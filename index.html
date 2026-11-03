@@ -5372,6 +5372,18 @@
                 window.__deferredInstallPrompt = null;
                 try { localStorage.setItem('wf_pwa_installed_flag', 'true'); } catch (err) { }
             });
+
+            // Register a minimal service worker. Android Chrome will NOT
+            // fire beforeinstallprompt without an active worker that
+            // handles fetch — this is a hard installability requirement
+            // on mobile, even though desktop Chrome is more lenient.
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function () {
+                    navigator.serviceWorker.register('sw.js').catch(function (err) {
+                        try { console.warn('[WFSMB] SW registration failed:', err); } catch (e) { }
+                    });
+                });
+            }
         })();
     </script>
 
@@ -17094,25 +17106,15 @@
             };
 
             try {
-                // Chrome on Android fails installability when the manifest
-                // is a blob: URL — it does not fetch it in time and the
-                // beforeinstallprompt event never fires. A data: URL with
-                // the correct MIME type is treated as an immediate,
-                // same-origin manifest and passes installability on both
-                // Android Chrome and desktop Chrome.
-                const manifestJson = JSON.stringify(manifest);
-                const dataUrl = 'data:application/manifest+json;charset=utf-8,' +
-                    encodeURIComponent(manifestJson);
-
+                // Serve the manifest as a real static file. Android Chrome
+                // rejects blob: and data: manifest URLs — it needs a
+                // same-origin HTTP(S) URL it can fetch directly.
                 document.querySelectorAll("link[rel='manifest']").forEach(l => l.remove());
                 const link = document.createElement('link');
                 link.rel = 'manifest';
-                link.href = dataUrl;
+                link.href = 'manifest.json';
                 document.head.appendChild(link);
-
-                // Also expose the manifest URL for Chrome to pick up the
-                // updated icon on the next beforeinstallprompt.
-                window.__wfManifestUrl = dataUrl;
+                window.__wfManifestUrl = 'manifest.json';
             } catch (e) { }
         }
 
@@ -18105,10 +18107,18 @@
         // WF CONTROL PANEL
         // ------------------------------------------------------------
         function initWFControl() {
-            // WF panel is PWA-only. Skip binding entirely in a browser tab.
-            if (!isRunningAsPWA()) {
+            // The WF panel only makes sense in the installed app, but
+            // binding the handler unconditionally means the button is
+            // ALWAYS responsive — in a browser tab it explains that the
+            // app must be installed first; in the installed app it
+            // behaves as before. This also removes the "button does
+            // nothing" failure mode when isRunningAsPWA() reports a
+            // stale false value on launch.
+            const __wfIsPwaNow = isRunningAsPWA();
+            if (!__wfIsPwaNow) {
                 console.log('%c[WFSMB] WF upload disabled — install the app to enable.', 'color:#ffaa00;');
-                return;
+                // Do NOT return. Fall through and bind, but record the
+                // current state so the click handler can react.
             }
 
             const wfControlBtn = document.getElementById("wfControlBtn");
@@ -18144,8 +18154,27 @@
 
             initWFStorageDB().then(() => loadWFSettings());
 
-            wfControlBtn?.addEventListener("click", function (e) {
+            if (wfControlBtn && wfControlBtn.dataset.wfClickBound === '1') {
+                // already bound — skip
+            } else if (wfControlBtn) {
+            wfControlBtn.dataset.wfClickBound = '1';
+            wfControlBtn.addEventListener("click", function (e) {
                 e.preventDefault(); e.stopPropagation();
+
+                // Re-check PWA state at click time. A stale false at boot
+                // (or an install that happened in another tab) must not
+                // permanently disable the button.
+                if (!isRunningAsPWA()) {
+                    try {
+                        showSuccessNotification(
+                            'Install the App',
+                            'Uploads are only available in the installed app. Install it from the browser menu, then reopen from the home screen.'
+                        );
+                    } catch (err) { }
+                    console.log('%c[WFSMB] WF button tapped in browser tab — showing install hint.', 'color:#ffaa00;');
+                    return;
+                }
+
                 isModalOpen = !isModalOpen;
                 if (microModal) {
                     microModal.style.display = isModalOpen ? "block" : "none";
@@ -18158,6 +18187,7 @@
                     }
                 }
             });
+            } // end click-bound guard
 
             closeModal?.addEventListener("click", function () {
                 if (microModal) microModal.style.display = "none";
@@ -19204,6 +19234,26 @@
                 document.body.classList.toggle('wf-pwa-mode', inPwa);
                 console.log('%c[WFSMB] PWA mode:', 'color:#4dabf7;font-weight:bold',
                     inPwa ? 'INSTALLED ✅ (upload enabled)' : 'BROWSER ❌ (view-only, admin slides only)');
+
+                // If the app is (now) running as a PWA and the WF panel
+                // was never bound because the boot-time check was false,
+                // bind it now. This handles the exact case where the user
+                // installs and returns to the app without a hard reload.
+                if (inPwa && !window.__wfBoundAtBoot) {
+                    try {
+                        // The WF control initializer is idempotent — a
+                        // second call re-runs the same lookups and only
+                        // binds the click handler if it is not already
+                        // bound (checked via a data attribute below).
+                        // To keep this safe, only rebind if the button has
+                        // no marker yet.
+                        const btn = document.getElementById('wfControlBtn');
+                        if (btn && btn.dataset.wfBound !== '1') {
+                            btn.dataset.wfBound = '1';
+                            initWFControl();
+                        }
+                    } catch (err) { }
+                }
             }
             applyPWAMode();
 
