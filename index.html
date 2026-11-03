@@ -2535,12 +2535,43 @@
             flex: 1; height: 4px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: 2px; cursor: pointer;
-            position: relative; overflow: hidden; min-width: 50px;
+            position: relative;
+            /* Enlarged invisible hit area — see ::before below. The visible
+               bar stays 4px tall, but the tappable region is 28px tall and
+               8px wider on each side, so a finger can land on it reliably. */
+            min-width: 50px;
+            touch-action: none;   /* prevent the browser from scrolling or
+                                     zooming while the user is dragging the
+                                     scrubber. Without this, Android will
+                                     steal the drag as a page-scroll gesture. */
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        /* Enlarged invisible hit area. Sits on top of the visible bar
+           so any pointer press within ±14px vertically and ±8px
+           horizontally lands on the scrubber. This is the single biggest
+           improvement for touch devices. */
+        .video-progress-container::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -8px;
+            right: -8px;
+            height: 28px;
+            transform: translateY(-50%);
+            background: transparent;
+            pointer-events: auto;
+            z-index: 0;
         }
         .video-progress-bar {
             position: absolute; left: 0; top: 0; height: 100%;
             background: rgba(255, 255, 255, 0.8); width: 0%;
             transition: width 0.1s linear;
+            border-radius: 2px;
+            z-index: 1;   /* above the ::before hit area */
+            pointer-events: none;   /* the bar itself never receives
+                                        pointer events; the container owns
+                                        all interaction */
         }
         .video-time-display {
             color: white; font-size: 0.6rem; min-width: 65px;
@@ -2915,6 +2946,21 @@
             bottom: 12px !important;
             left: 12px !important;
             right: 12px !important;
+        }
+
+        /* Fullscreen: make the seek bar finger-sized. The visible bar
+           stays 4px, but the pointer target becomes 36px tall and
+           12px wider on each side so a thumb can land on it and drag. */
+        .media-container.wf-css-fullscreen .video-progress-container {
+            height: 6px !important;
+            touch-action: none !important;
+        }
+        .media-container.wf-css-fullscreen .video-progress-container::before {
+            top: 50% !important;
+            left: -12px !important;
+            right: -12px !important;
+            height: 36px !important;
+            transform: translateY(-50%) !important;
         }
 
         .media-container.wf-css-fullscreen .media-header {
@@ -8701,6 +8747,29 @@
             const finalUrl = logoUrl || GLOBAL_BRANDING_DEFAULTS.app_icon;
             document.querySelectorAll(".logo-image img").forEach(img => {
                 if (img) {
+                    // ── MARK AS WF-PERSONAL ONLY WHEN CALLED FROM WF PANEL ──
+                    // This function is called from two places:
+                    //   1. loadWFSettings()  → WF panel per-device logo
+                    //   2. (legacy paths)     → should NOT mark
+                    //
+                    // We detect the WF panel path by checking whether the
+                    // data URL is a WF-storage logo. If it is, mark the
+                    // element so applyAppLogo() will not overwrite it.
+                    // If it isn't, leave the element unmarked so the admin
+                    // icon can still update it as before.
+                    try {
+                        const isWFLogo = !!logoUrl
+                            && (window.currentWFPersonalLogo === logoUrl
+                                || (typeof localStorage !== 'undefined'
+                                    && localStorage.getItem('wf_wfdata_mirror_v1')
+                                    && localStorage.getItem('wf_wfdata_mirror_v1').indexOf(logoUrl) !== -1));
+                        if (isWFLogo) {
+                            img.dataset.wfPersonalLogo = '1';
+                        } else {
+                            delete img.dataset.wfPersonalLogo;
+                        }
+                    } catch (e) { }
+
                     img.onerror = function () {
                         if (this.src !== GLOBAL_BRANDING_DEFAULTS.app_icon) {
                             this.src = GLOBAL_BRANDING_DEFAULTS.app_icon;
@@ -8778,6 +8847,18 @@
         function applyAppLogo(dataUrl) {
             const final = dataUrl || GLOBAL_BRANDING_DEFAULTS.app_logo || GLOBAL_BRANDING_DEFAULTS.app_icon;
             document.querySelectorAll('.logo-image img').forEach(img => {
+                // ── SAFETY GUARD ──
+                // If the WF panel has uploaded a per-device logo on this
+                // device, that device's logo takes priority over the
+                // admin's global icon ON THE PAGE. The admin icon still
+                // controls the favicon, install banner, manifest and
+                // splash screen (those are set elsewhere and are not
+                // touched by this guard).
+                //
+                // Marked by updateAllLogoImages() when called from the
+                // WF panel path — see the companion patch below.
+                if (img.dataset.wfPersonalLogo === '1') return;
+
                 img.onerror = function () {
                     if (this.src !== GLOBAL_BRANDING_DEFAULTS.app_icon) {
                         this.src = GLOBAL_BRANDING_DEFAULTS.app_icon;
@@ -16339,14 +16420,197 @@
                 if (muteBtn) muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
             });
 
-            progressContainer?.addEventListener("click", (e) => {
-                e.stopPropagation(); e.preventDefault();
-                if (mediaVideo.duration && isFinite(mediaVideo.duration)) {
-                    const rect = progressContainer.getBoundingClientRect();
-                    mediaVideo.currentTime = ((e.clientX - rect.left) / rect.width) * mediaVideo.duration;
-                    updateProgressBar();
+            // ============================================================
+            // PROGRESS / SEEK BAR — pointer-based scrubber
+            // ------------------------------------------------------------
+            // Works identically on desktop (mouse), mobile (touch), and
+            // tablet (touch or stylus) because it uses the unified
+            // Pointer Events API.
+            //
+            //   • pointerdown   → seek to that point immediately
+            //                     (a tap on the bar jumps instantly)
+            //   • pointermove   → while dragging, seek continuously
+            //                     (press-and-hold then slide your
+            //                     finger left/right to scrub)
+            //   • pointerup     → end the drag cleanly
+            //   • pointercancel → end the drag cleanly (system interrupt)
+            //
+            // setPointerCapture() guarantees that the drag keeps
+            // tracking even if the finger slides OFF the bar or the
+            // mouse leaves the element — which is the single biggest
+            // missing behaviour that made the old click-only version
+            // feel broken on mobile.
+            //
+            // touch-action: none (added in CSS) prevents Android and
+            // iOS from stealing the gesture as a page-scroll.
+            //
+            // Capture phase (true) is used so this handler runs BEFORE
+            // the media-container touchstart handler that otherwise
+            // swallows taps in this area. Without capture: true, the
+            // touchstart handler on mediaContainer would run first and
+            // consume the tap, and the seek would never happen.
+            // ============================================================
+            let __wfScrubActive = false;
+            let __wfScrubPointerId = null;
+            let __wfLastSeekRatio = -1;
+
+            // Map a pointer position to a 0..1 ratio along the seek bar,
+            // correct for BOTH rotated and non-rotated fullscreen.
+            //
+            // Rotated fullscreen (.wf-fs-rotate) spins the whole container
+            // 90° via CSS transform. After the transform:
+            //   • getBoundingClientRect() returns the TRANSPOSED box
+            //       rect.width  = visual HEIGHT of the bar
+            //       rect.height = visual WIDTH of the bar
+            //   • the finger's "along the bar" motion is clientY, not X
+            //   • dragging physically RIGHT decreases clientY... no —
+            //     it increases clientY, so we invert so right = forward.
+            function __wfSeekRatioFromPoint(clientX, clientY) {
+                const rect = progressContainer.getBoundingClientRect();
+                if (!rect.width || !rect.height) return null;
+
+                const fsContainer = progressContainer.closest('.media-container.wf-css-fullscreen');
+                const isRotated = !!(fsContainer && fsContainer.classList.contains('wf-fs-rotate'));
+
+                let ratio;
+                if (isRotated) {
+                    // In rotated fullscreen the bar's on-screen long axis is
+                    // the *un-rotated* vertical axis, which getBoundingClientRect
+                    // returns as rect.height. The finger's motion along the bar
+                    // is clientY. The pre-rotation bar starts at its LEFT edge,
+                    // which after rotate(90deg) ends up at the BOTTOM of the
+                    // transposed box — so clientY - rect.top = 0 is the bar's
+                    // START (ratio 0) and clientY - rect.top = rect.height is
+                    // the bar's END (ratio 1). No inversion.
+                    const denom = rect.height || 1;
+                    ratio = (clientY - rect.top) / denom;
+                } else {
+                    const denom = rect.width || 1;
+                    ratio = (clientX - rect.left) / denom;
                 }
-            });
+                if (!isFinite(ratio)) return null;
+                if (ratio < 0) ratio = 0;
+                else if (ratio > 1) ratio = 1;
+                return ratio;
+            }
+
+            function __wfSeekFromPointer(ev, commit) {
+                if (!mediaVideo.duration || !isFinite(mediaVideo.duration)) return;
+                const ratio = __wfSeekRatioFromPoint(ev.clientX, ev.clientY);
+                if (ratio === null) return;
+                // Skip redundant seeks within a fraction of a percent —
+                // continuous pointermove would otherwise hammer currentTime.
+                if (!commit && Math.abs(ratio - __wfLastSeekRatio) < 0.002) return;
+                __wfLastSeekRatio = ratio;
+                try {
+                    mediaVideo.currentTime = ratio * mediaVideo.duration;
+                } catch (e) { /* metadata not ready — harmless */ }
+                updateProgressBar();
+            }
+
+            // Enlarged hit test that works even when the user's finger is
+            // slightly outside the visible bar (which on a phone is 6px).
+            function __wfPointHitsSeekBar(clientX, clientY) {
+                const rect = progressContainer.getBoundingClientRect();
+                if (!rect.width || !rect.height) return false;
+
+                const fsContainer = progressContainer.closest('.media-container.wf-css-fullscreen');
+                const isRotated = !!(fsContainer && fsContainer.classList.contains('wf-fs-rotate'));
+
+                const pad = 20;
+                if (isRotated) {
+                    // After 90° rotation the on-screen long axis is
+                    // rect.height; the short axis is rect.width.
+                    return clientY >= rect.top - pad && clientY <= rect.bottom + pad &&
+                           clientX >= rect.left  - pad && clientX <= rect.right  + pad;
+                }
+                return clientX >= rect.left - pad && clientX <= rect.right + pad &&
+                       clientY >= rect.top  - pad && clientY <= rect.bottom + pad;
+            }
+
+            if (progressContainer) {
+                progressContainer.addEventListener('pointerdown', function (e) {
+                    if (e.button !== 0 && e.pointerType === 'mouse') return;
+
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    __wfScrubActive = true;
+                    __wfScrubPointerId = e.pointerId;
+                    __wfLastSeekRatio = -1;
+
+                    try { progressContainer.setPointerCapture(e.pointerId); } catch (err) { }
+
+                    // A tap seeks immediately — same as a press-drag.
+                    __wfSeekFromPointer(e, true);
+                    showControlsNow();
+                }, { passive: false, capture: true });
+
+                progressContainer.addEventListener('pointermove', function (e) {
+                    if (!__wfScrubActive) return;
+                    if (e.pointerId !== __wfScrubPointerId) return;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    __wfSeekFromPointer(e, false);
+                }, { passive: false, capture: true });
+
+                function __wfEndScrub(e) {
+                    if (!__wfScrubActive) return;
+                    if (e && e.pointerId !== undefined && e.pointerId !== __wfScrubPointerId) return;
+                    __wfScrubActive = false;
+                    __wfScrubPointerId = null;
+                    __wfLastSeekRatio = -1;
+                    try { progressContainer.releasePointerCapture(e.pointerId); } catch (err) { }
+                    showControlsNow();
+                }
+                progressContainer.addEventListener('pointerup', __wfEndScrub, { capture: true });
+                progressContainer.addEventListener('pointercancel', __wfEndScrub, { capture: true });
+
+                // Legacy touch fallback (browsers without PointerEvent,
+                // or Android WebViews that swallow pointermove mid-drag).
+                if (!window.PointerEvent) {
+                    progressContainer.addEventListener('touchstart', function (e) {
+                        if (e.touches.length !== 1) return;
+                        e.preventDefault();
+                        e.stopPropagation();
+                        __wfSeekFromPointer(e.touches[0], true);
+                        showControlsNow();
+                    }, { passive: false, capture: true });
+
+                    progressContainer.addEventListener('touchmove', function (e) {
+                        if (e.touches.length !== 1) return;
+                        e.preventDefault();
+                        e.stopPropagation();
+                        __wfSeekFromPointer(e.touches[0], false);
+                    }, { passive: false, capture: true });
+                }
+
+                // Safety net for rotated fullscreen: if the finger lands
+                // NEAR the bar (but on a sibling) while the container is
+                // rotated, route the press to the bar. Mobile browsers can
+                // mis-hit the transformed element because hit-testing runs
+                // against the pre-transform geometry.
+                document.addEventListener('pointerdown', function (e) {
+                    if (__wfScrubActive) return;
+                    const fsContainer = progressContainer.closest('.media-container.wf-css-fullscreen');
+                    if (!fsContainer) return;
+                    if (!fsContainer.classList.contains('wf-fs-rotate')) return;
+                    if (e.target === progressContainer) return;
+                    if (!__wfPointHitsSeekBar(e.clientX, e.clientY)) return;
+
+                    e.preventDefault();
+                    e.stopPropagation();
+                    __wfScrubActive = true;
+                    __wfScrubPointerId = e.pointerId;
+                    __wfLastSeekRatio = -1;
+                    try { progressContainer.setPointerCapture(e.pointerId); } catch (err) { }
+                    __wfSeekFromPointer(e, true);
+                    showControlsNow();
+                }, { passive: false, capture: true });
+            }
+
+                // (legacy seek-bar block removed — the pointer-based
+                //  scrubber above is the single implementation)
 
             // ============================================================
             // CSS-SIMULATED FULLSCREEN
@@ -17106,15 +17370,41 @@
             };
 
             try {
-                // Serve the manifest as a real static file. Android Chrome
-                // rejects blob: and data: manifest URLs — it needs a
-                // same-origin HTTP(S) URL it can fetch directly.
+                // ── RUNTIME MANIFEST — uses the ADMIN-UPLOADED icon ──
+                //
+                // The manifest object above is built with `iconUrl`
+                // (the admin-uploaded app icon, or the WF SVG fallback).
+                // Instead of discarding it by linking to a static
+                // manifest.json on disk, we serialise it to a Blob and
+                // serve that as the manifest URL. Chrome accepts a Blob
+                // URL as long as it is same-origin and served over
+                // HTTP(S) — which the blob: scheme satisfies because it
+                // inherits the page's origin.
+                //
+                // This is what makes the installed PWA icon match what
+                // the admin uploaded. A static manifest.json on disk
+                // cannot reference a runtime icon, so this is the only
+                // way to keep them in sync without a server.
                 document.querySelectorAll("link[rel='manifest']").forEach(l => l.remove());
+
+                const json = JSON.stringify(manifest);
+                const blob = new Blob([json], { type: 'application/manifest+json' });
+                const blobUrl = URL.createObjectURL(blob);
+
                 const link = document.createElement('link');
                 link.rel = 'manifest';
-                link.href = 'manifest.json';
+                link.href = blobUrl;
                 document.head.appendChild(link);
-                window.__wfManifestUrl = 'manifest.json';
+
+                // Release the previous blob URL so we do not leak one
+                // blob per setupPWAManifest() call. Safe to revoke now —
+                // Chrome has already parsed the previous manifest by the
+                // time this function runs again.
+                if (window.__wfManifestBlobUrl && window.__wfManifestBlobUrl !== blobUrl) {
+                    try { URL.revokeObjectURL(window.__wfManifestBlobUrl); } catch (e) { }
+                }
+                window.__wfManifestBlobUrl = blobUrl;
+                window.__wfManifestUrl = blobUrl;
             } catch (e) { }
         }
 
@@ -17200,7 +17490,7 @@
                     banner.style.setProperty('display', 'flex', 'important');
                     banner.style.setProperty('visibility', 'visible', 'important');
                     banner.style.setProperty('opacity', '1', 'important');
-                    console.log('[WFSMB] banner: SHOWN');
+                    // console.log('[WFSMB] banner: SHOWN');
                 } catch (e) { }
             }
 
@@ -18116,7 +18406,7 @@
             // stale false value on launch.
             const __wfIsPwaNow = isRunningAsPWA();
             if (!__wfIsPwaNow) {
-                console.log('%c[WFSMB] WF upload disabled — install the app to enable.', 'color:#ffaa00;');
+                // console.log('%c[WFSMB] WF upload disabled — install the app to enable.', 'color:#ffaa00;');
                 // Do NOT return. Fall through and bind, but record the
                 // current state so the click handler can react.
             }
@@ -18171,7 +18461,7 @@
                             'Uploads are only available in the installed app. Install it from the browser menu, then reopen from the home screen.'
                         );
                     } catch (err) { }
-                    console.log('%c[WFSMB] WF button tapped in browser tab — showing install hint.', 'color:#ffaa00;');
+                    // console.log('%c[WFSMB] WF button tapped in browser tab — showing install hint.', 'color:#ffaa00;');
                     return;
                 }
 
@@ -18264,6 +18554,10 @@
                         if (saved) {
                             if (logoPreview) { logoPreview.src = croppedLogo; logoPreview.style.display = "block"; }
                             if (logoPreviewText) logoPreviewText.style.display = "none";
+                            // Record the WF-personal logo so updateAllLogoImages()
+                            // can mark the DOM elements and applyAppLogo() will
+                            // know to leave them alone. See companion patches.
+                            try { window.currentWFPersonalLogo = croppedLogo; } catch (e) { }
                             updateAllLogoImages(croppedLogo);
                             if (statusDot) statusDot.style.display = "block";
                             if (cropperOverlay) cropperOverlay.classList.remove("active");
@@ -19232,8 +19526,8 @@
             function applyPWAMode() {
                 const inPwa = isRunningAsPWA();
                 document.body.classList.toggle('wf-pwa-mode', inPwa);
-                console.log('%c[WFSMB] PWA mode:', 'color:#4dabf7;font-weight:bold',
-                    inPwa ? 'INSTALLED ✅ (upload enabled)' : 'BROWSER ❌ (view-only, admin slides only)');
+                // console.log('%c[WFSMB] PWA mode:', 'color:#4dabf7;font-weight:bold',
+                //     inPwa ? 'INSTALLED ✅ (upload enabled)' : 'BROWSER ❌ (view-only, admin slides only)');
 
                 // If the app is (now) running as a PWA and the WF panel
                 // was never bound because the boot-time check was false,
@@ -19447,13 +19741,13 @@
             // page is now a separate "about us.html" document and does
             // not use any of these helpers)
 
-            // 10f. Console info
-            console.log('%c✅ WFSMB initialized — all systems ready',
-                'color:#00ff88;font-weight:bold;font-size:13px');
-            console.log('%c  Buckets: wfsmb-slides / wfsmb-branding / wfsmb-user-media / wfsmb-william',
-                'color:#4dabf7;font-size:11px');
-            console.log('%c  Realtime: replace-not-append · zero-delay hydration active',
-                'color:#4dabf7;font-size:11px');
+            // 10f. Console info (silenced for a clean production console)
+            // console.log('%c✅ WFSMB initialized — all systems ready',
+            //     'color:#00ff88;font-weight:bold;font-size:13px');
+            // console.log('%c  Buckets: wfsmb-slides / wfsmb-branding / wfsmb-user-media / wfsmb-william',
+            //     'color:#4dabf7;font-size:11px');
+            // console.log('%c  Realtime: replace-not-append · zero-delay hydration active',
+            //     'color:#4dabf7;font-size:11px');
         });
 
         // ------------------------------------------------------------
