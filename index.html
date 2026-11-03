@@ -18835,6 +18835,7 @@
                     saveSlideSnapshot();
                     showSuccessNotification("Slideshow Updated", `${validCount} item(s) added`);
                 }
+                try { slideshowImageUpload.value = ''; } catch (e) { }
             });
 
             document.getElementById('slideshowClearAllBtn')?.addEventListener('click', async function (e) {
@@ -18946,10 +18947,15 @@
                 let html = '<div class="uploaded-items-title">Uploaded Items:</div>';
                 uploadedItems.forEach(item => {
                     const typeIcon = item.type === "video" ? "🎬" : "🖼️";
+                    let tsLabel = "";
+                    try {
+                        const t = Number(item.timestamp);
+                        if (isFinite(t) && t > 0) tsLabel = new Date(t).toLocaleTimeString();
+                    } catch (e) { }
                     html += `<div class="uploaded-item">
                     <div class="uploaded-item-info">
                         <span class="uploaded-item-type">${typeIcon}</span>
-                        <span>${new Date(item.timestamp).toLocaleTimeString()}</span>
+                        <span>${tsLabel}</span>
                     </div>
                     <button class="uploaded-item-delete" onclick="window.deleteSlideshowItem('${item.id}')"><i class="fas fa-times"></i></button>
                 </div>`;
