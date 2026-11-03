@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>WILLFORTUNATE HIGH TECH INTERNATIONAL ONLINE SERVICES COMPANY</title>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+<style>
+:root{
+  --primary:#2D7FF9;--primary-dark:#1A5FCC;--accent:#4DABFF;--fire-glow:#6BB5FF;--spark:#1A73E8;
+  --electric-blue:#00C6FF;--cyber-blue:#0072FF;--dark:#0A0A0F;--light:#F8FAFC;
+  --glass:rgba(255,255,255,.05);--glass-border:rgba(45,127,249,.3);
+  --radius:24px;--transition:all 0s linear;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:#000;color:var(--light);
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  display:flex;justify-content:center;align-items:center;padding:10px;margin:0;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  contain:layout style;
+  -webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;
+  touch-action:none;
+}
+img{
+  max-width:100%;height:auto;display:block;will-change:transform;
+  -webkit-user-drag:none;-khtml-user-drag:none;-moz-user-drag:none;-o-user-drag:none;
+  user-drag:none;pointer-events:none;
+}
+.container{
+  position:relative;width:100%;max-width:400px;min-height:500px;
+  border:2px solid rgba(45,127,249,.5);border-radius:20px;overflow:visible;
+  background:rgba(10,10,20,.8);
+  box-shadow:0 0 40px rgba(45,127,249,.3),inset 0 0 30px rgba(45,127,249,.1);
+  display:flex;flex-direction:column;align-items:center;padding:15px 0 25px;
+  transform:translateZ(0);backface-visibility:hidden;contain:layout paint;
+}
+.back-button{
+  position:absolute;top:15px;right:15px;width:40px;height:40px;
+  background:rgba(15,15,26,.85);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+  border:1px solid rgba(45,127,249,.3);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  transition:var(--transition);z-index:1000;box-shadow:0 4px 15px rgba(0,0,0,.3);
+  overflow:hidden;text-decoration:none;transform:translateZ(0);
+}
+.back-button.visible{opacity:1;pointer-events:all;transform:translateX(0)}
+.back-button i{font-size:18px;color:var(--electric-blue);transition:var(--transition);pointer-events:none}
+.back-tooltip{
+  position:absolute;top:50%;right:50px;transform:translateY(-50%);
+  background:rgba(15,15,26,.9);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+  border:1px solid rgba(45,127,249,.3);color:var(--electric-blue);
+  padding:6px 12px;border-radius:10px;font-size:11px;font-weight:700;letter-spacing:1px;
+  white-space:nowrap;opacity:0;pointer-events:none;transition:var(--transition);
+  box-shadow:0 4px 15px rgba(0,0,0,.3);z-index:1001;
+}
+.back-button:hover .back-tooltip{opacity:1;transform:translateY(-50%) translateX(-5px)}
+
+.pure-orbital{
+  width:100%;max-width:350px;height:350px;position:relative;
+  filter:drop-shadow(0 0 40px rgba(45,127,249,.3));margin:40px auto 30px;
+  transform:translateZ(0);
+  isolation:isolate;
+}
+.fire-flames{z-index:3}
+.orbital-ring{z-index:4}
+.core-fire{z-index:20}
+.nav-orb{z-index:10}
+
+.core-fire{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px}
+.core-orb{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:80px;height:80px;background:linear-gradient(135deg,#0A0A0F,#151525);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  transition:transform 0s linear;
+  box-shadow:0 0 80px rgba(45,127,249,.6),inset 0 2px 20px rgba(255,255,255,.05);
+  z-index:15;animation:electric-pulse .6s ease-in-out infinite;overflow:hidden;
+  transform:translate(-50%,-50%) translateZ(0);
+  -webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;
+  -webkit-touch-callout:none;
+}
+.core-border{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) translateZ(0);
+  width:110px;height:110px;border-radius:50%;
+  background:conic-gradient(from 0deg,var(--electric-blue),var(--cyber-blue),var(--accent),var(--primary),var(--electric-blue));
+  z-index:10;animation:ultra-rotate .4s linear infinite;
+  filter:blur(8px) brightness(1.2);opacity:.9;
+}
+.core-border::after{
+  content:'';position:absolute;top:6px;left:6px;right:6px;bottom:6px;
+  background:radial-gradient(circle at center,#0F0F1A 0%,#050510 100%);border-radius:50%;z-index:1;
+}
+.core-icon{
+  font-size:30px;font-weight:800;letter-spacing:-1px;z-index:20;position:relative;
+  background:linear-gradient(135deg,#FFFFFF 0%,#A0C8FF 50%,#4DABFF 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  text-shadow:0 0 40px rgba(77,171,255,.5);
+  display:flex;align-items:center;justify-content:center;
+  animation: smooth-spin 2s linear infinite;
+  transform-origin: center center;
+  will-change: transform;
+  -webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;
+  -webkit-touch-callout:none;pointer-events:none;
+}
+.core-icon::after{
+  content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:50px;height:50px;border:2px solid rgba(77,171,255,.3);border-radius:50%;
+  z-index:-1;animation:pulse-ring 1s ease-in-out infinite;
+}
+.core-orb:hover{transform:translate(-50%,-50%) scale(1.2) translateZ(0);box-shadow:0 0 120px rgba(45,127,249,.9)}
+
+/* === BLUE FIRE === */
+.fire-flames{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:130px;height:130px;
+  filter:drop-shadow(0 0 12px rgba(0,198,255,.85)) drop-shadow(0 0 24px rgba(0,114,255,.6));
+}
+.flame{
+  position:absolute;width:30px;height:50px;
+  background:linear-gradient(to top,
+    rgba(0,198,255,0) 0%,
+    rgba(0,198,255,.35) 20%,
+    #00C6FF 55%,
+    #7FE4FF 82%,
+    #FFFFFF 100%);
+  border-radius:50% 50% 20% 20%;
+  filter:blur(2px) brightness(1.35) saturate(1.2);
+  opacity:.95;
+  animation:electric-flicker .2s ease-in-out infinite alternate;
+  will-change:transform,opacity;
+}
+.flame:nth-child(1){top:-25px;left:50px;animation-delay:0s}
+.flame:nth-child(2){top:10px;right:-15px;animation-delay:0s}
+.flame:nth-child(3){bottom:-15px;left:50px;animation-delay:0s}
+.flame:nth-child(4){top:10px;left:-15px;animation-delay:0s}
+
+.orbital-ring{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) translateZ(0);
+  width:320px;height:320px;border-radius:50%;
+  border:3px solid rgba(45,127,249,.2);animation:rotate-ring 8s linear infinite;
+  background:linear-gradient(90deg,rgba(45,127,249,.1) 0%,rgba(77,171,255,.2) 50%,rgba(45,127,249,.1) 100%);
+  box-shadow:0 0 30px rgba(45,127,249,.3);
+}
+.orbital-ring::before{
+  content:'';position:absolute;top:-3px;left:50%;width:6px;height:6px;
+  background:var(--electric-blue);border-radius:50%;box-shadow:0 0 25px var(--electric-blue);
+  animation:orb-glow .6s ease-in-out infinite alternate;z-index:3;
+}
+.img-box{
+  width:50px;height:50px;border-radius:5px;overflow:hidden;
+  border:2px solid var(--electric-blue);transition:var(--transition);z-index:6;
+  position:relative;box-shadow:0 0 15px rgba(0,198,255,.4);
+  background:rgba(10,15,30,.8);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+}
+.img-box img{
+  width:100%;height:100%;object-fit:cover;transition:opacity 0s linear;
+  filter:brightness(.9) contrast(1.1);position:absolute;top:0;left:0;will-change:opacity;
+  pointer-events:none;-webkit-user-drag:none;user-select:none;
+}
+.img-box .current-img{opacity:1;z-index:2}
+.img-box .next-img{opacity:0;z-index:1}
+.nav-orb{
+  position:absolute;width:80px;height:90px;border-radius:16px;
+  background:linear-gradient(145deg,rgba(15,15,26,.85),rgba(10,10,20,.85));
+  -webkit-backdrop-filter:blur(25px);backdrop-filter:blur(25px);
+  border:1px solid rgba(45,127,249,.2);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;cursor:pointer;
+  transition:transform 0s linear,border-color 0s linear,box-shadow 0s linear;
+  box-shadow:0 15px 35px rgba(0,0,0,.4);overflow:hidden;
+  text-decoration:none;padding-top:8px;padding-bottom:8px;transform:translateZ(0);
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
+}
+.nav-orb::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(45,127,249,.08) 0%,rgba(29,93,204,.05) 50%,rgba(45,127,249,.12) 100%);
+  border-radius:16px;opacity:.6;transition:var(--transition);z-index:5;
+}
+.orb-border{position:absolute;top:-2px;left:-2px;right:-2px;bottom:-2px;border-radius:18px;z-index:4;opacity:0;transition:var(--transition);filter:blur(1px)}
+.nav-orb::after{
+  content:'';position:absolute;inset:1px;border-radius:15px;
+  background:linear-gradient(135deg,rgba(20,25,45,.7) 0%,rgba(10,15,30,.8) 100%);z-index:5;
+}
+.nav-orb:hover{transform:scale(1.15) translateY(-5px) translateZ(0);border-color:rgba(45,127,249,.4);box-shadow:0 25px 50px rgba(0,0,0,.5)}
+.nav-orb.active{background:linear-gradient(145deg,rgba(20,25,45,.9),rgba(10,15,30,.9));border-color:rgba(45,127,249,.5);transform:scale(1.1) translateZ(0)}
+.nav-orb-label{
+  font-size:9px;font-weight:700;text-align:center;letter-spacing:.8px;padding:4px 0 0;
+  color:var(--light);z-index:6;position:relative;text-transform:uppercase;
+  background:linear-gradient(to right,#E0F0FF,#A0C8FF);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-top:2px;pointer-events:none;
+}
+#nav-music{top:10%;left:40%}
+#nav-team{top:40%;left:70%}
+#nav-calendar{top:70%;left:40%}
+#nav-info{top:40%;left:10%}
+.connection-line{display:none}
+.active-label{
+  position:absolute;bottom:-90px;left:0;right:0;text-align:center;opacity:0;
+  transform:translateY(20px);transition:opacity 0s linear,transform 0s linear;z-index:5;
+  padding:0 10px;
+}
+.active-label.show{opacity:1;transform:translateY(0)}
+.label-title{
+  font-size:16px;font-weight:800;color:var(--electric-blue);margin-bottom:5px;
+  text-shadow:0 0 20px rgba(0,198,255,.7);letter-spacing:1px;line-height:1.35;
+  word-break:break-word;
+  background:linear-gradient(to right,#FFFFFF,#A0C8FF);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.label-desc{font-size:11px;color:rgba(255,255,255,.6);font-weight:500;letter-spacing:1px;text-transform:uppercase}
+.status-bar{position:absolute;top:15px;left:15px;display:flex;align-items:center;gap:10px;z-index:100;max-width:62%}
+.status-indicator{
+  display:flex;align-items:center;gap:6px;background:rgba(15,15,26,.7);
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+  border:1px solid rgba(45,127,249,.3);padding:6px 10px;border-radius:16px;
+}
+.status-pulse{width:8px;height:8px;background:var(--electric-blue);border-radius:50%;animation:electric-pulse .5s ease-in-out infinite;box-shadow:0 0 10px var(--electric-blue);flex-shrink:0}
+.status-text{font-size:8px;font-weight:700;letter-spacing:.4px;color:var(--electric-blue);line-height:1.25;text-transform:uppercase}
+
+/* Orbit layer now sits EXACTLY on top of the container (local coordinates),
+   so glitter positions are always relative to the frame — no viewport drift. */
+#orbit-layer{
+  position:absolute;inset:0;pointer-events:none;z-index:30;overflow:hidden;
+  border-radius:20px;
+  contain:layout style;
+}
+.orbit-glitter{
+  position:absolute;top:0;left:0;width:3px;height:3px;border-radius:50%;
+  background:radial-gradient(circle,#FFFFFF 0%,#00C6FF 45%,rgba(0,198,255,0) 75%);
+  box-shadow:0 0 8px #00C6FF,0 0 16px rgba(0,198,255,.7);
+  will-change:transform,opacity;pointer-events:none;
+}
+.orbit-glitter.sparkle{
+  width:2px;height:2px;
+  background:radial-gradient(circle,#FFFFFF 0%,#A0C8FF 50%,rgba(160,200,255,0) 75%);
+  box-shadow:0 0 5px #A0C8FF,0 0 10px rgba(160,200,255,.5);
+}
+
+.spark{
+  position:fixed;width:3px;height:3px;border-radius:50%;
+  background:radial-gradient(circle,#FFFFFF 0%,#4DABFF 50%,transparent 70%);
+  filter:blur(.4px);animation:spark-fly .2s ease-out forwards;pointer-events:none;z-index:50;
+  will-change:transform,opacity;box-shadow:0 0 8px #6BB5FF;
+}
+.ripple{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(45,127,249,.4) 0%,transparent 70%);transform:scale(0);pointer-events:none;z-index:100;will-change:transform,opacity;transition:transform 0s linear,opacity 0s linear}
+
+@media print{
+  html,body{visibility:hidden!important;background:#000!important}
+  body::after{
+    content:'PRINT / CAPTURE DISABLED';
+    position:fixed!important;inset:0;
+    display:flex!important;align-items:center;justify-content:center;
+    color:#000;background:#000;
+    visibility:visible!important;font-size:20px;
+  }
+  *{display:none!important}
+}
+
+@keyframes orb-glow{0%{box-shadow:0 0 20px var(--electric-blue)}100%{box-shadow:0 0 30px var(--electric-blue)}}
+@keyframes pulse-ring{0%{opacity:.5;transform:translate(-50%,-50%) scale(.95)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}100%{opacity:.5;transform:translate(-50%,-50%) scale(.95)}}
+@keyframes ultra-rotate{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes smooth-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes electric-pulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:1}50%{transform:translate(-50%,-50%) scale(1.1);opacity:.9}}
+@keyframes rotate-ring{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes electric-flicker{
+  from{transform:scaleY(.6) translateY(8px) scaleX(1.05);opacity:.7}
+  to{transform:scaleY(1.4) translateY(-8px) scaleX(.92);opacity:1}
+}
+@keyframes spark-fly{0%{transform:translate(0,0) scale(0);opacity:0}20%{transform:translate(var(--tx),var(--ty)) scale(1);opacity:1}100%{transform:translate(var(--tx2),var(--ty2)) scale(0);opacity:0}}
+
+@media (prefers-reduced-motion:reduce){
+  .orbit-glitter,.core-orb,.core-border,.core-icon,.orbital-ring,.flame,.core-icon::after,.status-pulse{animation:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="container" id="main-container">
+  <div id="orbit-layer" aria-hidden="true"></div>
+
+  <div class="back-button visible" id="universal-back-btn">
+    <i class="fas fa-power-off"></i>
+    <div class="back-tooltip" id="back-tooltip">Exit Browser</div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-indicator">
+      <div class="status-pulse"></div>
+      <span class="status-text">WILLFORTUNATE HIGH TECH INTERNATIONAL ONLINE SERVICES COMPANY</span>
+    </div>
+  </div>
+
+  <div class="pure-orbital" id="orbital-container">
+    <div class="fire-flames"><div class="flame"></div><div class="flame"></div><div class="flame"></div><div class="flame"></div></div>
+    <div class="orbital-ring"></div>
+    <div class="core-fire">
+      <div class="core-border"></div>
+      <div class="core-orb" id="core-orb"><div class="core-icon">WF</div></div>
+    </div>
+
+    <a class="nav-orb" id="nav-music" href="willfort player.html" data-title="BOT MUSIC" data-desc="Music Player & Streaming Service">
+      <div class="orb-border"></div>
+      <div class="img-box" id="music-img-box">
+        <img class="current-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232D7FF9' opacity='0.3'/%3E%3Cpath d='M35,40 L45,50 L35,60 M65,40 L55,50 L65,60' stroke='%232D7FF9' stroke-width='6' fill='none'/%3E%3C/svg%3E" alt="Music Bot">
+        <img class="next-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232D7FF9' opacity='0.3'/%3E%3Cpath d='M35,40 L45,50 L35,60 M65,40 L55,50 L65,60' stroke='%232D7FF9' stroke-width='6' fill='none'/%3E%3C/svg%3E" alt="Music Bot">
+      </div>
+      <div class="nav-orb-label">BOT MUSIC</div>
+    </a>
+
+    <a class="nav-orb" id="nav-team" href="team.html" data-title="TEAM BOT" data-desc="Team Collaboration & Communication">
+      <div class="orb-border"></div>
+      <div class="img-box" id="team-img-box">
+        <img class="current-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232D7FF9' opacity='0.3'/%3E%3Cpath d='M35,40 L45,50 L35,60 M65,40 L55,50 L65,60' stroke='%232D7FF9' stroke-width='6' fill='none'/%3E%3C/svg%3E" alt="Team Bot">
+        <img class="next-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232D7FF9' opacity='0.3'/%3E%3Cpath d='M35,40 L45,50 L35,60 M65,40 L55,50 L65,60' stroke='%232D7FF9' stroke-width='6' fill='none'/%3E%3C/svg%3E" alt="Team Bot">
+      </div>
+      <div class="nav-orb-label">TEAM BOT</div>
+    </a>
+
+    <a class="nav-orb" id="nav-calendar" href="marketing.html" data-title="WILLFORT APP" data-desc="START MARKETING ">
+      <div class="orb-border"></div>
+      <div class="img-box" id="calendar-img-box">
+        <img class="current-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232D7FF9' opacity='0.3'/%3E%3Cpath d='M35,40 L45,50 L35,60 M65,40 L55,50 L65,60' stroke='%232D7FF9' stroke-width='6' fill='none'/%3E%3C/svg%3E" alt="Calendar Bot">
+        <img class="next-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232D7FF9' opacity='0.3'/%3E%3Cpath d='M35,40 L45,50 L35,60 M65,40 L55,50 L65,60' stroke='%232D7FF9' stroke-width='6' fill='none'/%3E%3C/svg%3E" alt="Calendar Bot">
+      </div>
+      <div class="nav-orb-label">START MARKETING</div>
+    </a>
+
+    <a class="nav-orb" id="nav-info" href="profile.html" data-title="MY INFO" data-desc="Personal Information & Profile">
+      <div class="orb-border"></div>
+      <div class="img-box" id="info-img-box">
+        <img class="current-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232D7FF9' opacity='0.3'/%3E%3Cpath d='M35,40 L45,50 L35,60 M65,40 L55,50 L65,60' stroke='%232D7FF9' stroke-width='6' fill='none'/%3E%3C/svg%3E" alt="My Info">
+        <img class="next-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232D7FF9' opacity='0.3'/%3E%3Cpath d='M35,40 L45,50 L35,60 M65,40 L55,50 L65,60' stroke='%232D7FF9' stroke-width='6' fill='none'/%3E%3C/svg%3E" alt="My Info">
+      </div>
+      <div class="nav-orb-label">MY INFO</div>
+    </a>
+
+    <div class="active-label" id="active-label">
+      <div class="label-title" id="label-title">WILLFORTUNATE HIGH TECH INTERNATIONAL ONLINE SERVICES COMPANY</div>
+      <div class="label-desc" id="label-desc">AI-Powered Bot Services</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* Lock scroll to top — extra safety on browsers that ignore CSS */
+  window.scrollTo(0, 0);
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+  window.addEventListener('scroll', function(){ window.scrollTo(0, 0); }, {passive:true});
+
+  /* Block touchmove scrolling (keeps pinch/tap working) */
+  document.addEventListener('touchmove', function(e){
+    if(e.cancelable) e.preventDefault();
+  }, {passive:false});
+
+  /* ============================================================
+     APP LOGIC
+     ============================================================ */
+  var CONFIG = {
+    IMAGE_ROTATION_INTERVAL: 3000,
+    ORBIT_GLITTER_BASE_COUNT: 40,
+    ORBIT_GLITTER_MAX_MOBILE: 18,
+    ORBIT_GLITTER_MAX_DESKTOP: 48
+  };
+
+  var dom = {
+    backBtn: document.getElementById('universal-back-btn'),
+    backTooltip: document.getElementById('back-tooltip'),
+    coreOrb: document.getElementById('core-orb'),
+    navOrbs: document.querySelectorAll('.nav-orb'),
+    activeLabel: document.getElementById('active-label'),
+    labelTitle: document.getElementById('label-title'),
+    labelDesc: document.getElementById('label-desc'),
+    container: document.getElementById('main-container'),
+    orbital: document.getElementById('orbital-container'),
+    orbitLayer: document.getElementById('orbit-layer'),
+    imgBoxes: {
+      music: document.getElementById('music-img-box'),
+      team: document.getElementById('team-img-box'),
+      calendar: document.getElementById('calendar-img-box'),
+      info: document.getElementById('info-img-box')
+    }
+  };
+
+  var FALLBACK_SVG = {
+    music: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232D7FF9' opacity='0.3'/%3E%3Cpath d='M35,40 L45,50 L35,60 M65,40 L55,50 L65,60' stroke='%232D7FF9' stroke-width='6' fill='none'/%3E%3C/svg%3E",
+    team:   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232D7FF9' opacity='0.3'/%3E%3Cpath d='M35,40 L45,50 L35,60 M65,40 L55,50 L65,60' stroke='%232D7FF9' stroke-width='6' fill='none'/%3E%3C/svg%3E",
+    calendar:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232D7FF9' opacity='0.3'/%3E%3Cpath d='M35,40 L45,50 L35,60 M65,40 L55,50 L65,60' stroke='%232D7FF9' stroke-width='6' fill='none'/%3E%3C/svg%3E",
+    info:   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232D7FF9' opacity='0.3'/%3E%3Cpath d='M35,40 L45,50 L35,60 M65,40 L55,50 L65,60' stroke='%232D7FF9' stroke-width='6' fill='none'/%3E%3C/svg%3E"
+  };
+
+  var IMAGE_URLS = {
+    music: [
+      'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=100&h=100&fit=crop',
+      'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=100&h=100&fit=crop',
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&h=100&fit=crop',
+      'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=100&h=100&fit=crop'
+    ],
+    team: [
+      'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=100&h=100&fit=crop',
+      'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=100&h=100&fit=crop',
+      'https://images.unsplash.com/photo-1552664730-d307ca884978?w=100&h=100&fit=crop',
+      'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=100&h=100&fit=crop'
+    ],
+    calendar: [
+      'https://images.unsplash.com/photo-1506784365847-bbad939e9335?w=100&h=100&fit=crop',
+      'https://images.unsplash.com/photo-1435527173128-983b87201f4d?w=100&h=100&fit=crop',
+      'https://images.unsplash.com/photo-1501139083538-0139583c060f?w=100&h=100&fit=crop',
+      'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=100&h=100&fit=crop'
+    ],
+    info: [
+      'https://images.unsplash.com/photo-1494790108777-2961286e4ab9?w=100&h=100&fit=crop',
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop',
+      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop',
+      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop'
+    ]
+  };
+
+  var imageIndices = { music:0, team:0, calendar:0, info:0 };
+
+  var orbitGlitters = [];
+  var orbitLayer;
+  var rectState = { w:0, h:0, perimeter:0, sideTop:0, sideRight:0, sideBottom:0, sideLeft:0 };
+  var rafId = null, lastFrame = 0;
+  var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function initOrbitGlitters(){
+    orbitLayer = dom.orbitLayer;
+    if(!orbitLayer) return;
+    measureAll();
+    var isMobile = window.innerWidth <= 480;
+    var orbitCount = Math.min(CONFIG.ORBIT_GLITTER_BASE_COUNT, isMobile ? CONFIG.ORBIT_GLITTER_MAX_MOBILE : CONFIG.ORBIT_GLITTER_MAX_DESKTOP);
+    for(var j=0;j<orbitCount;j++){ orbitGlitters.push(makeOrbitGlitter(true)); }
+    rafId = requestAnimationFrame(loop);
+    window.addEventListener('resize', measureAll, {passive:true});
+    window.addEventListener('orientationchange', measureAll, {passive:true});
+  }
+
+  function measureAll(){
+    if(!orbitLayer) return;
+    rectState.w = orbitLayer.clientWidth;
+    rectState.h = orbitLayer.clientHeight;
+    rectState.sideTop = rectState.w;
+    rectState.sideRight = rectState.h;
+    rectState.sideBottom = rectState.w;
+    rectState.sideLeft = rectState.h;
+    rectState.perimeter = 2 * (rectState.w + rectState.h);
+  }
+
+  function makeOrbitGlitter(randomize){
+    var el = document.createElement('div');
+    el.className = 'orbit-glitter' + (Math.random() < 0.4 ? ' sparkle' : '');
+    var size = 1.5 + Math.random() * 2.5;
+    el.style.width = size + 'px';
+    el.style.height = size + 'px';
+    el.style.opacity = '1';
+    orbitLayer.appendChild(el);
+
+    return {
+      el: el,
+      t: randomize ? Math.random() : 0,
+      speed: 1 / (22000 + Math.random() * 23000)
+    };
+  }
+
+  function pointOnRect(t){
+    var per = rectState.perimeter;
+    if(per <= 0) return { x:0, y:0 };
+    var dist = ((t % 1) + 1) % 1 * per;
+    var x, y;
+    if(dist < rectState.sideTop){
+      x = dist; y = 0;
+    } else if((dist -= rectState.sideTop) < rectState.sideRight){
+      x = rectState.w; y = dist;
+    } else if((dist -= rectState.sideRight) < rectState.sideBottom){
+      x = rectState.w - dist; y = rectState.h;
+    } else {
+      dist -= rectState.sideBottom;
+      x = 0; y = rectState.h - dist;
+    }
+    return { x: x, y: y };
+  }
+
+  function loop(now){
+    if(!lastFrame) lastFrame = now;
+    var dt = now - lastFrame;
+    lastFrame = now;
+    if(dt > 32) dt = 32;
+
+    if(rectState.perimeter > 0){
+      for(var k=0;k<orbitGlitters.length;k++){
+        var o = orbitGlitters[k];
+
+        if(!prefersReduced){
+          o.t += o.speed * dt;
+          if(o.t >= 1){ o.t = 0; }
+        }
+
+        var p = pointOnRect(o.t);
+        o.el.style.transform = 'translate3d(' + p.x + 'px,' + p.y + 'px,0)';
+      }
+    }
+    rafId = requestAnimationFrame(loop);
+  }
+
+  function init(){
+    initBackButton();
+    initNavOrbs();
+    initCoreOrb();
+    initImages();
+    initOrbitGlitters();
+    if(dom.activeLabel) dom.activeLabel.classList.add('show');
+    preloadImages();
+    if(dom.coreOrb) createSparkBurst(dom.coreOrb, 6);
+    setInterval(rotateImages, CONFIG.IMAGE_ROTATION_INTERVAL);
+  }
+
+  function preloadImages(){
+    Object.keys(IMAGE_URLS).forEach(function(type){
+      IMAGE_URLS[type].forEach(function(url){
+        var img = new Image(); img.decoding = 'async'; img.src = url;
+      });
+    });
+  }
+
+  function initImages(){
+    Object.keys(IMAGE_URLS).forEach(function(type){
+      var imgBox = dom.imgBoxes[type]; if(!imgBox) return;
+      var currentImg = imgBox.querySelector('.current-img');
+      var nextImg = imgBox.querySelector('.next-img');
+      if(currentImg){ currentImg.src = IMAGE_URLS[type][0]; currentImg.onerror = function(){ currentImg.src = FALLBACK_SVG[type]; }; }
+      if(nextImg){ nextImg.src = IMAGE_URLS[type][1]; nextImg.onerror = function(){ nextImg.src = FALLBACK_SVG[type]; }; nextImg.style.opacity = '0'; }
+    });
+  }
+
+  function rotateImages(){
+    Object.keys(IMAGE_URLS).forEach(function(type){
+      var imgBox = dom.imgBoxes[type]; if(!imgBox) return;
+      var currentImg = imgBox.querySelector('.current-img');
+      var nextImg = imgBox.querySelector('.next-img');
+      if(!currentImg || !nextImg) return;
+      imageIndices[type] = (imageIndices[type] + 1) % IMAGE_URLS[type].length;
+      var nextIndex = (imageIndices[type] + 1) % IMAGE_URLS[type].length;
+      nextImg.src = IMAGE_URLS[type][nextIndex];
+      nextImg.onerror = function(){ nextImg.src = FALLBACK_SVG[type]; };
+      nextImg.style.opacity = '1';
+      currentImg.style.opacity = '0';
+      currentImg.src = IMAGE_URLS[type][imageIndices[type]];
+      currentImg.onerror = function(){ currentImg.src = FALLBACK_SVG[type]; };
+      currentImg.style.opacity = '1';
+      nextImg.style.opacity = '0';
+    });
+  }
+
+  function initBackButton(){
+    if(!dom.backBtn) return;
+    if(dom.backTooltip) dom.backTooltip.textContent = 'Exit Browser';
+    dom.backBtn.classList.add('visible');
+    var triggered = false;
+    function exitHandler(e){
+      if(e){ e.preventDefault(); e.stopPropagation(); }
+      if(triggered) return;
+      triggered = true;
+      try { window.close(); } catch(err){}
+      try { window.location.replace('about:blank'); } catch(err){}
+    }
+    dom.backBtn.addEventListener('click', exitHandler, {passive:false});
+    dom.backBtn.addEventListener('touchstart', exitHandler, {passive:false});
+  }
+
+  function initNavOrbs(){
+    dom.navOrbs.forEach(function(orb){
+      var href = orb.getAttribute('href');
+      if(href && href !== '#'){
+        var pf = document.createElement('link');
+        pf.rel = 'prefetch'; pf.href = href;
+        document.head.appendChild(pf);
+      }
+      orb.addEventListener('click', function(e){
+        e.preventDefault();
+        dom.navOrbs.forEach(function(o){ o.classList.remove('active'); });
+        orb.classList.add('active');
+        if(dom.labelTitle) dom.labelTitle.textContent = orb.dataset.title;
+        if(dom.labelDesc) dom.labelDesc.textContent = orb.dataset.desc;
+        if(dom.activeLabel) dom.activeLabel.classList.add('show');
+        createQuickRipple(e, orb);
+        createSparkBurst(orb, 5);
+        if(href && href !== '#'){ window.location.href = href; }
+      }, {passive:false});
+      orb.addEventListener('pointerenter', function(){
+        if(dom.labelTitle) dom.labelTitle.textContent = orb.dataset.title;
+        if(dom.labelDesc) dom.labelDesc.textContent = orb.dataset.desc;
+        if(dom.activeLabel) dom.activeLabel.classList.add('show');
+      }, {passive:true});
+    });
+  }
+
+  function initCoreOrb(){
+    if(!dom.coreOrb) return;
+    dom.coreOrb.addEventListener('click', function(e){
+      e.stopPropagation();
+      dom.navOrbs.forEach(function(orb){ orb.classList.remove('active'); });
+      if(dom.activeLabel) dom.activeLabel.classList.remove('show');
+      if(dom.labelTitle) dom.labelTitle.textContent = 'WILLFORTUNATE HIGH TECH INTERNATIONAL ONLINE SERVICES COMPANY';
+      if(dom.labelDesc) dom.labelDesc.textContent = 'AI-Powered Bot Services';
+      createQuickRipple(e, dom.coreOrb);
+      createSparkBurst(dom.coreOrb, 10);
+    }, {passive:false});
+  }
+
+  function createQuickRipple(e, target){
+    if(!target) target = e && e.currentTarget;
+    if(!target) return;
+    var ripple = document.createElement('div');
+    ripple.className = 'ripple';
+    var rect = target.getBoundingClientRect();
+    var size = Math.max(rect.width, rect.height) * 2;
+    var x, y;
+    if(e && e.clientX !== undefined && e.clientX !== 0){ x = e.clientX; y = e.clientY; }
+    else if(e && e.touches && e.touches[0]){ x = e.touches[0].clientX; y = e.touches[0].clientY; }
+    else { x = rect.left + rect.width/2; y = rect.top + rect.height/2; }
+    ripple.style.width = size + 'px';
+    ripple.style.height = size + 'px';
+    ripple.style.left = (x - rect.left - size/2) + 'px';
+    ripple.style.top = (y - rect.top - size/2) + 'px';
+    target.appendChild(ripple);
+    ripple.style.transform = 'scale(1)';
+    ripple.style.opacity = '0';
+    setTimeout(function(){ if(ripple.parentNode) ripple.parentNode.removeChild(ripple); }, 0);
+  }
+
+  function createSparkBurst(element, count){
+    if(!element) return;
+    var rect = element.getBoundingClientRect();
+    var cx = rect.left + rect.width/2;
+    var cy = rect.top + rect.height/2;
+    for(var i=0;i<count;i++){
+      var spark = document.createElement('div');
+      spark.className = 'spark';
+      var angle = Math.random() * Math.PI * 2;
+      var distance = 30 + Math.random() * 40;
+      var tx = Math.cos(angle) * distance;
+      var ty = Math.sin(angle) * distance;
+      spark.style.setProperty('--tx', tx + 'px');
+      spark.style.setProperty('--ty', ty + 'px');
+      spark.style.setProperty('--tx2', (tx*1.6) + 'px');
+      spark.style.setProperty('--ty2', (ty*1.6) + 'px');
+      spark.style.left = cx + 'px';
+      spark.style.top = cy + 'px';
+      document.body.appendChild(spark);
+      spark.addEventListener('animationend', function(){ if(spark.parentNode) spark.parentNode.removeChild(spark); }, {once:true});
+    }
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init, {once:true});
+  } else { init(); }
+})();
+</script>
+</body>
+</html>

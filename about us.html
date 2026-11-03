@@ -1,0 +1,2458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>About Us — Willfortunate Tech Company</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        html, body { width: 100%; min-height: 100%; }
+        body { color: #fff; overflow-x: hidden; position: relative; min-height: 100vh; background: #0a0e17; }
+        img { max-width: 100%; height: auto; }
+        button { font-family: inherit; }
+
+        /* ============================================================
+           BLURRED BACKGROUND IMAGE LAYER
+           ============================================================ */
+        .wf-bg-blur {
+            position: fixed;
+            top: -20px;
+            left: -20px;
+            width: calc(100vw + 40px);
+            height: calc(100vh + 40px);
+            z-index: 0;
+            pointer-events: none;
+            background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            filter: blur(14px) brightness(0.45) saturate(1.2);
+            transform: scale(1.08);
+            opacity: 0.7;
+        }
+        .wf-bg-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse at 30% 20%, rgba(0, 229, 255, 0.08), transparent 55%),
+                radial-gradient(ellipse at 75% 80%, rgba(156, 39, 176, 0.08), transparent 55%),
+                linear-gradient(180deg, rgba(10, 14, 23, 0.55), rgba(10, 14, 23, 0.75));
+        }
+
+        /* ============================================================
+           ABOUT US MODAL — base
+           ============================================================ */
+        .about-us-modal {
+            display: flex; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0, 0, 0, 0.55);
+            z-index: 1000; justify-content: center; align-items: center;
+            backdrop-filter: blur(6px);
+            padding: 12px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        .about-us-modal-content {
+            background: rgba(10, 14, 23, 0.88); border-radius: 15px;
+            padding: 0;
+            max-width: 420px;
+            width: 95%;
+            max-height: 92vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(77, 171, 247, 0.5); position: relative;
+            display: flex; flex-direction: column;
+            backdrop-filter: blur(10px);
+        }
+
+        /* ============================================================
+           PREMIUM ANIMATED CLOSE / EXIT BUTTON
+           ============================================================ */
+        .close-about-us-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.18), transparent 60%),
+                linear-gradient(145deg, rgba(255, 71, 87, 0.18) 0%, rgba(156, 39, 176, 0.22) 100%);
+            border: 1px solid rgba(255, 107, 129, 0.55);
+            color: #fff;
+            font-size: 1.05rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            padding: 0;
+            outline: none;
+            isolation: isolate;
+            will-change: transform, box-shadow, background;
+            transform: translateZ(0);
+            -webkit-tap-highlight-color: transparent;
+            animation: wfClosePulse 2.6s ease-in-out infinite;
+            transition: transform 0.18s cubic-bezier(.2,.9,.3,1.4),
+                        box-shadow 0.18s ease,
+                        border-color 0.18s ease,
+                        background 0.18s ease;
+        }
+        .close-about-us-modal::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 50%;
+            padding: 2px;
+            background: conic-gradient(from 0deg,
+                #ff4757, #ff6b81, #9c27b0, #4dabf7, #00e5ff, #ff4757);
+            -webkit-mask:
+                linear-gradient(#000 0 0) content-box,
+                linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+                    mask-composite: exclude;
+            z-index: -1;
+            opacity: 0.85;
+            animation: wfCloseSpin 3s linear infinite;
+            pointer-events: none;
+        }
+        .close-about-us-modal::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.55);
+            z-index: -2;
+            animation: wfCloseGlow 2.6s ease-out infinite;
+            pointer-events: none;
+        }
+        .close-about-us-modal i {
+            display: inline-block;
+            line-height: 1;
+            transition: transform 0.25s cubic-bezier(.2,.9,.3,1.4);
+            will-change: transform;
+        }
+        .close-about-us-modal:hover {
+            background:
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.25), transparent 60%),
+                linear-gradient(145deg, rgba(255, 71, 87, 0.55) 0%, rgba(156, 39, 176, 0.55) 100%);
+            border-color: #ff6b81;
+            box-shadow:
+                0 0 22px rgba(255, 71, 87, 0.65),
+                0 0 42px rgba(156, 39, 176, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        }
+        .close-about-us-modal:hover i { transform: rotate(90deg) scale(1.08); }
+        .close-about-us-modal:active {
+            transform: scale(0.92);
+            transition-duration: 0.06s;
+        }
+        .close-about-us-modal:focus-visible {
+            box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.55);
+        }
+
+        @keyframes wfCloseSpin { to { transform: rotate(360deg); } }
+        @keyframes wfClosePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.045); }
+        }
+        @keyframes wfCloseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.55); }
+            70% { box-shadow: 0 0 0 12px rgba(255, 71, 87, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .close-about-us-modal,
+            .close-about-us-modal::before,
+            .close-about-us-modal::after { animation: none !important; }
+            .close-about-us-modal:hover i { transform: none; }
+        }
+
+        /* ============================================================
+           DESKTOP (≥901px) — PREMIUM LOOK, SAME ARRANGEMENT
+           ============================================================ */
+        @media (min-width: 901px) {
+            .about-us-modal-content {
+                max-width: 820px !important;
+                width: 92vw !important;
+                max-height: 92vh !important;
+                height: 92vh !important;
+                border-radius: 18px !important;
+                overflow: hidden !important;
+                display: flex !important;
+                flex-direction: column !important;
+                border: 1px solid rgba(0, 229, 255, 0.25) !important;
+                box-shadow:
+                    0 30px 80px rgba(0, 0, 0, 0.85),
+                    0 0 0 1px rgba(0, 229, 255, 0.08),
+                    0 0 60px rgba(0, 229, 255, 0.06) !important;
+                background:
+                    linear-gradient(145deg, rgba(12, 16, 28, 0.92), rgba(8, 10, 18, 0.95)) !important;
+                backdrop-filter: blur(14px) !important;
+            }
+            .about-us-modal-content .compact-card {
+                padding: 0 !important;
+                display: flex !important;
+                flex-direction: column !important;
+                width: 100% !important;
+                height: 100% !important;
+                overflow: hidden !important;
+                box-sizing: border-box !important;
+                border-radius: 18px !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+            .about-us-modal-content .compact-card::before {
+                display: none !important;
+            }
+
+            /* Sticky header (brand + title + description) — never scrolls */
+            .about-us-modal-content .compact-header {
+                position: sticky !important;
+                top: 0 !important;
+                z-index: 10 !important;
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: center !important;
+                gap: 18px !important;
+                padding: 20px 70px 18px 26px !important;
+                margin: 0 !important;
+                background:
+                    linear-gradient(180deg,
+                        rgba(10, 14, 23, 0.96) 0%,
+                        rgba(10, 14, 23, 0.93) 80%,
+                        rgba(10, 14, 23, 0.85) 100%) !important;
+                border-bottom: 1px solid rgba(0, 229, 255, 0.18) !important;
+                flex-shrink: 0 !important;
+                text-align: left !important;
+                backdrop-filter: blur(18px) !important;
+                box-shadow: 0 1px 0 rgba(0, 229, 255, 0.06) !important;
+            }
+            .about-us-modal-content .compact-brand-row {
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: center !important;
+                gap: 14px !important;
+                flex: 0 0 auto !important;
+            }
+            .about-us-modal-content .compact-brand-logo {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: 60px !important;
+                height: 60px !important;
+                border-radius: 50% !important;
+                overflow: hidden !important;
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                flex: 0 0 auto !important;
+                filter: drop-shadow(0 0 12px rgba(0, 229, 255, 0.25)) !important;
+            }
+            .about-us-modal-content .compact-brand-logo img {
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: contain !important;
+                background: transparent !important;
+                display: block !important;
+            }
+            .about-us-modal-content .compact-brand-text {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 3px !important;
+                text-align: left !important;
+            }
+            .about-us-modal-content .compact-logo {
+                font-size: 1.6rem !important;
+                font-weight: 900 !important;
+                letter-spacing: 0.5px !important;
+                line-height: 1.1 !important;
+                margin: 0 !important;
+                text-align: left !important;
+                background: linear-gradient(120deg, #00e5ff 0%, #4dabf7 45%, #9c27b0 100%) !important;
+                -webkit-background-clip: text !important;
+                background-clip: text !important;
+                color: transparent !important;
+                filter: drop-shadow(0 0 14px rgba(0, 229, 255, 0.25)) !important;
+            }
+            .about-us-modal-content .compact-subtitle {
+                font-size: 0.85rem !important;
+                letter-spacing: 2.4px !important;
+                text-transform: uppercase !important;
+                font-weight: 900 !important;
+                margin: 0 !important;
+                color: #e8eefc !important;
+                text-align: left !important;
+                line-height: 1.3 !important;
+                text-shadow: 0 0 18px rgba(0, 229, 255, 0.12) !important;
+            }
+
+            /* Body area — scrolls */
+            .about-us-modal-content .compact-body {
+                flex: 1 1 auto !important;
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
+                -webkit-overflow-scrolling: touch !important;
+                overscroll-behavior: contain !important;
+                padding: 18px 26px 22px !important;
+                display: grid !important;
+                grid-template-columns: 220px 1fr !important;
+                grid-template-areas:
+                    "image   intro"
+                    "image   features"
+                    "image   packages"
+                    "image   howitworks"
+                    "whychoose whychoose"
+                    "serve    serve"
+                    "contact  contact"
+                    "promise  promise"
+                    "footer   footer" !important;
+                column-gap: 24px !important;
+                row-gap: 14px !important;
+                align-items: start !important;
+                box-sizing: border-box !important;
+                background:
+                    radial-gradient(1200px 600px at 10% -10%, rgba(0, 229, 255, 0.04), transparent 60%),
+                    radial-gradient(900px 500px at 110% 110%, rgba(156, 39, 176, 0.04), transparent 60%) !important;
+            }
+            .about-us-modal-content .compact-body::-webkit-scrollbar { width: 6px; }
+            .about-us-modal-content .compact-body::-webkit-scrollbar-track { background: transparent; }
+            .about-us-modal-content .compact-body::-webkit-scrollbar-thumb {
+                background: linear-gradient(180deg, rgba(0, 229, 255, 0.55), rgba(77, 171, 247, 0.45));
+                border-radius: 3px;
+            }
+
+            .about-us-modal-content .compact-title {
+                grid-area: intro !important;
+                font-size: 1.55rem !important;
+                font-weight: 900 !important;
+                text-align: left !important;
+                margin: 0 !important;
+                line-height: 1.15 !important;
+                background: linear-gradient(135deg, #4dabf7, #00e5ff) !important;
+                -webkit-background-clip: text !important;
+                background-clip: text !important;
+                color: transparent !important;
+                align-self: start !important;
+                filter: drop-shadow(0 0 20px rgba(0, 229, 255, 0.15)) !important;
+            }
+            .about-us-modal-content .compact-description {
+                grid-area: intro !important;
+                font-size: 1rem !important;
+                text-align: left !important;
+                margin: 40px 0 0 !important;
+                line-height: 1.55 !important;
+                opacity: 0.95 !important;
+                color: #d5dbe8 !important;
+                align-self: start !important;
+            }
+
+            .about-us-modal-content .image-container-wrapper {
+                grid-area: image !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 8px !important;
+                max-width: 220px !important;
+                width: 100% !important;
+                margin: 8px auto 0 !important;
+                padding: 0 !important;
+                align-self: start !important;
+                justify-self: center !important;
+            }
+            .about-us-modal-content .container-title {
+                font-size: 0.8rem !important;
+                letter-spacing: 1.2px !important;
+                text-transform: uppercase !important;
+                font-weight: 800 !important;
+                text-align: center !important;
+                width: 100% !important;
+                margin: 0 !important;
+                color: #00e5ff !important;
+                text-shadow: 0 0 18px rgba(0, 229, 255, 0.25) !important;
+            }
+            .about-us-modal-content .image-container {
+                background: transparent !important;
+                border: none !important;
+                border-radius: 0 !important;
+                overflow: visible !important;
+                box-shadow: none !important;
+                outline: none !important;
+                aspect-ratio: 1 / 1 !important;
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                display: block !important;
+            }
+            .about-us-modal-content .compact-image {
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: contain !important;
+                background: transparent !important;
+                display: block !important;
+                filter: drop-shadow(0 8px 30px rgba(0, 229, 255, 0.15)) !important;
+            }
+            .about-us-modal-content .image-code {
+                font-size: 0.75rem !important;
+                padding: 4px 10px !important;
+                font-weight: 800 !important;
+                letter-spacing: 1px !important;
+                text-align: center !important;
+                margin: 0 !important;
+                color: #00e5ff !important;
+                background: rgba(0, 229, 255, 0.06) !important;
+                border: 1px solid rgba(0, 229, 255, 0.18) !important;
+                border-radius: 6px !important;
+            }
+
+            .about-us-modal-content .compact-stats { display: none !important; }
+
+            .about-us-modal-content .compact-features {
+                grid-area: features !important;
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                align-self: start !important;
+            }
+            .about-us-modal-content .compact-feature {
+                padding: 14px !important;
+                min-height: 140px !important;
+                border-radius: 12px !important;
+                background:
+                    linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.015)) !important;
+                border: 1px solid rgba(0, 229, 255, 0.14) !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 6px !important;
+                text-align: left !important;
+                position: relative !important;
+                box-shadow:
+                    0 6px 20px rgba(0, 0, 0, 0.35),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+                transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease !important;
+            }
+            .about-us-modal-content .compact-feature:hover {
+                transform: translateY(-2px) !important;
+                border-color: rgba(0, 229, 255, 0.35) !important;
+                box-shadow:
+                    0 12px 30px rgba(0, 0, 0, 0.45),
+                    0 0 24px rgba(0, 229, 255, 0.08),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+            }
+            .about-us-modal-content .compact-feature-icon {
+                font-size: 1.3rem !important;
+                color: #00e5ff !important;
+                margin: 0 !important;
+                filter: drop-shadow(0 0 12px rgba(0, 229, 255, 0.35)) !important;
+            }
+            .about-us-modal-content .compact-feature-title {
+                font-size: 0.95rem !important;
+                font-weight: 800 !important;
+                letter-spacing: 0.4px !important;
+                text-transform: uppercase !important;
+                color: #4dabf7 !important;
+                margin: 0 !important;
+            }
+            .about-us-modal-content .compact-feature-list {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 4px !important;
+                margin: 2px 0 0 !important;
+                padding: 0 !important;
+                list-style: none !important;
+                width: 100% !important;
+            }
+            .about-us-modal-content .compact-feature-list li {
+                font-size: 0.85rem !important;
+                line-height: 1.4 !important;
+                color: #cdd4e4 !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 7px !important;
+                margin: 0 !important;
+                font-weight: 600 !important;
+            }
+            .about-us-modal-content .compact-feature-list li i {
+                font-size: 0.62rem !important;
+                color: #00e5ff !important;
+                flex-shrink: 0 !important;
+            }
+
+            /* NEW SECTIONS — desktop */
+            .about-us-modal-content .wf-section { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+            .about-us-modal-content .wf-section-title {
+                font-size: 0.95rem !important;
+                font-weight: 900 !important;
+                letter-spacing: 1px !important;
+                text-transform: uppercase !important;
+                color: #00e5ff !important;
+                margin: 0 0 8px !important;
+                padding: 0 !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 8px !important;
+                text-shadow: 0 0 20px rgba(0, 229, 255, 0.2) !important;
+            }
+            .about-us-modal-content .wf-section-title::before {
+                content: '' !important;
+                width: 3px !important;
+                height: 16px !important;
+                border-radius: 2px !important;
+                background: linear-gradient(180deg, #00e5ff, #4dabf7, #9c27b0) !important;
+                box-shadow: 0 0 12px rgba(0, 229, 255, 0.55) !important;
+            }
+            .about-us-modal-content .wf-packages { grid-area: packages !important; }
+            .about-us-modal-content .wf-packages-grid {
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 10px !important;
+            }
+            .about-us-modal-content .wf-package {
+                position: relative !important;
+                padding: 14px 12px !important;
+                border-radius: 12px !important;
+                background:
+                    linear-gradient(145deg, rgba(77, 171, 247, 0.12), rgba(10, 14, 23, 0.85)) !important;
+                border: 1px solid rgba(0, 229, 255, 0.18) !important;
+                text-align: center !important;
+                box-shadow:
+                    0 6px 20px rgba(0, 0, 0, 0.35),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+                transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease !important;
+            }
+            .about-us-modal-content .wf-package:hover {
+                transform: translateY(-2px) !important;
+                border-color: rgba(0, 229, 255, 0.4) !important;
+                box-shadow:
+                    0 12px 30px rgba(0, 0, 0, 0.45),
+                    0 0 28px rgba(0, 229, 255, 0.1),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+            }
+            .about-us-modal-content .wf-package.popular {
+                border-color: #00e5ff !important;
+                box-shadow:
+                    0 0 24px rgba(0, 229, 255, 0.4),
+                    0 0 60px rgba(0, 229, 255, 0.1),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+            }
+            .about-us-modal-content .wf-package-name {
+                font-size: 0.85rem !important;
+                font-weight: 900 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.8px !important;
+                color: #4dabf7 !important;
+                margin-bottom: 4px !important;
+            }
+            .about-us-modal-content .wf-package-price {
+                font-size: 1.1rem !important;
+                font-weight: 900 !important;
+                color: #fff !important;
+                margin-bottom: 5px !important;
+                text-shadow: 0 0 18px rgba(0, 229, 255, 0.15) !important;
+            }
+            .about-us-modal-content .wf-package-desc {
+                font-size: 0.78rem !important;
+                line-height: 1.45 !important;
+                color: #cdd4e4 !important;
+                font-weight: 600 !important;
+            }
+            .about-us-modal-content .wf-package-star {
+                position: absolute !important;
+                top: -8px !important;
+                right: 8px !important;
+                font-size: 0.6rem !important;
+                font-weight: 800 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.4px !important;
+                background: linear-gradient(45deg, #00e5ff, #4dabf7) !important;
+                color: #0a0e17 !important;
+                padding: 2px 7px !important;
+                border-radius: 4px !important;
+                box-shadow: 0 0 16px rgba(0, 229, 255, 0.45) !important;
+            }
+            .about-us-modal-content .wf-how { grid-area: howitworks !important; }
+            .about-us-modal-content .wf-how-list {
+                list-style: none !important;
+                display: grid !important;
+                grid-template-columns: repeat(5, 1fr) !important;
+                gap: 8px !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .about-us-modal-content .wf-how-list li {
+                position: relative !important;
+                padding: 10px 8px !important;
+                border-radius: 10px !important;
+                background:
+                    linear-gradient(145deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.01)) !important;
+                border: 1px solid rgba(0, 229, 255, 0.12) !important;
+                text-align: center !important;
+                font-size: 0.72rem !important;
+                line-height: 1.35 !important;
+                color: #cdd4e4 !important;
+                font-weight: 600 !important;
+                box-shadow:
+                    0 4px 14px rgba(0, 0, 0, 0.3),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
+            }
+            .about-us-modal-content .wf-how-list li .step-num {
+                display: block !important;
+                font-size: 0.95rem !important;
+                font-weight: 900 !important;
+                color: #00e5ff !important;
+                margin-bottom: 3px !important;
+                text-shadow: 0 0 14px rgba(0, 229, 255, 0.45) !important;
+            }
+            .about-us-modal-content .wf-why { grid-area: whychoose !important; }
+            .about-us-modal-content .wf-why-grid {
+                display: grid !important;
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 8px !important;
+            }
+            .about-us-modal-content .wf-why-item {
+                display: flex !important;
+                align-items: flex-start !important;
+                gap: 7px !important;
+                font-size: 0.78rem !important;
+                line-height: 1.4 !important;
+                color: #cdd4e4 !important;
+                font-weight: 600 !important;
+                padding: 8px 10px !important;
+                border-radius: 8px !important;
+                background: rgba(255, 255, 255, 0.03) !important;
+                border: 1px solid rgba(0, 229, 255, 0.1) !important;
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
+            }
+            .about-us-modal-content .wf-why-item i {
+                color: #00ff88 !important;
+                font-size: 0.72rem !important;
+                flex-shrink: 0 !important;
+                margin-top: 2px !important;
+                filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.35)) !important;
+            }
+            .about-us-modal-content .wf-serve { grid-area: serve !important; }
+            .about-us-modal-content .wf-serve-text {
+                font-size: 0.88rem !important;
+                line-height: 1.55 !important;
+                color: #d5dbe8 !important;
+                font-weight: 600 !important;
+            }
+            .about-us-modal-content .wf-contact { grid-area: contact !important; }
+            .about-us-modal-content .wf-contact-grid {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px !important;
+            }
+            .about-us-modal-content .wf-contact-item {
+                display: flex !important;
+                align-items: center !important;
+                gap: 10px !important;
+                font-size: 0.82rem !important;
+                color: #cdd4e4 !important;
+                font-weight: 600 !important;
+                padding: 9px 12px !important;
+                border-radius: 8px !important;
+                background: rgba(255, 255, 255, 0.03) !important;
+                border: 1px solid rgba(0, 229, 255, 0.1) !important;
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
+            }
+            .about-us-modal-content .wf-contact-item i {
+                color: #00e5ff !important;
+                font-size: 0.9rem !important;
+                flex-shrink: 0 !important;
+                filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.35)) !important;
+            }
+            .about-us-modal-content .wf-promise {
+                grid-area: promise !important;
+                text-align: center !important;
+                padding: 12px 16px !important;
+                border-radius: 12px !important;
+                background:
+                    linear-gradient(135deg, rgba(77, 171, 247, 0.14), rgba(156, 39, 176, 0.14)) !important;
+                border: 1px solid rgba(0, 229, 255, 0.3) !important;
+                box-shadow:
+                    0 0 30px rgba(0, 229, 255, 0.06),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+            }
+            .about-us-modal-content .wf-promise p {
+                font-size: 0.85rem !important;
+                line-height: 1.5 !important;
+                color: #e8eefc !important;
+                font-weight: 700 !important;
+                margin: 0 !important;
+            }
+            .about-us-modal-content .wf-promise p + p {
+                margin-top: 5px !important;
+                color: #00e5ff !important;
+                font-weight: 800 !important;
+                text-shadow: 0 0 18px rgba(0, 229, 255, 0.25) !important;
+            }
+
+            .about-us-modal-content .compact-footer {
+                grid-area: footer !important;
+                text-align: center !important;
+                font-size: 0.72rem !important;
+                margin: 0 !important;
+                padding-top: 10px !important;
+                border-top: 1px solid rgba(0, 229, 255, 0.1) !important;
+                opacity: 0.8 !important;
+                color: #a0a0c0 !important;
+                align-self: end !important;
+            }
+
+            .about-us-modal-content .close-about-us-modal {
+                top: 16px !important;
+                right: 16px !important;
+                width: 42px !important;
+                height: 42px !important;
+                font-size: 1.05rem !important;
+            }
+        }
+
+        /* ============================================================
+           TABLET (601–900px) — unchanged
+           ============================================================ */
+        @media (min-width: 601px) and (max-width: 900px) {
+            .about-us-modal { padding: 10px !important; overflow: hidden !important; touch-action: pan-y !important; }
+            .about-us-modal-content {
+                width: 92vw !important;
+                max-width: 720px !important;
+                height: 92dvh !important;
+                max-height: 92dvh !important;
+                border-radius: 16px !important;
+                overflow: hidden !important;
+                display: flex !important;
+                flex-direction: column !important;
+                padding: 0 !important;
+                -webkit-tap-highlight-color: transparent;
+            }
+            .about-us-modal-content .compact-card {
+                padding: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                display: flex !important;
+                flex-direction: column !important;
+                overflow: hidden !important;
+                border-radius: 16px !important;
+                background: rgba(10, 10, 18, 0.94) !important;
+                box-sizing: border-box !important;
+            }
+            .about-us-modal-content .compact-card::before { display: none !important; }
+
+            .about-us-modal-content .compact-header {
+                position: sticky !important;
+                top: 0 !important;
+                z-index: 10 !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                text-align: center !important;
+                gap: 4px !important;
+                padding: 16px 70px 14px !important;
+                margin: 0 !important;
+                background: linear-gradient(180deg,
+                    rgba(10, 14, 23, 0.99) 0%,
+                    rgba(10, 14, 23, 0.97) 80%,
+                    rgba(10, 14, 23, 0.90) 100%) !important;
+                border-bottom: 1px solid rgba(77, 171, 247, 0.25) !important;
+                flex-shrink: 0 !important;
+                transform: translateZ(0);
+                will-change: transform;
+            }
+            .about-us-modal-content .compact-header .compact-brand-row {
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: center !important;
+                justify-content: flex-start !important;
+                gap: 14px !important;
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .about-us-modal-content .compact-header .compact-brand-logo {
+                flex: 0 0 auto !important;
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 56px !important;
+                height: 56px !important;
+                border-radius: 50% !important;
+                overflow: hidden !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            .about-us-modal-content .compact-header .compact-brand-logo img {
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: contain !important;
+                display: block !important;
+                background: transparent !important;
+            }
+            .about-us-modal-content .compact-header .compact-brand-text {
+                flex: 1 1 auto !important;
+                min-width: 0 !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                justify-content: center !important;
+                gap: 3px !important;
+                text-align: left !important;
+            }
+            .about-us-modal-content .compact-logo {
+                font-size: clamp(1.55rem, 4vw, 1.9rem) !important;
+                font-weight: 900 !important;
+                line-height: 1.05 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                text-align: left !important;
+                background: linear-gradient(120deg, #00e5ff 0%, #4dabf7 45%, #9c27b0 100%) !important;
+                -webkit-background-clip: text !important;
+                background-clip: text !important;
+                color: transparent !important;
+            }
+            .about-us-modal-content .compact-subtitle {
+                font-size: clamp(0.8rem, 2vw, 1rem) !important;
+                letter-spacing: clamp(1.5px, 0.5vw, 2.6px) !important;
+                text-transform: uppercase !important;
+                font-weight: 900 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                text-align: left !important;
+                color: #e8eefc !important;
+                line-height: 1.3 !important;
+            }
+
+            .about-us-modal-content .compact-body {
+                flex: 1 1 auto !important;
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
+                -webkit-overflow-scrolling: touch !important;
+                overscroll-behavior: contain !important;
+                padding: 0 !important;
+                box-sizing: border-box !important;
+            }
+            .about-us-modal-content .compact-body::-webkit-scrollbar { width: 5px; }
+            .about-us-modal-content .compact-body::-webkit-scrollbar-track { background: transparent; }
+            .about-us-modal-content .compact-body::-webkit-scrollbar-thumb { background: rgba(77, 171, 247, 0.45); border-radius: 3px; }
+
+            .about-us-modal-content .compact-title {
+                font-size: clamp(1.6rem, 3.8vw, 2rem) !important;
+                font-weight: 900 !important;
+                line-height: 1.2 !important;
+                margin: 0 !important;
+                padding: 24px 30px 8px !important;
+                text-align: center !important;
+                background: linear-gradient(135deg, #4dabf7, #00e5ff) !important;
+                -webkit-background-clip: text !important;
+                background-clip: text !important;
+                color: transparent !important;
+            }
+            .about-us-modal-content .compact-description {
+                font-size: clamp(1rem, 2.3vw, 1.2rem) !important;
+                line-height: 1.55 !important;
+                margin: 0 !important;
+                padding: 0 40px 24px !important;
+                text-align: center !important;
+                opacity: 0.95 !important;
+                font-weight: 500 !important;
+                color: #d5dbe8 !important;
+            }
+
+            .about-us-modal-content .image-container-wrapper {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 10px !important;
+                width: 100% !important;
+                padding: 0 30px 26px !important;
+                box-sizing: border-box !important;
+            }
+            .about-us-modal-content .container-title {
+                font-size: clamp(0.95rem, 2vw, 1.1rem) !important;
+                letter-spacing: 1.4px !important;
+                text-transform: uppercase !important;
+                font-weight: 800 !important;
+                text-align: center !important;
+                width: 100% !important;
+                margin: 0 !important;
+                color: #00e5ff !important;
+            }
+            .about-us-modal-content .image-container {
+                background: transparent !important;
+                border: none !important;
+                border-radius: 0 !important;
+                overflow: visible !important;
+                box-shadow: none !important;
+                width: clamp(260px, 50vw, 340px) !important;
+                height: clamp(260px, 50vw, 340px) !important;
+                padding: 0 !important;
+                margin: 0 auto !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                touch-action: pan-y !important;
+                user-select: none !important;
+                -webkit-user-select: none !important;
+            }
+            .about-us-modal-content .compact-image {
+                object-fit: contain !important;
+                background: transparent !important;
+                border: none !important;
+                border-radius: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                display: block !important;
+            }
+            .about-us-modal-content .image-code {
+                font-size: clamp(0.9rem, 2vw, 1.05rem) !important;
+                padding: 6px 16px !important;
+                text-align: center !important;
+                width: auto !important;
+                border-radius: 6px !important;
+                margin: 0 !important;
+                font-weight: 800 !important;
+                letter-spacing: 1px !important;
+            }
+
+            .about-us-modal-content .compact-stats { display: none !important; }
+
+            .about-us-modal-content .compact-features {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 14px !important;
+                margin: 0 !important;
+                padding: 0 30px 28px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                background: transparent !important;
+            }
+            .about-us-modal-content .compact-feature {
+                padding: 18px 16px !important;
+                border-radius: 12px !important;
+                background: rgba(255, 255, 255, 0.05) !important;
+                border: 1px solid rgba(77, 171, 247, 0.18) !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                text-align: left !important;
+                gap: 10px !important;
+                position: relative !important;
+                box-sizing: border-box !important;
+            }
+            .about-us-modal-content .compact-feature-icon {
+                font-size: clamp(1.5rem, 3.2vw, 1.8rem) !important;
+                line-height: 1 !important;
+                margin: 0 !important;
+                color: #00e5ff !important;
+            }
+            .about-us-modal-content .compact-feature-title {
+                font-size: clamp(1rem, 2.1vw, 1.15rem) !important;
+                font-weight: 800 !important;
+                text-transform: uppercase !important;
+                line-height: 1.2 !important;
+                margin: 0 !important;
+                text-align: left !important;
+                width: 100% !important;
+                color: #4dabf7 !important;
+            }
+            .about-us-modal-content .compact-feature-list {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 8px !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                list-style: none !important;
+                width: 100% !important;
+            }
+            .about-us-modal-content .compact-feature-list li {
+                font-size: clamp(0.88rem, 1.8vw, 1rem) !important;
+                line-height: 1.45 !important;
+                margin: 0 !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 8px !important;
+                color: #cdd4e4 !important;
+                text-align: left !important;
+                width: 100% !important;
+                font-weight: 600 !important;
+            }
+            .about-us-modal-content .compact-feature-list li i {
+                font-size: clamp(0.72rem, 1.4vw, 0.82rem) !important;
+                margin: 0 !important;
+                color: #00e5ff !important;
+                flex-shrink: 0 !important;
+            }
+
+            .about-us-modal-content .wf-section {
+                padding: 0 30px 26px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .about-us-modal-content .wf-section-title {
+                font-size: clamp(1.05rem, 2.3vw, 1.2rem) !important;
+                font-weight: 900 !important;
+                letter-spacing: 1px !important;
+                text-transform: uppercase !important;
+                color: #00e5ff !important;
+                margin: 0 0 12px !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 8px !important;
+            }
+            .about-us-modal-content .wf-section-title::before {
+                content: '' !important;
+                width: 3px !important;
+                height: 18px !important;
+                border-radius: 2px !important;
+                background: linear-gradient(180deg, #00e5ff, #4dabf7, #9c27b0) !important;
+            }
+            .about-us-modal-content .wf-packages-grid {
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 10px !important;
+            }
+            .about-us-modal-content .wf-package {
+                position: relative !important;
+                padding: 16px 12px !important;
+                border-radius: 12px !important;
+                background: linear-gradient(145deg, rgba(77, 171, 247, 0.12), rgba(10, 14, 23, 0.85)) !important;
+                border: 1px solid rgba(77, 171, 247, 0.25) !important;
+                text-align: center !important;
+            }
+            .about-us-modal-content .wf-package.popular {
+                border-color: #00e5ff !important;
+                box-shadow: 0 0 18px rgba(0, 229, 255, 0.35) !important;
+            }
+            .about-us-modal-content .wf-package-name {
+                font-size: 0.9rem !important;
+                font-weight: 900 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.8px !important;
+                color: #4dabf7 !important;
+                margin-bottom: 5px !important;
+            }
+            .about-us-modal-content .wf-package-price {
+                font-size: 1.15rem !important;
+                font-weight: 900 !important;
+                color: #fff !important;
+                margin-bottom: 6px !important;
+            }
+            .about-us-modal-content .wf-package-desc {
+                font-size: 0.82rem !important;
+                line-height: 1.45 !important;
+                color: #cdd4e4 !important;
+                font-weight: 600 !important;
+            }
+            .about-us-modal-content .wf-package-star {
+                position: absolute !important;
+                top: -8px !important;
+                right: 8px !important;
+                font-size: 0.62rem !important;
+                font-weight: 800 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.4px !important;
+                background: linear-gradient(45deg, #00e5ff, #4dabf7) !important;
+                color: #0a0e17 !important;
+                padding: 2px 7px !important;
+                border-radius: 4px !important;
+            }
+            .about-us-modal-content .wf-how-list {
+                list-style: none !important;
+                display: grid !important;
+                grid-template-columns: repeat(5, 1fr) !important;
+                gap: 8px !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .about-us-modal-content .wf-how-list li {
+                position: relative !important;
+                padding: 12px 8px !important;
+                border-radius: 10px !important;
+                background: rgba(255, 255, 255, 0.04) !important;
+                border: 1px solid rgba(77, 171, 247, 0.18) !important;
+                text-align: center !important;
+                font-size: 0.78rem !important;
+                line-height: 1.4 !important;
+                color: #cdd4e4 !important;
+                font-weight: 600 !important;
+            }
+            .about-us-modal-content .wf-how-list li .step-num {
+                display: block !important;
+                font-size: 1.05rem !important;
+                font-weight: 900 !important;
+                color: #00e5ff !important;
+                margin-bottom: 4px !important;
+            }
+            .about-us-modal-content .wf-why-grid {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+            .about-us-modal-content .wf-why-item {
+                display: flex !important;
+                align-items: flex-start !important;
+                gap: 8px !important;
+                font-size: 0.88rem !important;
+                line-height: 1.45 !important;
+                color: #cdd4e4 !important;
+                font-weight: 600 !important;
+                padding: 10px 12px !important;
+                border-radius: 8px !important;
+                background: rgba(255, 255, 255, 0.03) !important;
+                border: 1px solid rgba(77, 171, 247, 0.12) !important;
+            }
+            .about-us-modal-content .wf-why-item i {
+                color: #00ff88 !important;
+                font-size: 0.8rem !important;
+                flex-shrink: 0 !important;
+                margin-top: 2px !important;
+            }
+            .about-us-modal-content .wf-serve-text {
+                font-size: 0.95rem !important;
+                line-height: 1.55 !important;
+                color: #d5dbe8 !important;
+                font-weight: 600 !important;
+            }
+            .about-us-modal-content .wf-contact-grid {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+            .about-us-modal-content .wf-contact-item {
+                display: flex !important;
+                align-items: center !important;
+                gap: 10px !important;
+                font-size: 0.9rem !important;
+                color: #cdd4e4 !important;
+                font-weight: 600 !important;
+                padding: 11px 14px !important;
+                border-radius: 8px !important;
+                background: rgba(255, 255, 255, 0.03) !important;
+                border: 1px solid rgba(77, 171, 247, 0.12) !important;
+            }
+            .about-us-modal-content .wf-contact-item i {
+                color: #00e5ff !important;
+                font-size: 0.95rem !important;
+                flex-shrink: 0 !important;
+            }
+            .about-us-modal-content .wf-promise {
+                text-align: center !important;
+                padding: 16px 20px !important;
+                border-radius: 12px !important;
+                background: linear-gradient(135deg, rgba(77, 171, 247, 0.14), rgba(156, 39, 176, 0.14)) !important;
+                border: 1px solid rgba(0, 229, 255, 0.3) !important;
+            }
+            .about-us-modal-content .wf-promise p {
+                font-size: 0.92rem !important;
+                line-height: 1.5 !important;
+                color: #e8eefc !important;
+                font-weight: 700 !important;
+                margin: 0 !important;
+            }
+            .about-us-modal-content .wf-promise p + p {
+                margin-top: 6px !important;
+                color: #00e5ff !important;
+                font-weight: 800 !important;
+            }
+
+            .about-us-modal-content .compact-footer {
+                font-size: 0.82rem !important;
+                letter-spacing: 1.2px !important;
+                text-transform: uppercase !important;
+                text-align: center !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 16px 24px 22px !important;
+                border-top: 1px solid rgba(77, 171, 247, 0.18) !important;
+                opacity: 0.85 !important;
+                font-weight: 700 !important;
+                background: rgba(77, 171, 247, 0.05) !important;
+                border-radius: 0 0 16px 16px !important;
+                box-sizing: border-box !important;
+            }
+
+            .about-us-modal-content .close-about-us-modal {
+                position: absolute !important;
+                top: 14px !important;
+                right: 14px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: 46px !important;
+                height: 46px !important;
+                font-size: 1.15rem !important;
+                z-index: 30 !important;
+            }
+        }
+
+        /* ============================================================
+           MOBILE (≤600px) — unchanged
+           ============================================================ */
+        @media (max-width: 600px) {
+            .about-us-modal { padding: 6px !important; overflow: hidden !important; touch-action: pan-y !important; }
+            .about-us-modal-content {
+                width: 97vw !important;
+                max-width: 97vw !important;
+                height: 95dvh !important;
+                max-height: 95dvh !important;
+                border-radius: 16px !important;
+                overflow: hidden !important;
+                display: flex !important;
+                flex-direction: column !important;
+                padding: 0 !important;
+                -webkit-tap-highlight-color: transparent;
+            }
+            .about-us-modal-content .compact-card {
+                padding: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                display: flex !important;
+                flex-direction: column !important;
+                overflow: hidden !important;
+                border-radius: 16px !important;
+                background: rgba(10, 10, 18, 0.94) !important;
+                box-sizing: border-box !important;
+                position: relative !important;
+            }
+            .about-us-modal-content .compact-card::before { display: none !important; }
+
+            .about-us-modal-content .compact-header {
+                position: sticky !important;
+                top: 0 !important;
+                z-index: 10 !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                text-align: center !important;
+                gap: 4px !important;
+                padding: 14px 60px 12px !important;
+                margin: 0 !important;
+                background: linear-gradient(180deg,
+                    rgba(10, 14, 23, 0.99) 0%,
+                    rgba(10, 14, 23, 0.97) 80%,
+                    rgba(10, 14, 23, 0.90) 100%) !important;
+                border-bottom: 1px solid rgba(77, 171, 247, 0.25) !important;
+                flex-shrink: 0 !important;
+                transform: translateZ(0);
+                will-change: transform;
+            }
+            .about-us-modal-content .compact-header .compact-brand-row {
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: center !important;
+                justify-content: flex-start !important;
+                gap: 10px !important;
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .about-us-modal-content .compact-header .compact-brand-logo {
+                flex: 0 0 auto !important;
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 46px !important;
+                height: 46px !important;
+                border-radius: 50% !important;
+                overflow: hidden !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            .about-us-modal-content .compact-header .compact-brand-logo img {
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: contain !important;
+                display: block !important;
+                background: transparent !important;
+            }
+            .about-us-modal-content .compact-header .compact-brand-text {
+                flex: 1 1 auto !important;
+                min-width: 0 !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                justify-content: center !important;
+                gap: 2px !important;
+                text-align: left !important;
+            }
+            .about-us-modal-content .compact-logo {
+                font-size: clamp(1.45rem, 6vw, 1.85rem) !important;
+                font-weight: 900 !important;
+                letter-spacing: 0.5px !important;
+                line-height: 1.05 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                text-align: left !important;
+                background: linear-gradient(120deg, #00e5ff 0%, #4dabf7 45%, #9c27b0 100%) !important;
+                -webkit-background-clip: text !important;
+                background-clip: text !important;
+                color: transparent !important;
+            }
+            .about-us-modal-content .compact-subtitle {
+                font-size: clamp(0.78rem, 3.1vw, 0.95rem) !important;
+                letter-spacing: clamp(1.5px, 0.7vw, 2.6px) !important;
+                text-transform: uppercase !important;
+                font-weight: 900 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                text-align: left !important;
+                color: #e8eefc !important;
+                line-height: 1.3 !important;
+            }
+
+            .about-us-modal-content .compact-body {
+                flex: 1 1 auto !important;
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
+                -webkit-overflow-scrolling: touch !important;
+                overscroll-behavior: contain !important;
+                padding: 0 !important;
+                box-sizing: border-box !important;
+                display: flex !important;
+                flex-direction: column !important;
+            }
+            .about-us-modal-content .compact-body::-webkit-scrollbar { width: 4px; }
+            .about-us-modal-content .compact-body::-webkit-scrollbar-track { background: transparent; }
+            .about-us-modal-content .compact-body::-webkit-scrollbar-thumb { background: rgba(77, 171, 247, 0.45); border-radius: 2px; }
+
+            .about-us-modal-content #aboutImageWrapper { order: 1 !important; padding-top: 16px !important; }
+            .about-us-modal-content .compact-title     { order: 2 !important; }
+            .about-us-modal-content .compact-description { order: 3 !important; }
+            .about-us-modal-content .compact-features  { order: 4 !important; }
+            .about-us-modal-content .wf-packages       { order: 5 !important; }
+            .about-us-modal-content .wf-how            { order: 6 !important; }
+            .about-us-modal-content .wf-why            { order: 7 !important; }
+            .about-us-modal-content .wf-serve          { order: 8 !important; }
+            .about-us-modal-content .wf-contact        { order: 9 !important; }
+            .about-us-modal-content .wf-promise        { order: 10 !important; }
+            .about-us-modal-content .compact-footer    { order: 11 !important; }
+
+            .about-us-modal-content .compact-title {
+                font-size: clamp(1.5rem, 5.8vw, 1.95rem) !important;
+                font-weight: 900 !important;
+                line-height: 1.2 !important;
+                margin: 0 !important;
+                padding: 18px 22px 8px !important;
+                text-align: center !important;
+                background: linear-gradient(135deg, #4dabf7, #00e5ff) !important;
+                -webkit-background-clip: text !important;
+                background-clip: text !important;
+                color: transparent !important;
+            }
+            .about-us-modal-content .compact-description {
+                font-size: clamp(1rem, 3.7vw, 1.15rem) !important;
+                line-height: 1.55 !important;
+                margin: 0 !important;
+                padding: 0 22px 20px !important;
+                text-align: center !important;
+                opacity: 0.95 !important;
+                font-weight: 500 !important;
+                color: #d5dbe8 !important;
+            }
+
+            .about-us-modal-content .image-container-wrapper {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 10px !important;
+                width: 100% !important;
+                padding: 0 16px 22px !important;
+                box-sizing: border-box !important;
+                margin: 0 !important;
+                max-width: none !important;
+            }
+            .about-us-modal-content .container-title {
+                font-size: clamp(0.95rem, 3.4vw, 1.1rem) !important;
+                letter-spacing: 1.4px !important;
+                text-transform: uppercase !important;
+                font-weight: 800 !important;
+                text-align: center !important;
+                width: 100% !important;
+                margin: 0 !important;
+                color: #00e5ff !important;
+            }
+            .about-us-modal-content .image-container {
+                background: transparent !important;
+                border: none !important;
+                border-radius: 0 !important;
+                overflow: visible !important;
+                box-shadow: none !important;
+                width: min(86vw, 360px) !important;
+                height: min(86vw, 360px) !important;
+                padding: 0 !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                touch-action: pan-y !important;
+                user-select: none !important;
+                -webkit-user-select: none !important;
+            }
+            .about-us-modal-content .compact-image {
+                object-fit: contain !important;
+                background: transparent !important;
+                border: none !important;
+                border-radius: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                display: block !important;
+            }
+            .about-us-modal-content .image-code {
+                font-size: clamp(0.9rem, 3.2vw, 1.05rem) !important;
+                padding: 6px 14px !important;
+                text-align: center !important;
+                width: auto !important;
+                border-radius: 5px !important;
+                margin: 0 !important;
+                font-weight: 800 !important;
+                letter-spacing: 1px !important;
+            }
+
+            .about-us-modal-content .compact-stats { display: none !important; }
+
+            .about-us-modal-content .compact-features {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+                margin: 0 !important;
+                padding: 16px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                background: transparent !important;
+            }
+            .about-us-modal-content .compact-feature {
+                padding: 14px 12px !important;
+                border-radius: 12px !important;
+                background: rgba(255, 255, 255, 0.05) !important;
+                border: 1px solid rgba(77, 171, 247, 0.18) !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                justify-content: flex-start !important;
+                text-align: left !important;
+                gap: 8px !important;
+                position: relative !important;
+                box-sizing: border-box !important;
+            }
+            .about-us-modal-content .compact-feature-icon {
+                font-size: clamp(1.4rem, 5.2vw, 1.8rem) !important;
+                line-height: 1 !important;
+                margin: 0 !important;
+                color: #00e5ff !important;
+            }
+            .about-us-modal-content .compact-feature-title {
+                font-size: clamp(0.95rem, 3.5vw, 1.1rem) !important;
+                font-weight: 800 !important;
+                text-transform: uppercase !important;
+                line-height: 1.2 !important;
+                margin: 0 !important;
+                text-align: left !important;
+                width: 100% !important;
+                color: #4dabf7 !important;
+            }
+            .about-us-modal-content .compact-feature-list {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 6px !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                list-style: none !important;
+                width: 100% !important;
+            }
+            .about-us-modal-content .compact-feature-list li {
+                font-size: clamp(0.82rem, 3vw, 0.95rem) !important;
+                line-height: 1.4 !important;
+                margin: 0 !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 7px !important;
+                color: #cdd4e4 !important;
+                text-align: left !important;
+                width: 100% !important;
+                font-weight: 600 !important;
+            }
+            .about-us-modal-content .compact-feature-list li i {
+                font-size: clamp(0.65rem, 2.3vw, 0.78rem) !important;
+                margin: 0 !important;
+                color: #00e5ff !important;
+                flex-shrink: 0 !important;
+            }
+
+            .about-us-modal-content .wf-section {
+                padding: 0 18px 22px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .about-us-modal-content .wf-section-title {
+                font-size: clamp(1.05rem, 3.9vw, 1.2rem) !important;
+                font-weight: 900 !important;
+                letter-spacing: 1px !important;
+                text-transform: uppercase !important;
+                color: #00e5ff !important;
+                margin: 0 0 12px !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 8px !important;
+            }
+            .about-us-modal-content .wf-section-title::before {
+                content: '' !important;
+                width: 3px !important;
+                height: 18px !important;
+                border-radius: 2px !important;
+                background: linear-gradient(180deg, #00e5ff, #4dabf7, #9c27b0) !important;
+            }
+            .about-us-modal-content .wf-packages-grid {
+                display: grid !important;
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+            }
+            .about-us-modal-content .wf-package {
+                position: relative !important;
+                padding: 16px 14px !important;
+                border-radius: 12px !important;
+                background: linear-gradient(145deg, rgba(77, 171, 247, 0.12), rgba(10, 14, 23, 0.85)) !important;
+                border: 1px solid rgba(77, 171, 247, 0.25) !important;
+                text-align: left !important;
+            }
+            .about-us-modal-content .wf-package.popular {
+                border-color: #00e5ff !important;
+                box-shadow: 0 0 18px rgba(0, 229, 255, 0.35) !important;
+            }
+            .about-us-modal-content .wf-package-name {
+                font-size: clamp(0.95rem, 3.5vw, 1.05rem) !important;
+                font-weight: 900 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.8px !important;
+                color: #4dabf7 !important;
+                margin-bottom: 5px !important;
+            }
+            .about-us-modal-content .wf-package-price {
+                font-size: clamp(1.15rem, 4.3vw, 1.35rem) !important;
+                font-weight: 900 !important;
+                color: #fff !important;
+                margin-bottom: 6px !important;
+            }
+            .about-us-modal-content .wf-package-desc {
+                font-size: clamp(0.85rem, 3.2vw, 0.95rem) !important;
+                line-height: 1.45 !important;
+                color: #cdd4e4 !important;
+                font-weight: 600 !important;
+            }
+            .about-us-modal-content .wf-package-star {
+                position: absolute !important;
+                top: -9px !important;
+                right: 10px !important;
+                font-size: clamp(0.62rem, 2.3vw, 0.72rem) !important;
+                font-weight: 800 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.4px !important;
+                background: linear-gradient(45deg, #00e5ff, #4dabf7) !important;
+                color: #0a0e17 !important;
+                padding: 2px 8px !important;
+                border-radius: 4px !important;
+            }
+            .about-us-modal-content .wf-how-list {
+                list-style: none !important;
+                display: grid !important;
+                grid-template-columns: 1fr !important;
+                gap: 10px !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .about-us-modal-content .wf-how-list li {
+                position: relative !important;
+                padding: 12px 14px !important;
+                border-radius: 10px !important;
+                background: rgba(255, 255, 255, 0.04) !important;
+                border: 1px solid rgba(77, 171, 247, 0.18) !important;
+                text-align: left !important;
+                font-size: clamp(0.85rem, 3.2vw, 0.98rem) !important;
+                line-height: 1.4 !important;
+                color: #cdd4e4 !important;
+                font-weight: 600 !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 12px !important;
+            }
+            .about-us-modal-content .wf-how-list li .step-num {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                flex: 0 0 auto !important;
+                width: 30px !important;
+                height: 30px !important;
+                border-radius: 50% !important;
+                background: linear-gradient(135deg, #00e5ff, #4dabf7) !important;
+                color: #0a0e17 !important;
+                font-size: 0.88rem !important;
+                font-weight: 900 !important;
+                margin: 0 !important;
+            }
+            .about-us-modal-content .wf-why-grid {
+                display: grid !important;
+                grid-template-columns: 1fr !important;
+                gap: 10px !important;
+            }
+            .about-us-modal-content .wf-why-item {
+                display: flex !important;
+                align-items: flex-start !important;
+                gap: 12px !important;
+                font-size: clamp(0.85rem, 3.2vw, 0.98rem) !important;
+                line-height: 1.45 !important;
+                color: #cdd4e4 !important;
+                font-weight: 600 !important;
+                padding: 11px 14px !important;
+                border-radius: 9px !important;
+                background: rgba(255, 255, 255, 0.03) !important;
+                border: 1px solid rgba(77, 171, 247, 0.12) !important;
+            }
+            .about-us-modal-content .wf-why-item i {
+                color: #00ff88 !important;
+                font-size: 0.85rem !important;
+                flex-shrink: 0 !important;
+                margin-top: 2px !important;
+            }
+            .about-us-modal-content .wf-serve-text {
+                font-size: clamp(0.88rem, 3.4vw, 1rem) !important;
+                line-height: 1.55 !important;
+                color: #d5dbe8 !important;
+                font-weight: 600 !important;
+            }
+            .about-us-modal-content .wf-contact-grid {
+                display: grid !important;
+                grid-template-columns: 1fr !important;
+                gap: 10px !important;
+            }
+            .about-us-modal-content .wf-contact-item {
+                display: flex !important;
+                align-items: center !important;
+                gap: 12px !important;
+                font-size: clamp(0.85rem, 3.3vw, 0.98rem) !important;
+                color: #cdd4e4 !important;
+                font-weight: 600 !important;
+                padding: 11px 14px !important;
+                border-radius: 9px !important;
+                background: rgba(255, 255, 255, 0.03) !important;
+                border: 1px solid rgba(77, 171, 247, 0.12) !important;
+            }
+            .about-us-modal-content .wf-contact-item i {
+                color: #00e5ff !important;
+                font-size: 0.98rem !important;
+                flex-shrink: 0 !important;
+            }
+            .about-us-modal-content .wf-promise {
+                text-align: center !important;
+                padding: 16px 18px !important;
+                border-radius: 12px !important;
+                background: linear-gradient(135deg, rgba(77, 171, 247, 0.14), rgba(156, 39, 176, 0.14)) !important;
+                border: 1px solid rgba(0, 229, 255, 0.3) !important;
+            }
+            .about-us-modal-content .wf-promise p {
+                font-size: clamp(0.88rem, 3.4vw, 1rem) !important;
+                line-height: 1.5 !important;
+                color: #e8eefc !important;
+                font-weight: 700 !important;
+                margin: 0 !important;
+            }
+            .about-us-modal-content .wf-promise p + p {
+                margin-top: 6px !important;
+                color: #00e5ff !important;
+                font-weight: 800 !important;
+            }
+
+            .about-us-modal-content .compact-footer {
+                font-size: clamp(0.82rem, 3vw, 1rem) !important;
+                letter-spacing: 1.2px !important;
+                text-transform: uppercase !important;
+                text-align: center !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 16px 18px 22px !important;
+                border-top: 1px solid rgba(77, 171, 247, 0.18) !important;
+                opacity: 0.85 !important;
+                font-weight: 700 !important;
+                background: rgba(77, 171, 247, 0.05) !important;
+                border-radius: 0 0 16px 16px !important;
+                box-sizing: border-box !important;
+            }
+
+            .about-us-modal-content .close-about-us-modal {
+                position: absolute !important;
+                top: 12px !important;
+                right: 12px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: 42px !important;
+                height: 42px !important;
+                font-size: 1.05rem !important;
+                z-index: 30 !important;
+                margin: 0 !important;
+                float: none !important;
+            }
+        }
+
+        /* ============================================================
+           Shared inner components (base)
+           ============================================================ */
+        .compact-card {
+            background: rgba(10, 10, 18, 0.9); backdrop-filter: blur(10px);
+            border-radius: 8px; padding: 10px; width: 100%;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative; overflow: hidden;
+            box-sizing: border-box;
+        }
+        .compact-card:before {
+            content: ''; position: absolute; top: 0; left: 0;
+            width: 100%; height: 1px;
+            background: linear-gradient(to right, #0f8b8d, #e94560, #9c27b0, #00e5ff);
+        }
+        .compact-header {
+            display: flex; flex-direction: column; align-items: center;
+            text-align: center; padding-bottom: 5px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .compact-logo {
+            font-size: 1.3rem; font-weight: 900; text-align: center;
+            background: linear-gradient(to right, #00e5ff, #0f8b8d, #e94560, #9c27b0);
+            -webkit-background-clip: text; background-clip: text;
+            color: transparent; letter-spacing: 0.5px;
+            margin-bottom: 1px; word-wrap: break-word;
+        }
+        .compact-subtitle {
+            font-size: 0.6rem; color: #a0a0c0;
+            letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700;
+            background: linear-gradient(90deg, #0f8b8d, #e94560, #9c27b0);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .compact-title { font-size: 0.8rem; text-align: center; margin-bottom: 5px; line-height: 1.1; font-weight: 700; }
+        .compact-description {
+            color: #a0a0c0; text-align: center; line-height: 1.2;
+            margin-bottom: 8px; font-size: 0.6rem;
+            max-width: 350px; margin-left: auto; margin-right: auto;
+        }
+        .image-container-wrapper {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 4px; width: 100%; max-width: 90px; margin: 8px auto;
+        }
+        .container-title {
+            font-size: 0.45rem; font-weight: 700;
+            color: #00e5ff; text-transform: uppercase;
+            letter-spacing: 0.2px; text-align: center; width: 100%;
+        }
+        .image-container {
+            display: flex; align-items: center; justify-content: center;
+            background: transparent; backdrop-filter: none;
+            border-radius: 3px;
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            position: relative; overflow: visible;
+            box-shadow: none;
+            width: 100%; aspect-ratio: 1 / 1; padding: 0;
+            cursor: pointer; user-select: none;
+        }
+        .compact-image {
+            width: 100%; height: 100%; object-fit: contain;
+            border-radius: 3px; border: none;
+            transition: all 0.3s ease;
+            background: transparent; padding: 0;
+            display: block;
+        }
+        .image-code {
+            font-size: 0.4rem; font-weight: 700; color: #00e5ff;
+            padding: 2px 4px; background: rgba(0, 0, 0, 0.7);
+            border-radius: 1px; border: 0.5px solid rgba(0, 229, 255, 0.2);
+            text-align: center; width: 100%;
+        }
+        .compact-stats { display: none; }
+        .compact-features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 10px; }
+        .compact-feature {
+            background: rgba(255, 255, 255, 0.05); padding: 5px;
+            border-radius: 4px; text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex; flex-direction: column; height: 100%;
+            min-height: 108px;
+        }
+        .compact-feature-pro { border: 1px solid #00e5ff; }
+        .compact-feature-icon { font-size: 0.85rem; margin-bottom: 3px; color: #00e5ff; }
+        .compact-feature-title {
+            font-size: 0.6rem; font-weight: 700; margin-bottom: 2px;
+            text-transform: uppercase; letter-spacing: 0.5px; color: #00e5ff;
+        }
+        .compact-feature-list { text-align: left; margin-top: 3px; }
+        .compact-feature-list li { margin-bottom: 2px; font-size: 0.6rem; color: #a0a0c0; display: flex; align-items: flex-start; font-weight: 600; }
+        .compact-feature-list li i { color: #00e5ff; margin-right: 4px; margin-top: 1px; font-size: 0.45rem; }
+        .compact-footer { text-align: center; margin-top: 5px; font-size: 0.45rem; color: #a0a0c0; }
+
+        .wf-toast {
+            position: fixed; top: 20px; right: 20px;
+            background: rgba(0, 255, 136, 0.92); color: #fff;
+            padding: 12px 20px; border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+            z-index: 1002; display: none; align-items: center;
+            gap: 12px; max-width: 90%; word-wrap: break-word;
+            font-size: 0.8rem; font-weight: 600;
+        }
+        .wf-toast.show { display: flex; }
+    </style>
+</head>
+<body>
+    <!-- Blurred Unsplash background layers -->
+    <div class="wf-bg-blur" aria-hidden="true"></div>
+    <div class="wf-bg-overlay" aria-hidden="true"></div>
+
+    <div class="wf-toast" id="wfToast"><i class="fas fa-check-circle"></i><span id="wfToastText"></span></div>
+
+    <div class="about-us-modal active" id="aboutUsModal">
+        <div class="about-us-modal-content">
+            <button class="close-about-us-modal" id="closeAboutUsModal" type="button" aria-label="Exit"><i class="fas fa-times"></i></button>
+            <div class="compact-card">
+
+                <!-- Sticky header: brand + logo -->
+                <div class="compact-header">
+                    <div class="compact-brand-row">
+                        <div class="compact-brand-logo" id="wfLogoContainer">
+                            <img id="wfLogoImg" alt="Company logo"
+                                 src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20rx%3D%2720%27%20fill%3D%27%230a0e17%27%2F%3E%3Ctext%20x%3D%2750%27%20y%3D%2768%27%20font-family%3D%27Arial%27%20font-size%3D%2752%27%20font-weight%3D%27bold%27%20fill%3D%27%234dabf7%27%20text-anchor%3D%27middle%27%3EWF%3C%2Ftext%3E%3C%2Fsvg%3E">
+                        </div>
+                        <div class="compact-brand-text">
+                            <div class="compact-logo">Willfortunate</div>
+                            <div class="compact-subtitle">High Tech International Company</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scrollable body -->
+                <div class="compact-body">
+
+                    <!-- Image — first on mobile, left column on desktop -->
+                    <div class="image-container-wrapper" id="aboutImageWrapper">
+                        <div class="container-title">willfortunate company</div>
+                        <div class="image-container" id="imageContainer">
+                            <img id="dashboardImage"
+                                src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20rx%3D%2720%27%20fill%3D%27%230a0e17%27%2F%3E%3Ctext%20x%3D%2750%27%20y%3D%2768%27%20font-family%3D%27Arial%27%20font-size%3D%2752%27%20font-weight%3D%27bold%27%20fill%3D%27%234dabf7%27%20text-anchor%3D%27middle%27%3EWF%3C%2Ftext%3E%3C%2Fsvg%3E"
+                                alt="Dashboard Image" class="compact-image">
+                        </div>
+                        <div class="image-code">G-RCEKNWMFNV</div>
+                    </div>
+
+                    <h1 class="compact-title">About Us — Quick Read</h1>
+                    <p class="compact-description">A professional digital services company serving clients worldwide remotely. We help individuals, businesses, and organizations build and manage their entire digital presence — all under one trusted brand.</p>
+
+                    <!-- 170+ Services in 11 Categories -->
+                    <div class="compact-features">
+                        <div class="compact-feature compact-feature-pro">
+                            <div class="compact-feature-icon"><i class="fas fa-code"></i></div>
+                            <div class="compact-feature-title">Web &amp; Tech</div>
+                            <ul class="compact-feature-list">
+                                <li><i class="fas fa-check"></i> Websites &amp; e-commerce</li>
+                                <li><i class="fas fa-check"></i> Booking systems &amp; dashboards</li>
+                                <li><i class="fas fa-check"></i> Maintenance</li>
+                                <li><i class="fas fa-check"></i> From KSh 5,000</li>
+                            </ul>
+                        </div>
+                        <div class="compact-feature compact-feature-pro">
+                            <div class="compact-feature-icon"><i class="fas fa-palette"></i></div>
+                            <div class="compact-feature-title">Graphic Design</div>
+                            <ul class="compact-feature-list">
+                                <li><i class="fas fa-check"></i> Logos &amp; branding</li>
+                                <li><i class="fas fa-check"></i> Posters &amp; flyers</li>
+                                <li><i class="fas fa-check"></i> Social media graphics</li>
+                                <li><i class="fas fa-check"></i> From KSh 300</li>
+                            </ul>
+                        </div>
+                        <div class="compact-feature compact-feature-pro">
+                            <div class="compact-feature-icon"><i class="fas fa-file-alt"></i></div>
+                            <div class="compact-feature-title">Documents</div>
+                            <ul class="compact-feature-list">
+                                <li><i class="fas fa-check"></i> CVs &amp; cover letters</li>
+                                <li><i class="fas fa-check"></i> Proposals &amp; business plans</li>
+                                <li><i class="fas fa-check"></i> Formatting</li>
+                                <li><i class="fas fa-check"></i> From KSh 300</li>
+                            </ul>
+                        </div>
+                        <div class="compact-feature compact-feature-pro">
+                            <div class="compact-feature-icon"><i class="fas fa-bullhorn"></i></div>
+                            <div class="compact-feature-title">Digital Marketing</div>
+                            <ul class="compact-feature-list">
+                                <li><i class="fas fa-check"></i> Social media setup</li>
+                                <li><i class="fas fa-check"></i> Content packages</li>
+                                <li><i class="fas fa-check"></i> Campaigns &amp; strategy</li>
+                                <li><i class="fas fa-check"></i> From KSh 300</li>
+                            </ul>
+                        </div>
+                        <div class="compact-feature compact-feature-pro">
+                            <div class="compact-feature-icon"><i class="fas fa-video"></i></div>
+                            <div class="compact-feature-title">Video &amp; Content</div>
+                            <ul class="compact-feature-list">
+                                <li><i class="fas fa-check"></i> Reels &amp; ads</li>
+                                <li><i class="fas fa-check"></i> YouTube editing</li>
+                                <li><i class="fas fa-check"></i> Slideshows &amp; thumbnails</li>
+                                <li><i class="fas fa-check"></i> From KSh 300</li>
+                            </ul>
+                        </div>
+                        <div class="compact-feature compact-feature-pro">
+                            <div class="compact-feature-icon"><i class="fas fa-briefcase"></i></div>
+                            <div class="compact-feature-title">Business Support</div>
+                            <ul class="compact-feature-list">
+                                <li><i class="fas fa-check"></i> Data entry</li>
+                                <li><i class="fas fa-check"></i> Virtual assistant</li>
+                                <li><i class="fas fa-check"></i> Spreadsheets &amp; research</li>
+                                <li><i class="fas fa-check"></i> From KSh 300/hr</li>
+                            </ul>
+                        </div>
+                        <div class="compact-feature compact-feature-pro">
+                            <div class="compact-feature-icon"><i class="fas fa-pen-nib"></i></div>
+                            <div class="compact-feature-title">Writing</div>
+                            <ul class="compact-feature-list">
+                                <li><i class="fas fa-check"></i> Website copy</li>
+                                <li><i class="fas fa-check"></i> Speeches &amp; bios</li>
+                                <li><i class="fas fa-check"></i> Product descriptions</li>
+                                <li><i class="fas fa-check"></i> From KSh 300</li>
+                            </ul>
+                        </div>
+                        <div class="compact-feature compact-feature-pro">
+                            <div class="compact-feature-icon"><i class="fas fa-robot"></i></div>
+                            <div class="compact-feature-title">AI &amp; Automation</div>
+                            <ul class="compact-feature-list">
+                                <li><i class="fas fa-check"></i> Chatbots &amp; workflows</li>
+                                <li><i class="fas fa-check"></i> ChatGPT training</li>
+                                <li><i class="fas fa-check"></i> Automation</li>
+                                <li><i class="fas fa-check"></i> From KSh 500</li>
+                            </ul>
+                        </div>
+                        <div class="compact-feature compact-feature-pro">
+                            <div class="compact-feature-icon"><i class="fas fa-shield-alt"></i></div>
+                            <div class="compact-feature-title">IT &amp; Cybersecurity</div>
+                            <ul class="compact-feature-list">
+                                <li><i class="fas fa-check"></i> Remote support</li>
+                                <li><i class="fas fa-check"></i> 2FA &amp; security setup</li>
+                                <li><i class="fas fa-check"></i> Troubleshooting</li>
+                                <li><i class="fas fa-check"></i> From KSh 300</li>
+                            </ul>
+                        </div>
+                        <div class="compact-feature compact-feature-pro">
+                            <div class="compact-feature-icon"><i class="fas fa-graduation-cap"></i></div>
+                            <div class="compact-feature-title">Training</div>
+                            <ul class="compact-feature-list">
+                                <li><i class="fas fa-check"></i> Excel &amp; Canva</li>
+                                <li><i class="fas fa-check"></i> HTML/CSS</li>
+                                <li><i class="fas fa-check"></i> AI tools &amp; digital skills</li>
+                                <li><i class="fas fa-check"></i> From KSh 500/hr</li>
+                            </ul>
+                        </div>
+                        <div class="compact-feature compact-feature-pro">
+                            <div class="compact-feature-icon"><i class="fas fa-language"></i></div>
+                            <div class="compact-feature-title">Translation</div>
+                            <ul class="compact-feature-list">
+                                <li><i class="fas fa-check"></i> Swahili/English</li>
+                                <li><i class="fas fa-check"></i> Transcription</li>
+                                <li><i class="fas fa-check"></i> Proofreading</li>
+                                <li><i class="fas fa-check"></i> From KSh 300</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Packages -->
+                    <div class="wf-section wf-packages">
+                        <div class="wf-section-title">Packages</div>
+                        <div class="wf-packages-grid">
+                            <div class="wf-package">
+                                <div class="wf-package-name">Starter</div>
+                                <div class="wf-package-price">KSh 5,000</div>
+                                <div class="wf-package-desc">Landing page, logo, CV, poster, social setup</div>
+                            </div>
+                            <div class="wf-package popular">
+                                <div class="wf-package-star">★ Most Popular</div>
+                                <div class="wf-package-name">Business</div>
+                                <div class="wf-package-price">KSh 15,000</div>
+                                <div class="wf-package-desc">Full website, branding, marketing, 1-month maintenance</div>
+                            </div>
+                            <div class="wf-package">
+                                <div class="wf-package-name">Premium</div>
+                                <div class="wf-package-price">KSh 30,000+</div>
+                                <div class="wf-package-desc">Advanced systems, AI integration, cybersecurity, consultation</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- How It Works -->
+                    <div class="wf-section wf-how">
+                        <div class="wf-section-title">How It Works — 5 Steps</div>
+                        <ul class="wf-how-list">
+                            <li><span class="step-num">1</span>Choose your service</li>
+                            <li><span class="step-num">2</span>Submit your brief (form or WhatsApp)</li>
+                            <li><span class="step-num">3</span>Get a free quote within 24 hours</li>
+                            <li><span class="step-num">4</span>Pay 50% deposit to start</li>
+                            <li><span class="step-num">5</span>Receive delivery — 100% satisfaction guaranteed</li>
+                        </ul>
+                    </div>
+
+                    <!-- Why Choose Us -->
+                    <div class="wf-section wf-why">
+                        <div class="wf-section-title">Why Choose Us</div>
+                        <div class="wf-why-grid">
+                            <div class="wf-why-item"><i class="fas fa-check-circle"></i><span>170+ services — one partner for everything digital</span></div>
+                            <div class="wf-why-item"><i class="fas fa-check-circle"></i><span>Fast delivery — most projects in 1–7 days</span></div>
+                            <div class="wf-why-item"><i class="fas fa-check-circle"></i><span>100% satisfaction guarantee — free revisions</span></div>
+                            <div class="wf-why-item"><i class="fas fa-check-circle"></i><span>24/7 support — real humans on WhatsApp &amp; email</span></div>
+                            <div class="wf-why-item"><i class="fas fa-check-circle"></i><span>Worldwide remote delivery</span></div>
+                            <div class="wf-why-item"><i class="fas fa-check-circle"></i><span>Transparent pricing — no hidden fees</span></div>
+                            <div class="wf-why-item"><i class="fas fa-check-circle"></i><span>Modern tech — AI, automation, cloud tools</span></div>
+                            <div class="wf-why-item"><i class="fas fa-check-circle"></i><span>Business-focused — real results, not buzzwords</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Who We Serve -->
+                    <div class="wf-section wf-serve">
+                        <div class="wf-section-title">Who We Serve</div>
+                        <div class="wf-serve-text">Individuals · Entrepreneurs · Startups · SMEs · Churches · Schools · NGOs · Corporates · International clients</div>
+                    </div>
+
+                    <!-- Contact Us -->
+                    <div class="wf-section wf-contact">
+                        <div class="wf-section-title">Contact Us</div>
+                        <div class="wf-contact-grid">
+                            <div class="wf-contact-item"><i class="fas fa-phone-alt"></i><span>+254 7XX XXX XXX (24/7 WhatsApp)</span></div>
+                            <div class="wf-contact-item"><i class="fas fa-envelope"></i><span>YOUR_EMAIL_HERE (reply within 24 hours)</span></div>
+                            <div class="wf-contact-item"><i class="fas fa-globe"></i><span>Serving Worldwide · Remote delivery</span></div>
+                            <div class="wf-contact-item"><i class="fas fa-clock"></i><span>Mon–Sat: 8am–8pm · Sunday: Online enquiries</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Our Promise -->
+                    <div class="wf-section wf-promise">
+                        <div class="wf-section-title">Our Promise</div>
+                        <p>One trusted partner. 170+ services. Professional delivery. Transparent pricing. Worldwide reach.</p>
+                        <p>From your first logo to your complete digital ecosystem — we build digital possibilities.</p>
+                    </div>
+
+                    <div class="compact-footer">© 2026 WILLFORTUNATE HIGH TECH INTERNATIONAL COMPANY</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://kgfqesdcvekfhseurenz.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtnZnFlc2RjdmVrZmhzZXVyZW56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExNzQ1MDcsImV4cCI6MjEwNjc1MDUwN30.7UJKs7ZvRfOE1C8CmXS0KrG44V-KPL2_8D4ar8aPGbI';
+        const BUCKETS = { branding: 'wfsmb-branding' };
+
+        function bucketPublicUrl(bucket, path) {
+            return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;
+        }
+
+        const __configCache = new Map();
+        const __configCacheAt = new Map();
+        const __CONFIG_TTL = 30000;
+
+        async function getConfigValue(key, forceRefresh = false) {
+            if (!forceRefresh) {
+                const cached = __configCache.get(key);
+                const at = __configCacheAt.get(key) || 0;
+                if (cached !== undefined && (Date.now() - at) < __CONFIG_TTL) return cached;
+            }
+            if (!window.supabaseClient) return null;
+            try {
+                const { data, error } = await window.supabaseClient
+                    .from('wf_config').select('value').eq('key', key).maybeSingle();
+                if (error) {
+                    try {
+                        const c = localStorage.getItem('wf_cfg_' + key);
+                        if (c && c.length > 8) return c;
+                    } catch (e) { }
+                    return null;
+                }
+                const value = data ? data.value : null;
+                __configCache.set(key, value);
+                __configCacheAt.set(key, Date.now());
+                try { localStorage.setItem('wf_cfg_' + key, value === null ? '' : value); } catch (e) { }
+                return value;
+            } catch (e) { return null; }
+        }
+
+        async function setConfigValue(key, value) {
+            if (!window.supabaseClient) return false;
+            try {
+                const { error } = await window.supabaseClient.from('wf_config').upsert(
+                    { key, value, updated_at: new Date().toISOString() },
+                    { onConflict: 'key' }
+                );
+                if (error) return false;
+                __configCache.set(key, value);
+                __configCacheAt.set(key, Date.now());
+                try { localStorage.setItem('wf_cfg_' + key, value === null ? '' : value); } catch (e) { }
+                return true;
+            } catch (e) { return false; }
+        }
+
+        function sanitizeFilename(name) {
+            return (name || 'file').replace(/[^\w.\-]+/g, '_').replace(/_+/g, '_').slice(0, 120);
+        }
+
+        async function uploadToBucket(bucket, fileOrBlob, pathPrefix = '') {
+            if (!window.supabaseClient) return { url: null, path: null, error: 'no_client' };
+            try {
+                const name = (fileOrBlob && fileOrBlob.name) ? fileOrBlob.name : 'file';
+                const safe = sanitizeFilename(name);
+                const unique = Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6);
+                const clean = pathPrefix ? pathPrefix.replace(/^\/+|\/+$/g, '') + '/' : '';
+                const path = `${clean}${unique}_${safe}`;
+                const { error } = await window.supabaseClient.storage.from(bucket).upload(path, fileOrBlob, {
+                    cacheControl: '300', upsert: false, contentType: fileOrBlob.type || undefined
+                });
+                if (error) return { url: null, path: null, error: error.message };
+                return { url: bucketPublicUrl(bucket, path), path, error: null };
+            } catch (e) { return { url: null, path: null, error: String(e) }; }
+        }
+
+        const PERMANENT_STORAGE_DB_NAME = 'WFSMB_Permanent_Storage';
+        const PERMANENT_STORAGE_VERSION = 2;
+        const PERMANENT_IMAGES_STORE = 'images';
+
+        function initPermanentStorageDB() {
+            return new Promise((resolve, reject) => {
+                const req = indexedDB.open(PERMANENT_STORAGE_DB_NAME, PERMANENT_STORAGE_VERSION);
+                req.onerror = () => reject(req.error);
+                req.onsuccess = () => resolve(req.result);
+                req.onupgradeneeded = (ev) => {
+                    const db = ev.target.result;
+                    if (!db.objectStoreNames.contains(PERMANENT_IMAGES_STORE)) {
+                        db.createObjectStore(PERMANENT_IMAGES_STORE, { keyPath: 'id' });
+                    }
+                };
+            });
+        }
+
+        async function savePermanentImage(id, data) {
+            try {
+                const db = await initPermanentStorageDB();
+                const tx = db.transaction([PERMANENT_IMAGES_STORE], 'readwrite');
+                tx.objectStore(PERMANENT_IMAGES_STORE).put({ id, data, timestamp: Date.now() });
+                return true;
+            } catch (e) { return false; }
+        }
+
+        async function getPermanentImage(id) {
+            try {
+                const db = await initPermanentStorageDB();
+                const tx = db.transaction([PERMANENT_IMAGES_STORE], 'readonly');
+                const req = tx.objectStore(PERMANENT_IMAGES_STORE).get(id);
+                return new Promise((res) => {
+                    req.onsuccess = () => res(req.result ? req.result.data : null);
+                    req.onerror = () => res(null);
+                });
+            } catch (e) { return null; }
+        }
+
+        function showToast(title, message) {
+            const el = document.getElementById('wfToast');
+            const text = document.getElementById('wfToastText');
+            if (!el || !text) return;
+            text.innerHTML = `<strong>${title}:</strong> ${message}`;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 3000);
+        }
+
+        /* ---------- LOGO ---------- */
+        const DEFAULT_LOGO_ICON = "data:image/svg+xml;utf8," + encodeURIComponent(
+            "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>" +
+            "<rect width='100' height='100' rx='20' fill='#0a0e17'/>" +
+            "<text x='50' y='68' font-family='Arial' font-size='52' font-weight='bold' " +
+            "fill='#4dabf7' text-anchor='middle'>WF</text></svg>");
+
+        function setLogo(url) {
+            const img = document.getElementById('wfLogoImg');
+            if (!img) return;
+            const final = (url && url.length > 20) ? url : DEFAULT_LOGO_ICON;
+            img.onerror = function () {
+                if (this.src !== DEFAULT_LOGO_ICON) this.src = DEFAULT_LOGO_ICON;
+            };
+            img.src = final;
+            try { localStorage.setItem('wf_cfg_app_logo', final); } catch (e) { }
+        }
+
+        async function loadLogo() {
+            try {
+                const cached = localStorage.getItem('wf_cfg_app_logo');
+                if (cached && cached.length > 20) setLogo(cached);
+            } catch (e) { }
+
+            try {
+                if (window.supabaseClient) {
+                    const url = await getConfigValue('app_logo');
+                    if (url && url.length > 20) setLogo(url);
+                } else if (window.supabase) {
+                    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                        auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+                    });
+                    const { data, error } = await client
+                        .from('wf_config').select('value').eq('key', 'app_logo').maybeSingle();
+                    if (!error && data && data.value) setLogo(data.value);
+                }
+            } catch (e) { }
+        }
+
+        function initLogoRealtime() {
+            if (!window.supabaseClient) return;
+            try {
+                window.supabaseClient
+                    .channel('wf_logo_sync_about')
+                    .on('postgres_changes',
+                        { event: '*', schema: 'public', table: 'wf_config', filter: 'key=eq.app_logo' },
+                        (payload) => {
+                            if (payload.new && payload.new.value) setLogo(payload.new.value);
+                        }
+                    ).subscribe();
+            } catch (e) { }
+        }
+
+        /* ---------- DASHBOARD IMAGE ---------- */
+        function applyAboutImage(url) {
+            if (!url) return;
+            const el = document.getElementById('dashboardImage');
+            if (el) el.src = url;
+        }
+
+        async function loadAboutImage() {
+            try {
+                const globalUrl = await getConfigValue('app_about_image');
+                if (globalUrl && globalUrl.length > 20) {
+                    applyAboutImage(globalUrl);
+                    try { await savePermanentImage('dashboard_image', globalUrl); } catch (e) { }
+                    return;
+                }
+                const saved = await getPermanentImage('dashboard_image');
+                if (saved) applyAboutImage(saved);
+            } catch (e) { }
+        }
+
+        function initRealtimeSync() {
+            if (!window.supabaseClient) return;
+            try {
+                window.supabaseClient
+                    .channel('wf_about_us_realtime')
+                    .on('postgres_changes',
+                        { event: '*', schema: 'public', table: 'wf_config' },
+                        (payload) => {
+                            const key = (payload.new && payload.new.key) || (payload.old && payload.old.key);
+                            if (key !== 'app_about_image') return;
+                            const value = payload.new ? payload.new.value : '';
+                            if (value && value.length > 20) {
+                                applyAboutImage(value);
+                                try { savePermanentImage('dashboard_image', value); } catch (e) { }
+                            }
+                        }
+                    ).subscribe();
+            } catch (e) { }
+        }
+
+        function initSupabaseClient() {
+            try {
+                if (window.supabase && typeof window.supabase.createClient === 'function') {
+                    window.supabaseClient = window.supabase.createClient(
+                        SUPABASE_URL, SUPABASE_ANON_KEY,
+                        {
+                            auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+                            db: { schema: 'public' },
+                            global: { headers: { 'x-application-name': 'wfsmb-about-us' } },
+                            realtime: { params: { eventsPerSecond: 20 } }
+                        }
+                    );
+                    return true;
+                }
+            } catch (e) { }
+            return false;
+        }
+
+        function initAboutImageUpload() {
+            const imageContainer = document.getElementById('imageContainer');
+            const dashboardImage = document.getElementById('dashboardImage');
+            if (!imageContainer || !dashboardImage) return;
+
+            let clickCount = 0;
+            let clickTimer = null;
+            const requiredClicks = 10;
+            const clickTimeout = 2000;
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.style.display = 'none';
+            document.body.appendChild(fileInput);
+
+            function resetClickCounter() {
+                clickCount = 0;
+                if (clickTimer) { clearTimeout(clickTimer); clickTimer = null; }
+            }
+
+            function countOneTap() {
+                if (clickTimer) clearTimeout(clickTimer);
+                clickTimer = setTimeout(resetClickCounter, clickTimeout);
+                clickCount++;
+                if (clickCount >= requiredClicks) {
+                    resetClickCounter();
+                    fileInput.click();
+                }
+            }
+
+            let tapStartX = 0;
+            let tapStartY = 0;
+            let tapMoved = false;
+            const TOL = 10;
+
+            imageContainer.addEventListener('click', function (e) {
+                if (e && e.type === 'click' && e.pointerType !== 'touch') {
+                    /* desktop click — always count */
+                } else {
+                    if (tapMoved) return;
+                }
+                e.preventDefault();
+                e.stopPropagation();
+                countOneTap();
+            });
+
+            imageContainer.addEventListener('touchstart', function (e) {
+                if (e.touches.length !== 1) return;
+                tapStartX = e.touches[0].clientX;
+                tapStartY = e.touches[0].clientY;
+                tapMoved = false;
+            }, { passive: true });
+
+            imageContainer.addEventListener('touchmove', function (e) {
+                if (e.touches.length !== 1) return;
+                const dx = Math.abs(e.touches[0].clientX - tapStartX);
+                const dy = Math.abs(e.touches[0].clientY - tapStartY);
+                if (dx > TOL || dy > TOL) tapMoved = true;
+            }, { passive: true });
+
+            imageContainer.addEventListener('touchend', function () {
+                if (!tapMoved) countOneTap();
+                tapStartX = 0; tapStartY = 0; tapMoved = false;
+            }, { passive: true });
+
+            imageContainer.addEventListener('touchcancel', function () {
+                tapStartX = 0; tapStartY = 0; tapMoved = false;
+            }, { passive: true });
+
+            imageContainer.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                return false;
+            });
+
+            fileInput.addEventListener('change', async function (event) {
+                const file = event.target.files[0];
+                if (!file) { fileInput.value = ''; return; }
+
+                const localReader = new FileReader();
+                localReader.onload = (e) => { dashboardImage.src = e.target.result; };
+                localReader.readAsDataURL(file);
+
+                let finalUrl = null;
+                try {
+                    if (window.supabaseClient) {
+                        const result = await uploadToBucket(BUCKETS.branding, file, 'about');
+                        if (result && result.url) finalUrl = result.url;
+                    }
+                } catch (e) { }
+
+                if (!finalUrl) {
+                    finalUrl = await new Promise((res) => {
+                        const r = new FileReader();
+                        r.onload = () => res(r.result);
+                        r.readAsDataURL(file);
+                    });
+                }
+
+                dashboardImage.src = finalUrl;
+
+                try {
+                    const ok = await setConfigValue('app_about_image', finalUrl);
+                    if (ok) showToast('Image Saved', 'Saved globally — every device will see it.');
+                    else showToast('Save Failed', 'Could not write to Supabase. Cached locally.');
+                } catch (e) {
+                    showToast('Save Failed', 'Network error — image cached locally only.');
+                }
+
+                try { await savePermanentImage('dashboard_image', finalUrl); } catch (e) { }
+
+                fileInput.value = '';
+            });
+
+            dashboardImage.addEventListener('error', function () {
+                this.src = "data:image/svg+xml;utf8," + encodeURIComponent(
+                    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>" +
+                    "<rect width='100' height='100' rx='20' fill='#0a0e17'/>" +
+                    "<text x='50' y='68' font-family='Arial' font-size='52' font-weight='bold' " +
+                    "fill='#4dabf7' text-anchor='middle'>WF</text></svg>");
+            });
+        }
+
+        function exitBrowser() {
+            window.onbeforeunload = null;
+            try {
+                window.open('', '_self');
+                window.close();
+            } catch (e) { }
+            setTimeout(function () {
+                try {
+                    if (history.replaceState) {
+                        history.replaceState(null, '', 'about:blank');
+                    }
+                } catch (e) { }
+                try {
+                    window.location.replace('about:blank');
+                } catch (e) {
+                    try { window.location.href = 'about:blank'; } catch (e2) { }
+                }
+            }, 60);
+        }
+
+        document.getElementById('closeAboutUsModal')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            exitBrowser();
+        });
+        document.getElementById('aboutUsModal')?.addEventListener('click', function (e) {
+            if (e.target === this) exitBrowser();
+        });
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            const ok = initSupabaseClient();
+            initAboutImageUpload();
+            loadLogo();
+            if (ok) await loadAboutImage();
+            if (ok) initRealtimeSync();
+            if (ok) initLogoRealtime();
+            console.log('%c✅ About Us module ready', 'color:#00ff88;font-weight:bold',
+                ok ? '· Supabase connected' : '· Supabase script not loaded');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+    <title>Willfortunate High Level Technology International Online Services</title>
+    <link rel="preconnect" href="https://aeuqiijhozlmiptagthj.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://aeuqiijhozlmiptagthj.supabase.co">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="icon" id="app-favicon" sizes="512x512" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏯️</text></svg>">
+    <link rel="apple-touch-icon" id="app-touch-icon" sizes="512x512" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏯️</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; width: 100%; overflow: hidden; overscroll-behavior: none; }
+        body { color: #f1f1f1; min-height: 100vh; position: relative; background: #000; }
+        .background-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden; background: #000; }
+        .background-media { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; object-position: center center; opacity: 0; z-index: 1; transition: opacity 0.4s ease-out; background: #000; pointer-events: none; contain: layout paint; }
+        .background-media.active { opacity: 1; z-index: 3; }
+        .background-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.3); z-index: -1; }
+        .floating-name { position: fixed; font-size: 1.2rem; font-weight: 700; color: #7b2ff7; z-index: 2000; opacity: 0; animation: floatName 15s ease-in-out infinite; text-shadow: 0 0 10px rgba(123, 47, 247, 0.5); pointer-events: none; }
+        @keyframes floatName { 0%, 5% { opacity: 0; transform: translateY(-20px) scale(0.8); } 10%, 90% { opacity: 1; transform: translateY(0) scale(1); } 95%, 100% { opacity: 0; transform: translateY(20px) scale(0.8); } }
+        .modal-container { width: 90%; max-width: 300px; background: rgba(25, 25, 40, 0.97); border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7); overflow: hidden; position: fixed; top: 80px; right: 20px; z-index: 1000; border: 1px solid rgba(255, 255, 255, 0.1); display: block; will-change: transform, opacity; }
+        .modal-container.compact { max-width: 280px; }
+        .glitter-border { position: absolute; top: -1px; left: -1px; right: -1px; bottom: -1px; border-radius: 13px; background: linear-gradient(45deg, transparent 40%, #7b2ff7 50%, #f107a3 60%, transparent 70%); background-size: 300% 300%; z-index: -1; animation: glitterMove 8s linear infinite; filter: blur(1px); opacity: 0.7; }
+        @keyframes glitterMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .modal-content { position: relative; border-radius: 12px; background: rgba(25, 25, 40, 0.97); overflow: hidden; }
+        .main-content { padding: 15px; width: 100%; }
+        .header { text-align: center; margin-bottom: 15px; position: relative; }
+        .header-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; gap: 8px; }
+        .search-container { flex: 1; position: relative; }
+        .search-input { width: 100%; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(123, 47, 247, 0.3); border-radius: 15px; padding: 10px 12px 10px 35px; color: white; font-size: 16px; transition: border-color 0.2s; -webkit-appearance: none; }
+        .search-input:focus { outline: none; border-color: #7b2ff7; }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: rgba(170, 170, 255, 0.8); font-size: 0.9rem; pointer-events: none; }
+        .back-button { position: fixed; top: 15px; left: 15px; z-index: 2000; background: rgba(123, 47, 247, 0.9); border: none; color: white; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; box-shadow: 0 4px 12px rgba(123, 47, 247, 0.4); user-select: none; -webkit-user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        h1 { font-size: 1.05rem; margin-bottom: 4px; background: linear-gradient(90deg, #7b2ff7, #f107a3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 700; line-height: 1.25; }
+        .subtitle { color: rgba(170, 170, 255, 0.8); font-size: 0.7rem; }
+        .upload-container { margin-bottom: 10px; display: flex; justify-content: flex-end; }
+        .upload-music-btn { background: linear-gradient(135deg, #7b2ff7, #f107a3); border: none; color: white; padding: 8px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px; letter-spacing: 0.5px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        .upload-music-btn i { font-size: 0.72rem; }
+        .hidden-input { display: none; }
+        .uploaded-songs { background: rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 10px; max-height: 200px; overflow-y: auto; position: relative; border: 1px solid rgba(255, 255, 255, 0.1); -webkit-overflow-scrolling: touch; overscroll-behavior: contain; touch-action: pan-y; scroll-behavior: auto; }
+        .uploaded-songs::-webkit-scrollbar { width: 6px; }
+        .uploaded-songs::-webkit-scrollbar-track { background: transparent; }
+        .uploaded-songs::-webkit-scrollbar-thumb { background: rgba(123,47,247,0.5); border-radius: 3px; }
+        .uploaded-songs h3 { font-size: 0.8rem; margin-bottom: 8px; color: rgba(170, 170, 255, 0.9); display: flex; justify-content: space-between; align-items: center; }
+        .clear-all-btn { background: none; border: none; color: #ff6b6b; font-size: 0.7rem; cursor: pointer; padding: 6px 10px; border-radius: 3px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        .song-item { display: flex; align-items: center; padding: 12px 10px; border-radius: 6px; margin-bottom: 6px; background: rgba(255, 255, 255, 0.07); font-size: 0.82rem; cursor: pointer; position: relative; touch-action: manipulation; -webkit-tap-highlight-color: transparent; will-change: background; contain: layout style; }
+        .song-item.active { background: rgba(123, 47, 247, 0.25); }
+        .song-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: transparent; border-radius: 0 2px 2px 0; }
+        .song-item.active::before { background: #f107a3; }
+        .song-item .song-icon { width: 28px; height: 28px; margin-right: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #7b2ff7; font-size: 1.1rem; }
+        .song-item .song-icon img { width: 100%; height: 100%; object-fit: contain; image-rendering: -webkit-optimize-contrast; }
+        .song-details { flex: 1; overflow: hidden; }
+        .song-item-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; font-weight: 500; }
+        .song-item-info { font-size: 0.7rem; color: rgba(170, 170, 255, 0.8); display: flex; justify-content: space-between; }
+        .song-item-remove { background: none; border: none; color: #ff6b6b; font-size: 0.85rem; cursor: pointer; padding: 6px; margin-left: 4px; z-index: 5; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        .empty-songs { text-align: center; color: rgba(170, 170, 255, 0.6); font-size: 0.8rem; padding: 20px 10px; }
+        .dashboard { position: fixed; bottom: 20px; right: 20px; width: 90%; max-width: 280px; background: rgba(20, 20, 35, 0.97); border-radius: 10px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8); overflow: hidden; z-index: 1000; border: 1px solid rgba(255, 255, 255, 0.1); display: block; will-change: transform, opacity; }
+        .dashboard::before { content: ''; position: absolute; top: -1px; left: -1px; right: -1px; bottom: -1px; border-radius: 11px; background: linear-gradient(45deg, transparent 40%, #7b2ff7 50%, #f107a3 60%, transparent 70%); background-size: 300% 300%; animation: glitterMove 5s linear infinite; filter: blur(1px); opacity: 0.7; z-index: -1; }
+        .dashboard-header { display: flex; align-items: center; padding: 12px; cursor: pointer; border-bottom: 1px solid rgba(255, 255, 255, 0.08); touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        .album-art-nano { width: 64px; height: 64px; border-radius: 8px; background: linear-gradient(135deg, #2a2a4a, #1a1a2e); display: flex; align-items: center; justify-content: center; margin-right: 12px; overflow: hidden; flex-shrink: 0; }
+        .album-art-nano img { width: 100%; height: 100%; object-fit: cover; image-rendering: -webkit-optimize-contrast; }
+        .album-art-nano i { color: #7b2ff7; font-size: 1.6rem; }
+        .song-info-nano { flex: 1; overflow: hidden; min-width: 0; }
+        .song-title-nano { font-size: 0.85rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+        .song-artist-nano { font-size: 0.7rem; color: rgba(170, 170, 255, 0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .controls-nano { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+        .control-btn-nano { background: rgba(123, 47, 247, 0.2); border: none; color: #7b2ff7; font-size: 0.9rem; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; touch-action: manipulation; -webkit-tap-highlight-color: transparent; will-change: transform; }
+        .play-pause-nano { background: linear-gradient(135deg, #7b2ff7, #f107a3); width: 44px; height: 44px; font-size: 1.15rem; }
+        .expanded-controls { padding: 12px; display: none; }
+        .dashboard.expanded .expanded-controls { display: block; }
+        .progress-section { margin-bottom: 10px; }
+        .progress-bar-nano { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.15); border-radius: 3px; overflow: visible; margin-bottom: 6px; cursor: pointer; touch-action: none; position: relative; -webkit-tap-highlight-color: transparent; }
+        .progress-bar-nano::before { content: ''; position: absolute; left: 0; right: 0; top: -14px; bottom: -14px; cursor: pointer; }
+        .progress-nano { height: 100%; background: linear-gradient(90deg, #7b2ff7, #f107a3); width: 0%; border-radius: 3px; pointer-events: none; }
+        .time-info-nano { display: flex; justify-content: space-between; font-size: 0.65rem; color: rgba(170, 170, 255, 0.8); }
+        .player-controls-nano { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 0 5px; }
+        .player-btn-nano { background: none; border: none; color: white; font-size: 1rem; cursor: pointer; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; touch-action: manipulation; -webkit-tap-highlight-color: transparent; will-change: transform; }
+        .bottom-controls { display: flex; justify-content: space-between; align-items: center; }
+        .volume-control-nano { display: flex; align-items: center; gap: 6px; flex: 1; }
+        .volume-icon { color: rgba(170, 170, 255, 0.9); font-size: 0.8rem; }
+        .volume-slider-nano { flex: 1; max-width: 90px; height: 6px; background: rgba(255, 255, 255, 0.15); border-radius: 3px; position: relative; cursor: pointer; touch-action: none; -webkit-tap-highlight-color: transparent; }
+        .volume-slider-nano::before { content: ''; position: absolute; left: 0; right: 0; top: -14px; bottom: -14px; cursor: pointer; }
+        .volume-level-nano { height: 100%; background: #7b2ff7; width: 70%; border-radius: 3px; pointer-events: none; }
+        .playlist-controls-nano { display: flex; gap: 6px; }
+        .playlist-btn { background: rgba(255, 255, 255, 0.1); border: none; color: white; font-size: 0.7rem; cursor: pointer; padding: 8px 12px; border-radius: 4px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; will-change: transform; }
+        .playlist-btn.active { background: rgba(123, 47, 247, 0.3); color: #7b2ff7; }
+        .status-message { position: fixed; bottom: 70px; right: 20px; background: rgba(20, 20, 35, 0.97); border: 1px solid rgba(123, 47, 247, 0.4); border-radius: 6px; padding: 10px 14px; font-size: 0.75rem; max-width: 90%; z-index: 1001; opacity: 0; transform: translateY(10px); transition: opacity 0.25s, transform 0.25s; pointer-events: none; }
+        .status-message.show { opacity: 1; transform: translateY(0); }
+        .status-message.success { border-left: 3px solid #2ecc71; }
+        .status-message.error { border-left: 3px solid #e74c3c; }
+        .upload-progress { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(20, 20, 35, 0.98); padding: 15px; border-radius: 10px; z-index: 3000; display: none; min-width: 200px; border: 1px solid rgba(123, 47, 247, 0.3); box-shadow: 0 5px 20px rgba(0, 0, 0, 0.8); }
+        .progress-bar-container { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; overflow: hidden; margin: 10px 0 5px; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #7b2ff7, #f107a3); width: 0%; transition: width 0.1s ease; }
+        .progress-text { font-size: 0.8rem; color: #aaaaff; text-align: center; margin-top: 5px; }
+        .touch-feedback:active { opacity: 0.7; }
+        .join-float-container { position: fixed; top: 15px; right: 70px; z-index: 2500; background: rgba(10, 10, 20, 0.9); border: 1px solid rgba(45, 127, 249, 0.6); border-radius: 14px; padding: 8px 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; box-shadow: 0 0 30px rgba(45, 127, 249, 0.4); will-change: transform, opacity; transition: opacity 0.35s ease, transform 0.35s ease; }
+        .join-text { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; background: linear-gradient(135deg, #FFFFFF, #80B0FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .icons-wrapper { display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; }
+        .nav-orb { width: 38px; height: 38px; border-radius: 8px; background: linear-gradient(145deg, rgba(25, 25, 40, 0.98), rgba(15, 15, 30, 0.98)); border: 2px solid rgba(45, 127, 249, 0.5); display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; text-decoration: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        .icon-box { width: 24px; height: 24px; border-radius: 6px; overflow: hidden; border: 2px solid; position: relative; z-index: 3; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.5); }
+        .icon-box i { font-size: 14px; }
+        .nav-orb.youtube { border-color: rgba(255, 0, 0, 0.4); }
+        .nav-orb.youtube .icon-box { border-color: #FF0000; }
+        .nav-orb.youtube .icon-box i { color: #FF0000; }
+        .nav-orb.tubidy { border-color: rgba(29, 185, 84, 0.4); }
+        .nav-orb.tubidy .icon-box { border-color: #1DB954; }
+        .nav-orb.tubidy .icon-box i { color: #1DB954; }
+        .hover-glow { position: absolute; width: 150%; height: 150%; background: radial-gradient(circle at center, rgba(255, 255, 255, 0.2) 0%, transparent 70%); opacity: 0; pointer-events: none; top: -25%; left: -25%; }
+        .join-text::before { content: ''; position: absolute; top: -2px; left: 15%; width: 70%; height: 1px; background: linear-gradient(90deg, transparent, rgba(45, 127, 249, 0.5), transparent); }
+        .join-arrow { position: fixed; top: 30px; right: 190px; z-index: 2600; display: flex; align-items: center; gap: 4px; pointer-events: none; background: rgba(0, 0, 0, 0.15); padding: 4px 8px 4px 12px; border-radius: 30px; border: 1px solid rgba(255, 215, 0, 0.2); will-change: transform, opacity; transition: opacity 0.35s ease, transform 0.35s ease; }
+        .join-arrow-line { width: 35px; height: 5px; background: linear-gradient(90deg, #7b2ff7, #f107a3, #7b2ff7); border-radius: 3px; }
+        .join-arrow-head { width: 0; height: 0; border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-left: 14px solid #f107a3; }
+        .join-arrow-text { color: white; font-size: 9px; font-weight: bold; text-transform: uppercase; background: linear-gradient(90deg, #7b2ff7, #f107a3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 1px; white-space: nowrap; margin-left: 3px; }
+        .music-arrow { position: fixed; bottom: 180px; right: 320px; z-index: 2600; display: flex; flex-direction: column; align-items: center; gap: 4px; pointer-events: none; background: rgba(0, 0, 0, 0.15); padding: 8px 6px 4px 6px; border-radius: 30px; border: 1px solid rgba(123, 47, 247, 0.2); will-change: transform, opacity; transition: opacity 0.35s ease, transform 0.35s ease; }
+        .music-arrow-line { width: 5px; height: 35px; background: linear-gradient(180deg, #7b2ff7, #f107a3, #7b2ff7); border-radius: 3px; }
+        .music-arrow-head { width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 14px solid #f107a3; }
+        .music-arrow-text { color: white; font-size: 9px; font-weight: bold; text-transform: uppercase; background: linear-gradient(180deg, #7b2ff7, #f107a3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 1px; white-space: nowrap; margin-top: 2px; writing-mode: vertical-rl; text-orientation: upright; }
+
+        #wake-blocker { position: fixed; inset: 0; z-index: 4000; background: transparent; display: none; touch-action: none; }
+        #wake-blocker.active { display: block; }
+
+        .admin-overlay { position: fixed; inset: 0; z-index: 5000; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; padding: 20px; }
+        .admin-overlay.open { display: flex; }
+        .admin-login-box, .admin-panel { background: linear-gradient(160deg, rgba(22,20,40,0.98), rgba(15,12,28,0.98)); border: 1px solid rgba(123,47,247,0.4); border-radius: 16px; box-shadow: 0 25px 60px rgba(0,0,0,0.9); width: 100%; position: relative; }
+        .admin-login-box { max-width: 380px; padding: 35px 28px; text-align: center; }
+        .admin-login-box h2 { font-size: 1.1rem; margin-bottom: 6px; background: linear-gradient(90deg,#7b2ff7,#f107a3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .admin-login-box p { font-size: 0.72rem; color: rgba(170,170,255,0.7); margin-bottom: 20px; }
+        .admin-input-f { width: 100%; padding: 12px 14px; border-radius: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(123,47,247,0.4); color: #fff; font-size: 16px; outline: none; margin-bottom: 8px; -webkit-appearance: none; }
+        .admin-input-f:focus { border-color: #f107a3; }
+        .admin-login-btn { width: 100%; margin-top: 8px; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(135deg,#7b2ff7,#f107a3); color: white; font-weight: 700; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        .admin-login-btn:disabled { opacity: 0.5; cursor: wait; }
+        .admin-login-err { color: #ff6b6b; font-size: 0.72rem; margin-top: 10px; min-height: 16px; }
+        .admin-panel { max-width: 1100px; max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; }
+        .admin-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; }
+        .admin-header h2 { font-size: 0.92rem; font-weight: 700; background: linear-gradient(90deg,#7b2ff7,#f107a3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .admin-close { background: rgba(255,255,255,0.08); border: none; color: #fff; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        .admin-tabs { display: flex; gap: 6px; padding: 12px 20px 0; flex-shrink: 0; overflow-x: auto; }
+        .admin-tab { padding: 9px 18px; border: none; border-radius: 8px 8px 0 0; cursor: pointer; background: rgba(255,255,255,0.05); color: rgba(200,200,255,0.7); font-size: 0.78rem; font-weight: 600; touch-action: manipulation; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+        .admin-tab.active { background: rgba(123,47,247,0.25); color: #fff; }
+        .admin-body { padding: 16px 20px 20px; overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+        .admin-tab-pane { display: none; }
+        .admin-tab-pane.active { display: block; }
+        .admin-section-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.2px; color: rgba(170,170,255,0.65); margin: 16px 0 10px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .admin-section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+        .admin-form-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+        .admin-input { flex: 1; min-width: 140px; padding: 10px 12px; border-radius: 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(123,47,247,0.3); color: #fff; font-size: 16px; outline: none; -webkit-appearance: none; }
+        .admin-btn { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 0.78rem; font-weight: 700; background: linear-gradient(135deg,#7b2ff7,#f107a3); color: white; white-space: nowrap; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        .admin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .admin-btn.ghost { background: rgba(255,255,255,0.08); color: #fff; }
+        .admin-btn.danger { background: linear-gradient(135deg,#c0392b,#e74c3c); }
+        .admin-btn.small { padding: 6px 10px; font-size: 0.68rem; }
+        .admin-media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+        .admin-media-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+        .admin-media-card.disabled { opacity: 0.45; }
+        .admin-media-thumb { width: 100%; height: 100px; object-fit: cover; background: #1a1a2e; display: block; }
+        .admin-media-meta { padding: 8px 10px; flex: 1; }
+        .admin-media-title { font-size: 0.75rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .admin-media-sub { font-size: 0.65rem; color: rgba(170,170,255,0.7); }
+        .admin-media-actions { display: flex; gap: 4px; padding: 0 10px 10px; flex-wrap: wrap; }
+        .admin-pro-list { display: flex; flex-direction: column; gap: 8px; }
+        .admin-pro-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; }
+        .admin-pro-item .order-num { font-size: 0.68rem; font-weight: 700; color: #7b2ff7; width: 24px; text-align: center; flex-shrink: 0; }
+        .admin-pro-item .pro-icon { width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0; background: linear-gradient(135deg,#2a2a4a,#1a1a2e); display: flex; align-items: center; justify-content: center; color: #7b2ff7; overflow: hidden; }
+        .admin-pro-item .pro-icon img { width: 100%; height: 100%; object-fit: cover; }
+        .admin-pro-item .pro-info { flex: 1; overflow: hidden; }
+        .admin-pro-item .pro-title { font-size: 0.8rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .admin-pro-item .pro-sub { font-size: 0.68rem; color: rgba(170,170,255,0.7); }
+        .admin-pro-item .pro-actions { display: flex; gap: 4px; flex-shrink: 0; }
+        .admin-pro-badge { display: inline-block; font-size: 0.55rem; padding: 2px 6px; border-radius: 4px; margin-left: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .admin-pro-badge.db { background: rgba(46,204,113,0.2); color: #2ecc71; }
+        .admin-pro-badge.bucket { background: rgba(123,47,247,0.2); color: #b88bff; }
+        .admin-empty { text-align: center; padding: 30px 10px; color: rgba(170,170,255,0.5); font-size: 0.78rem; }
+        .admin-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(20,20,35,0.98); border: 1px solid rgba(123,47,247,0.5); padding: 11px 20px; border-radius: 10px; font-size: 0.8rem; z-index: 6000; opacity: 0; transition: opacity 0.25s, transform 0.25s; pointer-events: none; }
+        .admin-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .admin-toast.success { border-left: 3px solid #2ecc71; }
+        .admin-toast.error { border-left: 3px solid #e74c3c; }
+        .song-item-download { background: none; border: none; color: #2ecc71; font-size: 0.85rem; cursor: pointer; padding: 6px; margin-left: 2px; z-index: 5; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+
+        .icon-preview-box { display: flex; flex-direction: column; align-items: center; gap: 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(123,47,247,0.25); border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+        .icon-preview-frame { width: 160px; height: 160px; border-radius: 20px; overflow: hidden; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; border: 2px solid rgba(123,47,247,0.5); box-shadow: 0 6px 20px rgba(123,47,247,0.3); }
+        .icon-preview-frame img { width: 100%; height: 100%; object-fit: cover; image-rendering: -webkit-optimize-contrast; }
+        .icon-preview-frame .fallback { font-size: 4rem; color: #7b2ff7; }
+        .icon-hint { font-size: 0.72rem; color: rgba(170,170,255,0.6); text-align: center; line-height: 1.5; max-width: 340px; }
+        .icon-action-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+
+        @media (max-width: 768px) {
+            .glitter-border { display: none; }
+            .dashboard::before { display: none; }
+            .modal-container, .dashboard { transition: opacity 0.35s ease, transform 0.35s ease; }
+            .modal-container.auto-hidden { opacity: 0; transform: translateX(30px) scale(0.95); pointer-events: none; }
+            .dashboard.auto-hidden { opacity: 0; transform: translateX(30px) translateY(10px) scale(0.95); pointer-events: none; }
+            .join-float-container.auto-hidden { opacity: 0; transform: translateY(-20px) scale(0.9); pointer-events: none; }
+            .join-arrow.auto-hidden { opacity: 0; transform: translateX(20px); }
+            .music-arrow.auto-hidden { opacity: 0; transform: translateY(20px); }
+            .uploaded-songs { max-height: 260px; -webkit-overflow-scrolling: touch; touch-action: pan-y; scroll-behavior: auto; }
+            .song-item { touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+            .floating-name { animation-duration: 20s; }
+            .modal-container, .dashboard, .join-float-container, .join-arrow, .music-arrow { box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+            .background-media { object-fit: cover; object-position: center center; transition: opacity 0.3s ease-out; }
+            .admin-overlay { backdrop-filter: none; -webkit-backdrop-filter: none; }
+            .status-message { backdrop-filter: none; -webkit-backdrop-filter: none; }
+        }
+        @media (max-width: 480px) {
+            .join-arrow { top: 20px; right: 140px; }
+            .music-arrow { bottom: 140px; right: 240px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-container" id="background-container"></div>
+    <div class="background-overlay"></div>
+
+    <div id="wake-blocker"></div>
+
+    <button class="back-button touch-feedback" id="back-button"><i class="fas fa-arrow-left"></i></button>
+
+    <div class="join-arrow">
+        <div class="join-arrow-text">JOIN</div>
+        <div class="join-arrow-line"></div>
+        <div class="join-arrow-head"></div>
+    </div>
+
+    <div class="music-arrow">
+        <div class="music-arrow-text">MUSIC</div>
+        <div class="music-arrow-line"></div>
+        <div class="music-arrow-head"></div>
+    </div>
+
+    <div class="join-float-container" id="join-float-container">
+        <span class="join-text">join to</span>
+        <div class="icons-wrapper">
+            <a class="nav-orb youtube" href="#" id="youtube-btn"><div class="hover-glow"></div><div class="icon-box"><i class="fab fa-youtube"></i></div></a>
+            <a class="nav-orb tubidy" href="#" id="tubidy-btn"><div class="hover-glow"></div><div class="icon-box"><i class="fas fa-music"></i></div></a>
+        </div>
+    </div>
+
+    <div class="floating-name" id="floating-name">WILLFORTUNATE</div>
+
+    <div class="modal-container compact" id="modal-container">
+        <div class="modal-content">
+            <div class="main-content">
+                <div class="header">
+                    <h1>Willfortunate High Level Technology International Online Services</h1>
+                    <p class="subtitle">Willfortunate Cloud Requests</p>
+                    <div class="header-controls">
+                        <div class="search-container">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" class="search-input" id="search-input" placeholder="Search...">
+                        </div>
+                    </div>
+                </div>
+                <div class="upload-container">
+                    <button class="upload-music-btn touch-feedback" id="upload-music-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</button>
+                    <input type="file" id="music-file-input" class="hidden-input" multiple>
+                </div>
+                <div class="uploaded-songs" id="uploaded-songs">
+                    <h3>Library <button class="clear-all-btn touch-feedback" id="clear-all-btn">Clear User Songs</button></h3>
+                    <div id="songs-list"><div class="empty-songs">Loading songs...</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard" id="dashboard">
+        <div class="modal-content">
+            <div class="dashboard-header touch-feedback" id="dashboard-header">
+                <div class="album-art-nano" id="album-art-nano"><i class="fas fa-music"></i></div>
+                <div class="song-info-nano">
+                    <div class="song-title-nano" id="song-title-nano">No music</div>
+                    <div class="song-artist-nano" id="song-artist-nano">Upload to begin</div>
+                </div>
+                <div class="controls-nano">
+                    <button class="control-btn-nano touch-feedback" id="play-pause-nano"><i class="fas fa-play" id="play-pause-nano-icon"></i></button>
+                </div>
+            </div>
+            <div class="expanded-controls" id="expanded-controls">
+                <div class="progress-section">
+                    <div class="progress-bar-nano touch-feedback" id="progress-bar-nano"><div class="progress-nano" id="progress-nano"></div></div>
+                    <div class="time-info-nano"><span id="current-time-nano">0:00</span><span id="duration-nano">0:00</span></div>
+                </div>
+                <div class="player-controls-nano">
+                    <button class="player-btn-nano touch-feedback" id="prev-nano"><i class="fas fa-step-backward"></i></button>
+                    <button class="player-btn-nano play-pause-nano touch-feedback" id="play-pause-expanded"><i class="fas fa-play" id="play-pause-expanded-icon"></i></button>
+                    <button class="player-btn-nano touch-feedback" id="next-nano"><i class="fas fa-step-forward"></i></button>
+                </div>
+                <div class="bottom-controls">
+                    <div class="volume-control-nano">
+                        <i class="fas fa-volume-down volume-icon"></i>
+                        <div class="volume-slider-nano touch-feedback" id="volume-slider-nano"><div class="volume-level-nano" id="volume-level-nano"></div></div>
+                    </div>
+                    <div class="playlist-controls-nano">
+                        <button class="playlist-btn touch-feedback" id="shuffle-btn"><i class="fas fa-random"></i></button>
+                        <button class="playlist-btn touch-feedback" id="repeat-btn"><i class="fas fa-redo"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-message" id="status-message"></div>
+    <div class="upload-progress" id="upload-progress">
+        <div style="text-align: center; color: #7b2ff7; margin-bottom: 5px;"><i class="fas fa-bolt"></i> Processing</div>
+        <div class="progress-bar-container"><div class="progress-bar-fill" id="progress-bar-fill"></div></div>
+        <div class="progress-text" id="progress-text">0/0 files</div>
+    </div>
+
+    <audio id="audio-player" preload="auto" playsinline></audio>
+
+    <div class="admin-overlay" id="admin-overlay">
+        <div class="admin-login-box" id="admin-login-box">
+            <h2><i class="fas fa-shield-alt"></i> Admin Access</h2>
+            <p>Sign in with your Supabase admin account</p>
+            <input type="email" class="admin-input-f" id="admin-email" placeholder="Email" autocomplete="username">
+            <input type="password" class="admin-input-f" id="admin-pw-input" placeholder="Password" autocomplete="current-password">
+            <button class="admin-login-btn" id="admin-login-btn">Sign In</button>
+            <div class="admin-login-err" id="admin-login-err"></div>
+        </div>
+
+        <div class="admin-panel" id="admin-panel" style="display:none;">
+            <div class="admin-header">
+                <h2><i class="fas fa-crown"></i> Willfortunate High Level Technology International Online Services — Admin Console</h2>
+                <div style="display:flex;gap:8px;">
+                    <button class="admin-close" id="admin-logout-btn" title="Sign out" style="color:#ff6b6b;"><i class="fas fa-sign-out-alt"></i></button>
+                    <button class="admin-close" id="admin-close-btn"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="images"><i class="fas fa-image"></i> Background Images</button>
+                <button class="admin-tab" data-tab="music"><i class="fas fa-music"></i> Music Library</button>
+                <button class="admin-tab" data-tab="appicon"><i class="fas fa-star"></i> App Icon</button>
+            </div>
+            <div class="admin-body">
+                <div class="admin-tab-pane active" id="tab-images">
+                    <div class="admin-section-title"><i class="fas fa-plus"></i> Upload New Backgrounds (multiple allowed)</div>
+                    <div class="admin-form-row">
+                        <input type="text" class="admin-input" id="admin-img-title" placeholder="Image name / label (optional)">
+                        <input type="file" class="hidden-input" id="admin-img-file" accept="image/*" multiple>
+                        <button class="admin-btn" id="admin-img-upload-btn"><i class="fas fa-cloud-upload-alt"></i> Choose & Upload Images</button>
+                    </div>
+                    <div class="admin-section-title"><i class="fas fa-cloud"></i> Supabase Backgrounds (Global)</div>
+                    <div class="admin-media-grid" id="admin-sb-images-grid"><div class="admin-empty">Loading…</div></div>
+                    <div class="admin-section-title"><i class="fas fa-globe"></i> Default Unsplash Backgrounds</div>
+                    <div class="admin-media-grid" id="admin-unsplash-grid"><div class="admin-empty">Loading…</div></div>
+                </div>
+                <div class="admin-tab-pane" id="tab-music">
+                    <div class="admin-section-title"><i class="fas fa-plus"></i> Add Music (filename is read automatically, multiple allowed)</div>
+                    <div class="admin-form-row">
+                        <input type="file" class="hidden-input" id="admin-music-file" accept="audio/*" multiple>
+                        <button class="admin-btn" id="admin-music-upload-btn"><i class="fas fa-cloud-upload-alt"></i> Choose & Upload Audio</button>
+                    </div>
+                    <div class="admin-section-title"><i class="fas fa-list-ol"></i> Global Music Library (bucket + database)</div>
+                    <div class="admin-pro-list" id="admin-music-list"><div class="admin-empty">Loading…</div></div>
+                </div>
+                <div class="admin-tab-pane" id="tab-appicon">
+                    <div class="admin-section-title"><i class="fas fa-image"></i> Current Music Player App Icon</div>
+                    <div class="icon-preview-box">
+                        <div class="icon-preview-frame" id="app-icon-preview">
+                            <div class="fallback"><i class="fas fa-music"></i></div>
+                        </div>
+                        <div class="icon-hint">
+                            This icon is used as the browser tab favicon and inside the music player.
+                            Auto-resized to <strong>512×512</strong> on upload for crisp rendering at any size.
+                            Changes take effect for everyone globally within seconds.
+                        </div>
+                        <div class="icon-action-row">
+                            <input type="file" class="hidden-input" id="admin-icon-file" accept="image/*">
+                            <button class="admin-btn" id="admin-icon-upload-btn"><i class="fas fa-cloud-upload-alt"></i> Upload New Icon</button>
+                            <button class="admin-btn danger" id="admin-icon-reset-btn"><i class="fas fa-undo"></i> Reset to Default</button>
+                        </div>
+                    </div>
+                    <div class="admin-section-title"><i class="fas fa-info-circle"></i> Icon Info</div>
+                    <div class="admin-empty" id="admin-icon-info" style="text-align:left; padding: 12px; line-height: 1.8;">
+                        No custom icon uploaded. Using the default ⏯️ emoji.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-toast" id="admin-toast"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://aeuqiijhozlmiptagthj.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFldXFpaWpob3psbWlwdGFndGhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MTA0NTUsImV4cCI6MjA4OTM4NjQ1NX0.kwEI0p9UIlh_OvHTyIqFV7oYKhrmpKyeQy66bmnEHDU';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const IS_MOBILE = () => window.matchMedia('(max-width: 768px)').matches;
+
+        const wakeBlocker = document.getElementById('wake-blocker');
+        let __swallowActive = false;
+
+        function setBlockerActive(active) {
+            if (active) wakeBlocker.classList.add('active');
+            else wakeBlocker.classList.remove('active');
+        }
+
+        function armSwallow() {
+            __swallowActive = true;
+            const kill = (e) => {
+                if (!__swallowActive) return;
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+            };
+            const evts = ['pointerdown','pointerup','pointermove','click','touchstart','touchend','mousedown','mouseup'];
+            const opts = { capture: true, passive: false };
+            evts.forEach(t => document.addEventListener(t, kill, opts));
+            const disarm = () => {
+                if (!__swallowActive) return;
+                __swallowActive = false;
+                evts.forEach(t => document.removeEventListener(t, kill, opts));
+            };
+            document.addEventListener('pointerup', disarm, { capture: true, once: true });
+            document.addEventListener('touchend', disarm, { capture: true, once: true });
+            setTimeout(disarm, 400);
+        }
+
+        function handleWakeTap(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.querySelectorAll('.auto-hidden').forEach(el => el.classList.remove('auto-hidden'));
+            setBlockerActive(false);
+            armSwallow();
+        }
+        wakeBlocker.addEventListener('pointerdown', handleWakeTap, { passive: false });
+        wakeBlocker.addEventListener('touchstart', handleWakeTap, { passive: false });
+        wakeBlocker.addEventListener('mousedown', handleWakeTap);
+
+        function safeUUID() {
+            if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+                try { return crypto.randomUUID(); } catch (e) {}
+            }
+            if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+                try {
+                    const bytes = new Uint8Array(16);
+                    crypto.getRandomValues(bytes);
+                    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+                    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+                    const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+                    return hex.slice(0,8) + '-' + hex.slice(8,12) + '-' + hex.slice(12,16) + '-' + hex.slice(16,20) + '-' + hex.slice(20);
+                } catch (e) {}
+            }
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : ((r & 0x3) | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        const ICON_BUCKET = 'app-icons';
+        const BG_BUCKET = 'backgrounds';
+        const MUSIC_BUCKET = 'willfortunate';
+        const APP_ICON_TABLE = 'app_icon';
+
+        const DEFAULT_FAVICON = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏯️</text></svg>";
+
+        const FALLBACK_BG_BASE64 = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100%25\' height=\'100%25\'%3E%3Cdefs%3E%3ClinearGradient id=\'a\' x1=\'0%25\' y1=\'0%25\' x2=\'100%25\' y2=\'100%25\'%3E%3Cstop offset=\'0%25\' stop-color=\'%23220033\'/%3E%3Cstop offset=\'50%25\' stop-color=\'%23330066\'/%3E%3Cstop offset=\'100%25\' stop-color=\'%23440099\'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'url(%23a)\'/%3E%3C/svg%3E';
+
+        function optimizeImageUrl(url) {
+            if (!url.includes('images.unsplash.com')) return url;
+            const w = IS_MOBILE()
+                ? Math.min(1440, Math.round(window.innerWidth * (window.devicePixelRatio || 1)))
+                : 1600;
+            const q = IS_MOBILE() ? 70 : 75;
+            return url.replace(/[?&]w=\d+/, '?w=' + w).replace(/[?&]q=\d+/, '&q=' + q);
+        }
+        function stripQuery(url) { return (url || '').split('?')[0]; }
+
+        const ONLINE_BACKGROUNDS_RAW = [
+            'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920&q=80',
+            'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=1920&q=80',
+            'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1920&q=80',
+            'https://images.unsplash.com/photo-1566473965997-3de9c817e938?w=1920&q=80',
+            'https://images.unsplash.com/photo-1563720360172-67b8f3dce741?w=1920&q=80',
+            'https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=1920&q=80',
+            'https://images.unsplash.com/photo-1599059813005-11265ba4b4ce?w=1920&q=80',
+            'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=1920&q=80',
+            'https://images.unsplash.com/photo-1558981359-219d6364c9c8?w=1920&q=80',
+            'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=1920&q=80',
+            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80'
+        ];
+        const ONLINE_BACKGROUNDS = ONLINE_BACKGROUNDS_RAW.map(url => ({ url: optimizeImageUrl(url) }));
+
+        function parseFilename(filename) {
+            let name = filename.replace(/^music_\d+_[a-z0-9]+\./i, '').replace(/^bg_\d+_[a-z0-9]+\./i, '').replace(/^icon_\d+_[a-z0-9]+\./i, '');
+            name = name.replace(/\.[^/.]+$/, '');
+            name = name.replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
+            if (name.includes(' - ')) {
+                const parts = name.split(' - ');
+                return { artist: parts[0].trim(), title: parts.slice(1).join(' - ').trim() };
+            }
+            return { artist: 'Unknown', title: name || filename };
+        }
+        function normalizeUrl(u) { return (u || '').split('?')[0]; }
+
+        function resizeImageToIcon(file, size) {
+            size = size || 512;
+            return new Promise(function (resolve, reject) {
+                function attemptDecode(input) {
+                    return new Promise(function (res, rej) {
+                        const img = new Image();
+                        img.onload = function () { res(img); };
+                        img.onerror = function () { rej(new Error('Image decode failed')); };
+                        img.src = input;
+                    });
+                }
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    attemptDecode(e.target.result).then(function (img) {
+                        try {
+                            const canvas = document.createElement('canvas');
+                            canvas.width = canvas.height = size;
+                            const ctx = canvas.getContext('2d');
+                            ctx.imageSmoothingEnabled = true;
+                            ctx.imageSmoothingQuality = 'high';
+                            const usePng = file.type === 'image/png';
+                            if (!usePng) {
+                                ctx.fillStyle = '#000';
+                                ctx.fillRect(0, 0, size, size);
+                            }
+                            const min = Math.min(img.width, img.height);
+                            const sx = (img.width - min) / 2;
+                            const sy = (img.height - min) / 2;
+                            ctx.drawImage(img, sx, sy, min, min, 0, 0, size, size);
+                            const mime = usePng ? 'image/png' : 'image/jpeg';
+                            const ext = usePng ? 'png' : 'jpg';
+                            canvas.toBlob(function (blob) {
+                                if (blob) resolve({ blob: blob, mime: mime, ext: ext });
+                                else reject(new Error('Canvas encode failed'));
+                            }, mime, usePng ? 0.95 : 0.92);
+                        } catch (err) { reject(err); }
+                    }).catch(reject);
+                };
+                reader.onerror = function () { reject(new Error('File read failed')); };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function applyAppIcon(url) {
+            const bust = url ? url + (url.includes('?') ? '&' : '?') + 'v=' + Date.now() : null;
+            const oldFav = document.getElementById('app-favicon');
+            const oldTouch = document.getElementById('app-touch-icon');
+            const newFav = document.createElement('link');
+            newFav.id = 'app-favicon';
+            newFav.rel = 'icon';
+            newFav.setAttribute('sizes', '512x512');
+            newFav.href = bust || DEFAULT_FAVICON;
+            if (url) newFav.type = url.match(/\.png(\?|$)/) ? 'image/png' : 'image/jpeg';
+            const newTouch = document.createElement('link');
+            newTouch.id = 'app-touch-icon';
+            newTouch.rel = 'apple-touch-icon';
+            newTouch.setAttribute('sizes', '512x512');
+            newTouch.href = bust || DEFAULT_FAVICON;
+            if (oldFav && oldFav.parentNode) oldFav.replaceWith(newFav); else document.head.appendChild(newFav);
+            if (oldTouch && oldTouch.parentNode) oldTouch.replaceWith(newTouch); else document.head.appendChild(newTouch);
+
+            document.querySelectorAll('.song-item .song-icon').forEach(function (el) {
+                el.innerHTML = url ? '<img src="' + bust + '" alt="">' : '<i class="fas fa-music"></i>';
+            });
+            const albumArt = document.getElementById('album-art-nano');
+            if (albumArt) albumArt.innerHTML = url ? '<img src="' + bust + '" alt="">' : '<i class="fas fa-music"></i>';
+        }
+
+        class IndexedDBService {
+            constructor() {
+                this.dbName = 'WillfortunatePlayerDB';
+                this.version = 7;
+                this.db = null;
+                this.initPromise = this.init();
+                this.CACHE_DURATION = 14 * 24 * 60 * 60 * 1000;
+            }
+            async init() {
+                return new Promise((resolve, reject) => {
+                    const req = indexedDB.open(this.dbName, this.version);
+                    req.onerror = () => reject(req.error);
+                    req.onsuccess = () => { this.db = req.result; resolve(this.db); };
+                    req.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+                        if (!db.objectStoreNames.contains('userSongs')) {
+                            const s = db.createObjectStore('userSongs', { keyPath: 'id' });
+                            s.createIndex('timestamp', 'timestamp', { unique: false });
+                        }
+                        if (!db.objectStoreNames.contains('permanentCache')) {
+                            const c = db.createObjectStore('permanentCache', { keyPath: 'id' });
+                            c.createIndex('url', 'url', { unique: true });
+                            c.createIndex('cachedAt', 'cachedAt', { unique: false });
+                        }
+                        if (!db.objectStoreNames.contains('imageCache')) db.createObjectStore('imageCache', { keyPath: 'url' });
+                    };
+                });
+            }
+            async ensureDB() { if (!this.db) await this.initPromise; return this.db; }
+            isExpired(t) { return Date.now() - t > this.CACHE_DURATION; }
+            async saveToPermanentCache(id, url, title, artist, blobData, fileType) {
+                await this.ensureDB();
+                return new Promise((res, rej) => {
+                    const t = this.db.transaction(['permanentCache'], 'readwrite');
+                    const r = t.objectStore('permanentCache').put({ id, url: url.split('?')[0], fullUrl: url, title, artist, blobData, fileType, cachedAt: Date.now(), expiresAt: Date.now() + this.CACHE_DURATION });
+                    r.onsuccess = () => res(true); r.onerror = () => rej(r.error);
+                });
+            }
+            async getFromPermanentCache(url) {
+                await this.ensureDB();
+                return new Promise((res, rej) => {
+                    const t = this.db.transaction(['permanentCache'], 'readonly');
+                    const r = t.objectStore('permanentCache').index('url').get(url.split('?')[0]);
+                    r.onsuccess = () => { const v = r.result; if (v && !this.isExpired(v.cachedAt)) res(v); else res(null); };
+                    r.onerror = () => rej(r.error);
+                });
+            }
+            async cacheImageBlob(url) {
+                await this.ensureDB();
+                try {
+                    const res = await fetch(url);
+                    const blob = await res.blob();
+                    return new Promise((res2, rej) => {
+                        const t = this.db.transaction(['imageCache'], 'readwrite');
+                        t.objectStore('imageCache').put({ url, blob, cachedAt: Date.now() });
+                        t.oncomplete = () => res2(blob);
+                        t.onerror = () => rej(t.error);
+                    });
+                } catch { return null; }
+            }
+            async getCachedImageBlob(url) {
+                await this.ensureDB();
+                return new Promise((res, rej) => {
+                    const t = this.db.transaction(['imageCache'], 'readonly');
+                    const r = t.objectStore('imageCache').get(url);
+                    r.onsuccess = () => { const v = r.result; if (v && v.blob && !this.isExpired(v.cachedAt)) res(v.blob); else res(null); };
+                    r.onerror = () => rej(r.error);
+                });
+            }
+            async saveUserSong(song) {
+                await this.ensureDB();
+                return new Promise((res, rej) => {
+                    const t = this.db.transaction(['userSongs'], 'readwrite');
+                    if (!song.timestamp) song.timestamp = Date.now();
+                    const r = t.objectStore('userSongs').put(song);
+                    r.onsuccess = () => res(true); r.onerror = () => rej(r.error);
+                });
+            }
+            async getAllUserSongs() {
+                await this.ensureDB();
+                return new Promise((res, rej) => {
+                    const t = this.db.transaction(['userSongs'], 'readonly');
+                    const r = t.objectStore('userSongs').index('timestamp').openCursor(null, 'prev');
+                    const out = [];
+                    r.onsuccess = (e) => { const c = e.target.result; if (c) { out.push(c.value); c.continue(); } else res(out); };
+                    r.onerror = () => rej(r.error);
+                });
+            }
+            async deleteUserSong(id) {
+                await this.ensureDB();
+                return new Promise((res, rej) => {
+                    const t = this.db.transaction(['userSongs'], 'readwrite');
+                    const r = t.objectStore('userSongs').delete(id);
+                    r.onsuccess = () => res(true); r.onerror = () => rej(r.error);
+                });
+            }
+            async clearAllUserSongs() {
+                await this.ensureDB();
+                return new Promise((res, rej) => {
+                    const t = this.db.transaction(['userSongs'], 'readwrite');
+                    const r = t.objectStore('userSongs').clear();
+                    r.onsuccess = () => res(true); r.onerror = () => rej(r.error);
+                });
+            }
+        }
+
+        class SupabaseMediaService {
+            constructor() {
+                this.customImages = [];
+                this.customMusic = [];
+                this.bucketMusic = [];
+                this.bucketImages = [];
+                this.disabledUnsplash = new Set();
+                this.appIcon = null;
+                this.listeners = [];
+                this.channel = null;
+                this._iconChannel = null;
+                this._broadcast = null;
+                this._lastSnap = '';
+                this._emitTimer = null;
+                this._realtimeDebounce = null;
+                this._mergedMusicCache = null;
+                this._mergedImagesCache = null;
+            }
+            onChange(fn, filter) { this.listeners.push({ fn, filter: filter || 'all' }); }
+            emit(type, immediate) {
+                type = type || 'all';
+                const run = () => {
+                    this.listeners.forEach(({ fn, filter }) => {
+                        if (filter === 'all' || type === 'all' || filter === type) {
+                            try { fn(); } catch (e) { console.error(e); }
+                        }
+                    });
+                };
+                if (immediate) { run(); return; }
+                const snap = type + '|' + this.customMusic.map(m => m.id).join('|') + '::' + this.bucketMusic.map(b => b.name).sort().join('|') + '::' + this.customImages.map(m => m.id).join('|') + '::' + this.bucketImages.map(b => b.name).sort().join('|') + '::' + [...this.disabledUnsplash].sort().join('|') + '::icon=' + (this.appIcon ? this.appIcon.url : 'none');
+                if (snap === this._lastSnap) return;
+                this._lastSnap = snap;
+                if (this._emitTimer) clearTimeout(this._emitTimer);
+                this._emitTimer = setTimeout(run, 16);
+            }
+            async loadIcon() {
+                try {
+                    const { data, error } = await supabaseClient.from(APP_ICON_TABLE).select('*').eq('id', 'global').maybeSingle();
+                    if (error && error.code !== 'PGRST116') console.warn('loadIcon:', error.message);
+                    this.appIcon = data || null;
+                    applyAppIcon(this.appIcon ? this.appIcon.url : null);
+                    this.emit('icon', true);
+                } catch (e) { console.warn('loadIcon failed', e); }
+            }
+            async loadAll() {
+                try {
+                    const [iRes, mRes, dRes, bucketMus, bucketImg] = await Promise.all([
+                        supabaseClient.from('custom_media').select('*').eq('type', 'image').eq('is_active', true).order('created_at', { ascending: false }),
+                        supabaseClient.from('custom_media').select('*').eq('type', 'audio').eq('is_active', true).order('created_at', { ascending: true }),
+                        supabaseClient.from('disabled_unsplash').select('url'),
+                        supabaseClient.storage.from(MUSIC_BUCKET).list('', { limit: 5000, sortBy: { column: 'name', order: 'asc' } }),
+                        supabaseClient.storage.from(BG_BUCKET).list('', { limit: 5000, sortBy: { column: 'name', order: 'desc' } })
+                    ]);
+                    this.customImages = iRes.data || [];
+                    this.customMusic = mRes.data || [];
+                    this.disabledUnsplash = new Set((dRes.data || []).map(r => stripQuery(r.url)));
+                    this.bucketMusic = (bucketMus.data || []).filter(f => f.name && f.name.includes('.'));
+                    this.bucketImages = (bucketImg.data || []).filter(f => f.name && f.name.includes('.'));
+                    this._mergedMusicCache = null;
+                    this._mergedImagesCache = null;
+                    this.emit('all', true);
+                } catch (e) { console.error('loadAll', e); }
+                await this.loadIcon();
+            }
+            async refreshIconOnly() {
+                const { data } = await supabaseClient.from(APP_ICON_TABLE).select('*').eq('id', 'global').maybeSingle();
+                this.appIcon = data || null;
+                applyAppIcon(this.appIcon ? this.appIcon.url : null);
+                this.emit('icon', true);
+            }
+            async refreshMusicOnly() {
+                const [mRes, bucketMus] = await Promise.all([
+                    supabaseClient.from('custom_media').select('*').eq('type', 'audio').eq('is_active', true).order('created_at', { ascending: true }),
+                    supabaseClient.storage.from(MUSIC_BUCKET).list('', { limit: 5000, sortBy: { column: 'name', order: 'asc' } })
+                ]);
+                this.customMusic = mRes.data || [];
+                this.bucketMusic = (bucketMus.data || []).filter(f => f.name && f.name.includes('.'));
+                this._mergedMusicCache = null;
+                this.emit('music', true);
+            }
+            async refreshImagesOnly() {
+                const [iRes, bucketImg] = await Promise.all([
+                    supabaseClient.from('custom_media').select('*').eq('type', 'image').eq('is_active', true).order('created_at', { ascending: false }),
+                    supabaseClient.storage.from(BG_BUCKET).list('', { limit: 5000, sortBy: { column: 'name', order: 'desc' } })
+                ]);
+                this.customImages = iRes.data || [];
+                this.bucketImages = (bucketImg.data || []).filter(f => f.name && f.name.includes('.'));
+                this._mergedImagesCache = null;
+                this.emit('images', true);
+            }
+
+            applyMusicInsert(row) {
+                if (!row || !row.id) return;
+                if (this.customMusic.some(m => m.id === row.id)) return;
+                this.customMusic.push(row);
+                this._mergedMusicCache = null;
+                this.emit('music', true);
+            }
+            applyMusicDelete(id) {
+                const before = this.customMusic.length;
+                this.customMusic = this.customMusic.filter(m => m.id !== id);
+                if (this.customMusic.length !== before) {
+                    this._mergedMusicCache = null;
+                    this.emit('music', true);
+                }
+            }
+            applyMusicUpdate(row) {
+                if (!row || !row.id) return;
+                let changed = false;
+                this.customMusic = this.customMusic.map(m => {
+                    if (m.id === row.id) { changed = true; return Object.assign({}, m, row); }
+                    return m;
+                });
+                if (changed) { this._mergedMusicCache = null; this.emit('music', true); }
+            }
+            applyImageInsert(row) {
+                if (!row || !row.id) return;
+                if (this.customImages.some(m => m.id === row.id)) return;
+                this.customImages.unshift(row);
+                this._mergedImagesCache = null;
+                this.emit('images', true);
+            }
+            applyImageDelete(id) {
+                const before = this.customImages.length;
+                this.customImages = this.customImages.filter(m => m.id !== id);
+                if (this.customImages.length !== before) {
+                    this._mergedImagesCache = null;
+                    this.emit('images', true);
+                }
+            }
+            applyImageUpdate(row) {
+                if (!row || !row.id) return;
+                let changed = false;
+                this.customImages = this.customImages.map(m => {
+                    if (m.id === row.id) { changed = true; return Object.assign({}, m, row); }
+                    return m;
+                });
+                if (changed) { this._mergedImagesCache = null; this.emit('images', true); }
+            }
+            applyBucketMusicAdd(name) {
+                if (!name || !name.includes('.')) return;
+                if (this.bucketMusic.some(f => f.name === name)) return;
+                this.bucketMusic.push({ name, created_at: new Date().toISOString(), updated_at: new Date().toISOString() });
+                this._mergedMusicCache = null;
+                this.emit('music', true);
+            }
+            applyBucketMusicDelete(name) {
+                const before = this.bucketMusic.length;
+                this.bucketMusic = this.bucketMusic.filter(f => f.name !== name);
+                if (this.bucketMusic.length !== before) {
+                    this._mergedMusicCache = null;
+                    this.emit('music', true);
+                }
+            }
+            applyBucketImageAdd(name) {
+                if (!name || !name.includes('.')) return;
+                if (this.bucketImages.some(f => f.name === name)) return;
+                this.bucketImages.unshift({ name, created_at: new Date().toISOString(), updated_at: new Date().toISOString() });
+                this._mergedImagesCache = null;
+                this.emit('images', true);
+            }
+            applyBucketImageDelete(name) {
+                const before = this.bucketImages.length;
+                this.bucketImages = this.bucketImages.filter(f => f.name !== name);
+                if (this.bucketImages.length !== before) {
+                    this._mergedImagesCache = null;
+                    this.emit('images', true);
+                }
+            }
+
+            subscribeRealtime() {
+                if (this.channel) supabaseClient.removeChannel(this.channel);
+                this.channel = supabaseClient.channel('media-changes')
+                    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'custom_media' }, (p) => {
+                        const row = p.new;
+                        if (!row || !row.is_active) return;
+                        if (row.type === 'audio') {
+                            this.applyMusicInsert(row);
+                            if (row.storage_path) this.applyBucketMusicAdd(row.storage_path);
+                        } else if (row.type === 'image') {
+                            this.applyImageInsert(row);
+                            if (row.storage_path) this.applyBucketImageAdd(row.storage_path);
+                        }
+                    })
+                    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'custom_media' }, (p) => {
+                        const row = p.new;
+                        if (!row) return;
+                        if (!row.is_active) {
+                            if (row.type === 'audio') this.applyMusicDelete(row.id);
+                            else if (row.type === 'image') this.applyImageDelete(row.id);
+                            return;
+                        }
+                        if (row.type === 'audio') this.applyMusicUpdate(row);
+                        else if (row.type === 'image') this.applyImageUpdate(row);
+                    })
+                    .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'custom_media' }, (p) => {
+                        const row = p.old;
+                        if (!row) return;
+                        if (row.type === 'audio') this.applyMusicDelete(row.id);
+                        else if (row.type === 'image') this.applyImageDelete(row.id);
+                    })
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'disabled_unsplash' }, async () => {
+                        const { data } = await supabaseClient.from('disabled_unsplash').select('url');
+                        this.disabledUnsplash = new Set((data || []).map(r => stripQuery(r.url)));
+                        this.emit('images', true);
+                    })
+                    .subscribe();
+
+                if (this._iconChannel) supabaseClient.removeChannel(this._iconChannel);
+                this._iconChannel = supabaseClient.channel('app-icon-changes')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: APP_ICON_TABLE }, () => this.loadIcon())
+                    .subscribe();
+
+                if (this._broadcast) supabaseClient.removeChannel(this._broadcast);
+                this._broadcast = supabaseClient.channel('media-broadcast', { config: { broadcast: { self: false } } })
+                    .on('broadcast', { event: 'bucket-changed' }, ({ payload }) => {
+                        if (!payload) return;
+                        const { kind, action, name } = payload;
+                        if (!name) return;
+                        if (kind === 'music') {
+                            if (action === 'upload') this.applyBucketMusicAdd(name);
+                            else if (action === 'delete') this.applyBucketMusicDelete(name);
+                        } else if (kind === 'image') {
+                            if (action === 'upload') this.applyBucketImageAdd(name);
+                            else if (action === 'delete') this.applyBucketImageDelete(name);
+                        }
+                    })
+                    .subscribe();
+            }
+
+            async broadcastBucketChange(kind, action, name) {
+                try {
+                    if (!this._broadcast) return;
+                    await this._broadcast.send({ type: 'broadcast', event: 'bucket-changed', payload: { kind, action, name } });
+                } catch (e) { }
+            }
+
+            getMergedMusic() {
+                if (this._mergedMusicCache) return this._mergedMusicCache;
+                const dbUrls = new Set(this.customMusic.map(m => normalizeUrl(m.url)));
+                const merged = this.customMusic.map(m => ({
+                    id: 'sb_' + m.id, storage_path: m.storage_path, url: m.url,
+                    title: m.title || 'Unknown', artist: m.artist || 'Unknown',
+                    source: 'supabase-admin', inDb: true,
+                    created_at: m.created_at || new Date(0).toISOString()
+                }));
+                this.bucketMusic.forEach(f => {
+                    const pub = supabaseClient.storage.from(MUSIC_BUCKET).getPublicUrl(f.name);
+                    const url = pub.data.publicUrl;
+                    if (dbUrls.has(normalizeUrl(url))) return;
+                    const parsed = parseFilename(f.name);
+                    merged.push({
+                        id: 'bkt_' + f.name, storage_path: f.name, url,
+                        title: parsed.title, artist: parsed.artist,
+                        source: 'supabase-bucket', inDb: false,
+                        created_at: f.created_at || f.updated_at || new Date(0).toISOString()
+                    });
+                });
+                merged.sort((a, b) => {
+                    if (a.inDb !== b.inDb) return a.inDb ? -1 : 1;
+                    return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+                });
+                this._mergedMusicCache = merged;
+                return merged;
+            }
+            getMergedImages() {
+                if (this._mergedImagesCache) return this._mergedImagesCache;
+                const dbUrls = new Set(this.customImages.map(m => normalizeUrl(m.url)));
+                const merged = this.customImages.map(m => ({
+                    id: m.id, storage_path: m.storage_path, url: m.url,
+                    title: m.title || 'Untitled', inDb: true,
+                    created_at: m.created_at || new Date(0).toISOString()
+                }));
+                this.bucketImages.forEach(f => {
+                    const pub = supabaseClient.storage.from(BG_BUCKET).getPublicUrl(f.name);
+                    const url = pub.data.publicUrl;
+                    if (dbUrls.has(normalizeUrl(url))) return;
+                    const parsed = parseFilename(f.name);
+                    merged.push({
+                        id: 'bkt_' + f.name, storage_path: f.name, url,
+                        title: parsed.title, inDb: false,
+                        created_at: f.created_at || f.updated_at || new Date(0).toISOString()
+                    });
+                });
+                merged.sort((a, b) => {
+                    const tb = new Date(b.created_at || 0).getTime();
+                    const ta = new Date(a.created_at || 0).getTime();
+                    if (tb !== ta) return tb - ta;
+                    return a.inDb === b.inDb ? 0 : (a.inDb ? -1 : 1);
+                });
+                this._mergedImagesCache = merged;
+                return merged;
+            }
+        }
+
+        class BackgroundSystem {
+            constructor(idb, ms) {
+                this.idb = idb; this.ms = ms; this.media = []; this.idx = 0;
+                this.container = document.getElementById('background-container');
+                this.blobUrls = new Map();
+                this.currentImgEl = null;
+                this.started = false;
+                this._lastListKey = '';
+                this._isLoading = false;
+                this._timer = null;
+                ms.onChange(() => this.rebuild(), 'images');
+                ms.onChange(() => this.rebuild(), 'all');
+                this.init();
+            }
+            async init() {
+                this.rebuild();
+                this.ms.subscribeRealtime();
+            }
+            rebuild() {
+                const dbImages = this.ms.customImages.map(m => ({ url: optimizeImageUrl(m.url) }));
+                const bucketOnly = this.ms.getMergedImages().filter(x => !x.inDb).map(x => ({ url: optimizeImageUrl(x.url) }));
+                const disabled = this.ms.disabledUnsplash;
+                const un = ONLINE_BACKGROUNDS.filter(b => {
+                    const a = stripQuery(b.url);
+                    const raw = stripQuery(b.url.replace(/[?&]w=\d+/, '?w=1920'));
+                    return !disabled.has(a) && !disabled.has(raw);
+                });
+                const all = [...dbImages, ...bucketOnly, ...un];
+                const key = all.map(u => u.url).join('|');
+                if (key === this._lastListKey) return;
+                this._lastListKey = key;
+                this.media = all.length ? all : [{ url: ONLINE_BACKGROUNDS[0].url }];
+
+                if (!this.started) {
+                    this.started = true; this.idx = 0; this.show();
+                    this._timer = setInterval(() => this.next(), 30000);
+                } else {
+                    if (this.idx >= this.media.length) this.idx = 0;
+                    this.show();
+                }
+            }
+            async show() {
+                if (this._isLoading) return;
+                if (!this.media.length) return;
+                this._isLoading = true;
+                try {
+                    const cur = this.media[this.idx];
+                    if (this.currentImgEl) {
+                        this.currentImgEl.classList.remove('active');
+                        const old = this.currentImgEl;
+                        setTimeout(() => old.remove(), 450);
+                    }
+                    const img = document.createElement('img');
+                    img.className = 'background-media';
+                    this.container.appendChild(img);
+                    this.currentImgEl = img;
+
+                    const cachedBlob = await this.idb.getCachedImageBlob(cur.url);
+                    if (cachedBlob) {
+                        const blobUrl = URL.createObjectURL(cachedBlob);
+                        this.blobUrls.set(cur.url, blobUrl);
+                        img.src = blobUrl;
+                    } else {
+                        img.src = cur.url;
+                        img.onerror = () => { img.src = FALLBACK_BG_BASE64; };
+                        this.idb.cacheImageBlob(cur.url).then(blob => {
+                            if (blob) this.blobUrls.set(cur.url, URL.createObjectURL(blob));
+                        });
+                    }
+
+                    await new Promise((resolve) => {
+                        if (img.complete && img.naturalWidth > 0) { resolve(); return; }
+                        img.onload = () => resolve();
+                        img.onerror = () => resolve();
+                        setTimeout(resolve, 8000);
+                    });
+
+                    requestAnimationFrame(() => img.classList.add('active'));
+                    setTimeout(() => this.prefetchNext(this.idx), 300);
+                } finally {
+                    this._isLoading = false;
+                }
+            }
+            async prefetchNext(fromIdx) {
+                if (this.media.length < 2) return;
+                const nextUrl = this.media[(fromIdx + 1) % this.media.length].url;
+                if (this.blobUrls.has(nextUrl)) return;
+                const existing = await this.idb.getCachedImageBlob(nextUrl);
+                if (existing) {
+                    this.blobUrls.set(nextUrl, URL.createObjectURL(existing));
+                } else {
+                    this.idb.cacheImageBlob(nextUrl).then(blob => { if (blob) this.blobUrls.set(nextUrl, URL.createObjectURL(blob)); });
+                }
+            }
+            next() {
+                if (!this.media.length || this._isLoading) return;
+                this.idx = (this.idx + 1) % this.media.length;
+                this.show();
+            }
+        }
+
+        class MusicSystem {
+            constructor(idb, ms) {
+                this.idb = idb; this.ms = ms;
+                this.playlist = []; this.currentIndex = -1;
+                this.isPlaying = false; this.shuffle = false; this.repeat = false;
+                this.audio = document.getElementById('audio-player');
+                this.blobUrls = new Map();
+                this.STORAGE_KEY = 'willfortunate_player_state';
+                this.cacheQueue = []; this.isCaching = false;
+                this._uiPending = false;
+                this._lastSaveTick = 0;
+                this._listEl = document.getElementById('songs-list');
+                this._itemEls = new Map();
+                this._pendingCacheWrites = [];
+                this._booted = false;
+                this._resuming = false;
+                this._pendingRestore = null;
+                this._saveInterval = null;
+
+                ms.onChange(() => this.mergeSupabaseMusic(), 'music');
+                ms.onChange(() => this.mergeSupabaseMusic(), 'all');
+                this.init();
+            }
+            async init() {
+                this.scheduleUI();
+
+                try {
+                    const raw = localStorage.getItem(this.STORAGE_KEY);
+                    if (raw) {
+                        const st = JSON.parse(raw);
+                        if (st && st.songId) {
+                            this._pendingRestore = {
+                                id: st.songId,
+                                time: Math.max(0, Number(st.currentTime) || 0),
+                                wantPlaying: !!st.isPlaying
+                            };
+                            this.shuffle = !!st.shuffle;
+                            this.repeat = !!st.repeat;
+                            document.getElementById('shuffle-btn').classList.toggle('active', this.shuffle);
+                            document.getElementById('repeat-btn').classList.toggle('active', this.repeat);
+                            if (st.volume !== undefined && st.volume !== null) {
+                                this.audio.volume = st.volume;
+                                document.getElementById('volume-level-nano').style.width = (st.volume * 100) + '%';
+                            }
+                        }
+                    }
+                } catch {}
+
+                const userSongs = await this.idb.getAllUserSongs();
+                this.mergeUserSongs(userSongs);
+                this.mergeSupabaseMusic();
+                this.scheduleUI();
+                this.bindEvents();
+                this.cacheNextUpcoming();
+                await this.resume();
+            }
+            mergeUserSongs(rows) {
+                rows.forEach(r => {
+                    if (!r.blobData) return;
+                    if (this.playlist.some(x => x.id === r.id)) return;
+                    try {
+                        const blob = new Blob([r.blobData], { type: r.fileType || 'audio/mpeg' });
+                        const bu = URL.createObjectURL(blob);
+                        this.blobUrls.set(r.id, bu);
+                        this.playlist.unshift({ ...r, url: bu, blobData: undefined, isDefault: false, source: 'indexeddb', isCached: true });
+                    } catch {}
+                });
+            }
+            mergeSupabaseMusic() {
+                const merged = this.ms.getMergedMusic().map(m => ({
+                    id: m.id, url: m.url, title: m.title, artist: m.artist,
+                    isDefault: true, isSupabase: true,
+                    source: m.inDb ? 'supabase-admin' : 'supabase-bucket',
+                    isCached: false, cachedUrl: null, downloadUrl: m.url,
+                    storage_path: m.storage_path, inDb: m.inDb
+                }));
+                const existing = new Map();
+                this.playlist.forEach(s => { if (s.source === 'supabase-admin' || s.source === 'supabase-bucket') existing.set(s.id, s); });
+                const mergedWithCache = merged.map(n => {
+                    const old = existing.get(n.id);
+                    return old ? Object.assign(old, { title: n.title, artist: n.artist, url: n.url, storage_path: n.storage_path }) : n;
+                });
+                const others = this.playlist.filter(s => s.source !== 'supabase-admin' && s.source !== 'supabase-bucket');
+                const curId = this.currentIndex >= 0 ? this.playlist[this.currentIndex]?.id : null;
+                this.playlist = [...mergedWithCache, ...others];
+                if (curId) {
+                    const n = this.playlist.findIndex(s => s.id === curId);
+                    this.currentIndex = n !== -1 ? n : (this.playlist.length ? 0 : -1);
+                }
+                this.scheduleUI();
+                this.cacheNextUpcoming();
+                if (!this._booted && this._pendingRestore) this.resume();
+            }
+            scheduleUI() {
+                if (this._uiPending) return;
+                this._uiPending = true;
+                requestAnimationFrame(() => { this._uiPending = false; this.updateUI(); });
+            }
+
+            async cacheNextUpcoming() {
+                if (this.isCaching) return;
+                if (!this.audio.paused && this.audio.readyState < 3) return;
+                if (!this.playlist.length) return;
+
+                const startIdx = this.currentIndex >= 0 ? this.currentIndex + 1 : 0;
+                let candidate = null;
+                for (let i = 0; i < this.playlist.length; i++) {
+                    const s = this.playlist[(startIdx + i) % this.playlist.length];
+                    if (s.isSupabase && !s.isCached && !s.cachedUrl) { candidate = s; break; }
+                }
+                if (!candidate) return;
+
+                this.isCaching = true;
+                try {
+                    const existing = await this.idb.getFromPermanentCache(candidate.url);
+                    let buf, type;
+                    if (existing && existing.blobData) {
+                        buf = existing.blobData; type = existing.fileType;
+                    } else {
+                        const res = await fetch(candidate.url);
+                        if (!res.ok) throw new Error('fetch failed');
+                        const blob = await res.blob();
+                        buf = await blob.arrayBuffer();
+                        type = blob.type || 'audio/mp4';
+                    }
+                    const blob = new Blob([buf], { type });
+                    candidate.cachedUrl = URL.createObjectURL(blob);
+                    candidate.isCached = true;
+                    this.blobUrls.set(candidate.id, candidate.cachedUrl);
+
+                    if (!existing) {
+                        try {
+                            await this.idb.saveToPermanentCache(candidate.id, candidate.url, candidate.title, candidate.artist, buf, type);
+                        } catch {}
+                    }
+                    this.scheduleUI();
+                } catch (e) {
+                } finally {
+                    this.isCaching = false;
+                }
+            }
+
+            getPlayable(s) {
+                if (s.source === 'indexeddb') return s.url;
+                if (s.isCached && s.cachedUrl) return s.cachedUrl;
+
+                this.idb.getFromPermanentCache(s.url).then(c => {
+                    if (!c || !c.blobData) return;
+                    if (this.playlist[this.currentIndex]?.id !== s.id) return;
+                    if (s.cachedUrl) return;
+                    const b = new Blob([c.blobData], { type: c.fileType });
+                    s.cachedUrl = URL.createObjectURL(b);
+                    s.isCached = true;
+                    this.blobUrls.set(s.id, s.cachedUrl);
+                    this.scheduleUI();
+                }).catch(() => {});
+
+                return s.url;
+            }
+
+            async playSong(index, seek, opts) {
+                seek = seek || 0;
+                opts = opts || {};
+                if (index < 0 || index >= this.playlist.length) return;
+                try {
+                    const s = this.playlist[index];
+                    this.currentIndex = index;
+                    this.saveState();
+                    this.scheduleUI();
+
+                    document.getElementById('song-title-nano').textContent = s.title || 'Unknown';
+                    document.getElementById('song-artist-nano').textContent = s.artist || 'Unknown';
+                    document.getElementById('current-time-nano').textContent = '0:00';
+                    this.updateProgressUI(0);
+
+                    const u = this.getPlayable(s);
+
+                    if (this.audio.src !== u) {
+                        this.audio.pause();
+                        this.audio.src = u;
+                        try { this.audio.load(); } catch {}
+                    }
+
+                    if (seek > 0) {
+                        const applySeek = () => {
+                            try {
+                                if (isFinite(this.audio.duration) && this.audio.duration > 0) {
+                                    const t = Math.min(seek, Math.max(0, this.audio.duration - 0.25));
+                                    this.audio.currentTime = t;
+                                    this.updateProgressUI(t / this.audio.duration);
+                                }
+                            } catch {}
+                        };
+                        if (this.audio.readyState >= 1) applySeek();
+                        this.audio.addEventListener('loadedmetadata', applySeek, { once: true });
+                        this.audio.addEventListener('canplay', applySeek, { once: true });
+                    }
+
+                    const shouldPlay = opts.autoplay !== false;
+                    this.isPlaying = shouldPlay;
+                    this.updateButtons();
+
+                    if (shouldPlay) {
+                        const playPromise = this.audio.play();
+                        if (playPromise && playPromise.catch) {
+                            playPromise.catch(() => {
+                                setTimeout(() => {
+                                    this.audio.play().catch(() => {
+                                        this.isPlaying = false;
+                                        this.updateButtons();
+                                    });
+                                }, 50);
+                            });
+                        }
+                    }
+
+                    this.updateMediaSession();
+
+                    setTimeout(() => this.cacheNextUpcoming(), 1500);
+                } catch (e) {
+                    console.warn('playSong failed', e);
+                    this.isPlaying = false;
+                    this.updateButtons();
+                }
+            }
+
+            updateMediaSession() {
+                if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) return;
+                const s = this.playlist[this.currentIndex];
+                if (!s) return;
+
+                const iconUrl = this.ms.appIcon ? this.ms.appIcon.url : null;
+                const artwork = iconUrl ? [
+                    { src: iconUrl, sizes: '256x256', type: 'image/png' },
+                    { src: iconUrl, sizes: '512x512', type: 'image/png' }
+                ] : [];
+
+                try {
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                        title: s.title || 'Unknown',
+                        artist: s.artist || 'Unknown',
+                        album: 'Willfortunate',
+                        artwork: artwork
+                    });
+                } catch (e) {}
+
+                try {
+                    navigator.mediaSession.setActionHandler('play',          () => { this.togglePlay(); });
+                    navigator.mediaSession.setActionHandler('pause',         () => { this.togglePlay(); });
+                    navigator.mediaSession.setActionHandler('previoustrack', () => { this.prev(); });
+                    navigator.mediaSession.setActionHandler('nexttrack',     () => { this.next(); });
+                    navigator.mediaSession.setActionHandler('seekbackward',  (d) => {
+                        const off = (d && d.seekOffset) || 10;
+                        this.audio.currentTime = Math.max(0, this.audio.currentTime - off);
+                    });
+                    navigator.mediaSession.setActionHandler('seekforward',   (d) => {
+                        const off = (d && d.seekOffset) || 10;
+                        const dur = isFinite(this.audio.duration) ? this.audio.duration : this.audio.currentTime + off;
+                        this.audio.currentTime = Math.min(dur, this.audio.currentTime + off);
+                    });
+                    navigator.mediaSession.setActionHandler('seekto', (d) => {
+                        if (d && d.seekTime != null) this.audio.currentTime = d.seekTime;
+                    });
+                    navigator.mediaSession.setActionHandler('stop', () => {
+                        this.audio.pause();
+                        this.audio.currentTime = 0;
+                        this.isPlaying = false;
+                        this.updateButtons();
+                    });
+                } catch (e) {}
+            }
+
+            updateMediaSessionPosition() {
+                if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) return;
+                if (!isFinite(this.audio.duration) || this.audio.duration <= 0) return;
+                try {
+                    navigator.mediaSession.setPositionState({
+                        duration: this.audio.duration,
+                        playbackRate: this.audio.playbackRate || 1,
+                        position: Math.min(this.audio.currentTime, this.audio.duration)
+                    });
+                } catch (e) {}
+            }
+
+            async resume() {
+                if (this._resuming) return;
+                this._resuming = true;
+                try {
+                    if (this._booted === true) return;
+
+                    if (!this._pendingRestore) {
+                        const raw = localStorage.getItem(this.STORAGE_KEY);
+                        if (!raw) {
+                            this._booted = true;
+                            if (this.playlist.length) this.playSong(0, 0, { autoplay: false });
+                            return;
+                        }
+                        try {
+                            const st = JSON.parse(raw);
+                            if (!st || !st.songId) {
+                                this._booted = true;
+                                return;
+                            }
+                            this._pendingRestore = {
+                                id: st.songId,
+                                time: Math.max(0, Number(st.currentTime) || 0),
+                                wantPlaying: !!st.isPlaying
+                            };
+                        } catch {
+                            this._booted = true;
+                            return;
+                        }
+                    }
+
+                    const targetId = this._pendingRestore.id;
+                    const targetTime = this._pendingRestore.time;
+                    const wantPlaying = this._pendingRestore.wantPlaying;
+
+                    let idx = this.playlist.findIndex(s => s.id === targetId);
+                    if (idx !== -1) {
+                        await this.playSong(idx, targetTime, { autoplay: wantPlaying });
+                        this._pendingRestore = null;
+                        this._booted = true;
+                        if (wantPlaying && this.audio.paused) {
+                            try { await this.audio.play(); } catch {}
+                        }
+                        this._startSaveInterval();
+                        return;
+                    }
+
+                    const deadline = Date.now() + 40000;
+                    while (Date.now() < deadline) {
+                        if (this._booted === true) return;
+                        await new Promise(r => setTimeout(r, 500));
+                        idx = this.playlist.findIndex(s => s.id === targetId);
+                        if (idx !== -1) {
+                            await this.playSong(idx, targetTime, { autoplay: wantPlaying });
+                            this._pendingRestore = null;
+                            this._booted = true;
+                            if (wantPlaying && this.audio.paused) {
+                                try { await this.audio.play(); } catch {}
+                            }
+                            this._startSaveInterval();
+                            return;
+                        }
+                    }
+
+                    this._pendingRestore = null;
+                    this._booted = true;
+                    if (this.playlist.length) this.playSong(0, 0, { autoplay: false });
+                    this._startSaveInterval();
+                } finally {
+                    this._resuming = false;
+                }
+            }
+
+            _startSaveInterval() {
+                if (this._saveInterval) return;
+                this._saveInterval = setInterval(() => {
+                    if (this._booted && !this.audio.paused) this.saveState();
+                }, 1000);
+            }
+
+            readBuf(f) { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsArrayBuffer(f); }); }
+            async uploadFiles(files) {
+                if (!files || !files.length) return;
+                const audio = Array.from(files).filter(f => f.type.startsWith('audio/') || f.name.match(/\.(mp3|m4a|aac|wav|ogg|flac|mp4)$/i));
+                if (!audio.length) { this.showStatus('No audio', 'error'); return; }
+                const pe = document.getElementById('upload-progress'), pf = document.getElementById('progress-bar-fill'), pt = document.getElementById('progress-text');
+                pe.style.display = 'block'; pf.style.width = '0%'; pt.textContent = '0/' + audio.length;
+                let done = 0; const newSongs = [];
+                for (let i = 0; i < audio.length; i++) {
+                    const f = audio[i];
+                    try {
+                        const buf = await this.readBuf(f);
+                        const name = f.name.replace(/\.[^/.]+$/, '');
+                        let title = name, artist = 'Unknown';
+                        if (name.includes(' - ')) { const p = name.split(' - '); artist = p[0].trim(); title = p.slice(1).join(' - ').trim(); }
+                        const mime = f.type || 'audio/mpeg';
+                        const blob = new Blob([buf], { type: mime });
+                        const bu = URL.createObjectURL(blob);
+                        const id = 'user_' + Date.now() + '_' + i + '_' + Math.random().toString(36).slice(2, 11);
+                        this.blobUrls.set(id, bu);
+                        const ns = { id: id, url: bu, blobData: buf, fileType: mime, title: title, artist: artist, isDefault: false, source: 'indexeddb', timestamp: Date.now(), isCached: true };
+                        await this.idb.saveUserSong({ ...ns, url: undefined });
+                        newSongs.push(ns);
+                    } catch (err) { console.error('[user upload]', err); }
+                    done++; pf.style.width = ((done / audio.length) * 100) + '%'; pt.textContent = done + '/' + audio.length;
+                }
+                if (newSongs.length) {
+                    const currentlyPlayingId = this.currentIndex >= 0 && this.playlist[this.currentIndex] ? this.playlist[this.currentIndex].id : null;
+                    this.playlist = [...newSongs, ...this.playlist];
+                    if (currentlyPlayingId) {
+                        const newIdx = this.playlist.findIndex(s => s.id === currentlyPlayingId);
+                        if (newIdx !== -1) this.currentIndex = newIdx;
+                    }
+                    this.scheduleUI();
+                    this.showStatus('✅ ' + newSongs.length + ' songs saved locally', 'success');
+                }
+                setTimeout(() => { pe.style.display = 'none'; }, 400);
+            }
+
+            saveState() {
+                if (this._booted !== true) return;
+                if (this.currentIndex === -1 || !this.playlist[this.currentIndex]) return;
+                try {
+                    localStorage.setItem(this.STORAGE_KEY, JSON.stringify({
+                        songId: this.playlist[this.currentIndex].id,
+                        currentTime: this.audio.currentTime,
+                        isPlaying: this.isPlaying,
+                        volume: this.audio.volume,
+                        shuffle: this.shuffle,
+                        repeat: this.repeat,
+                        timestamp: Date.now()
+                    }));
+                } catch {}
+            }
+
+            toggleShuffle() {
+                this.shuffle = !this.shuffle;
+                document.getElementById('shuffle-btn').classList.toggle('active', this.shuffle);
+                const cid = this.currentIndex >= 0 ? this.playlist[this.currentIndex]?.id : null;
+                if (this.shuffle) {
+                    for (let i = this.playlist.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [this.playlist[i], this.playlist[j]] = [this.playlist[j], this.playlist[i]];
+                    }
+                } else {
+                    const admin = this.playlist.filter(s => s.source === 'supabase-admin');
+                    const bucket = this.playlist.filter(s => s.source === 'supabase-bucket');
+                    const users = this.playlist.filter(s => s.source === 'indexeddb');
+                    this.playlist = [...admin, ...bucket, ...users];
+                }
+                if (cid) { const n = this.playlist.findIndex(s => s.id === cid); if (n !== -1) this.currentIndex = n; }
+                this.scheduleUI(); this.saveState();
+            }
+            toggleRepeat() { this.repeat = !this.repeat; document.getElementById('repeat-btn').classList.toggle('active', this.repeat); this.saveState(); }
+            async removeSong(id, ev) {
+                ev.stopPropagation();
+                const i = this.playlist.findIndex(s => s.id === id);
+                if (i === -1 || this.playlist[i].source !== 'indexeddb') return;
+                try { await this.idb.deleteUserSong(id); if (this.blobUrls.has(id)) { URL.revokeObjectURL(this.blobUrls.get(id)); this.blobUrls.delete(id); } } catch {}
+                if (i === this.currentIndex) {
+                    this.audio.pause(); this.isPlaying = false;
+                    if (this.playlist.length > 1) {
+                        this.playlist.splice(i, 1);
+                        this.currentIndex = Math.min(i, this.playlist.length - 1);
+                        this.playSong(this.currentIndex, 0);
+                    } else {
+                        this.currentIndex = -1; this.audio.src = '';
+                        document.getElementById('song-title-nano').textContent = 'No music';
+                        document.getElementById('song-artist-nano').textContent = 'Upload to begin';
+                        this.updateProgressUI(0);
+                        document.getElementById('duration-nano').textContent = '0:00';
+                        localStorage.removeItem(this.STORAGE_KEY);
+                        this.playlist.splice(i, 1);
+                    }
+                } else {
+                    this.playlist.splice(i, 1);
+                    if (this.currentIndex > i) this.currentIndex--;
+                }
+                this.scheduleUI(); this.updateButtons();
+            }
+            togglePlay() {
+                if (!this.playlist.length) return;
+                if (this.currentIndex === -1) { this.playSong(0, 0); return; }
+                if (this.audio.paused) {
+                    this.audio.play().then(() => { this.isPlaying = true; this.updateButtons(); this.saveState(); })
+                        .catch(() => { this.isPlaying = false; this.updateButtons(); });
+                } else {
+                    this.audio.pause();
+                }
+            }
+            next() {
+                if (!this.playlist.length) return;
+                const last = this.playlist.length - 1;
+                if (this.repeat) this.playSong((this.currentIndex + 1) % this.playlist.length, 0);
+                else if (this.currentIndex >= last) {
+                    this.audio.pause(); this.audio.currentTime = 0;
+                    this.isPlaying = false; this.updateButtons();
+                    this.updateProgressUI(0); this.saveState();
+                } else this.playSong(this.currentIndex + 1, 0);
+            }
+            prev() {
+                if (!this.playlist.length) return;
+                if (this.audio.currentTime > 3) { this.audio.currentTime = 0; this.updateProgressUI(0); this.saveState(); return; }
+                if (this.repeat && this.currentIndex === 0) this.playSong(this.playlist.length - 1, 0);
+                else if (this.currentIndex > 0) this.playSong(this.currentIndex - 1, 0);
+                else { this.audio.currentTime = 0; this.updateProgressUI(0); }
+            }
+            updateProgressUI(ratio) {
+                const pct = Math.max(0, Math.min(1, ratio)) * 100;
+                const bar = document.getElementById('progress-nano');
+                if (bar) bar.style.width = pct + '%';
+                const cur = document.getElementById('current-time-nano');
+                if (cur && this.audio.duration && isFinite(this.audio.duration)) {
+                    const t = ratio * this.audio.duration;
+                    const m = Math.floor(t / 60), s = Math.floor(t % 60);
+                    cur.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+                }
+            }
+            async clearAllUser() {
+                const n = this.playlist.filter(s => s.source === 'indexeddb').length;
+                if (!n) { this.showStatus('No user songs', 'error'); return; }
+                if (!confirm('Clear ' + n + ' user songs?')) return;
+                await this.idb.clearAllUserSongs();
+                for (const [id, u] of this.blobUrls) if (id.startsWith('user_')) { URL.revokeObjectURL(u); this.blobUrls.delete(id); }
+                this.playlist = this.playlist.filter(s => s.source !== 'indexeddb');
+                if (this.currentIndex >= this.playlist.length) this.currentIndex = this.playlist.length ? 0 : -1;
+                if (!this.playlist.length) {
+                    this.audio.src = '';
+                    document.getElementById('song-title-nano').textContent = 'No music';
+                    document.getElementById('song-artist-nano').textContent = 'Upload to begin';
+                    this.updateProgressUI(0);
+                    document.getElementById('duration-nano').textContent = '0:00';
+                    localStorage.removeItem(this.STORAGE_KEY);
+                }
+                this.scheduleUI(); this.updateButtons(); this.showStatus('User songs cleared', 'success');
+            }
+            showStatus(msg, type) {
+                type = type || 'success';
+                const el = document.getElementById('status-message');
+                if (el) { el.textContent = msg; el.className = 'status-message ' + type + ' show'; setTimeout(() => el.classList.remove('show'), 2000); }
+            }
+            updateUI() {
+                const list = this._listEl;
+                if (!list) return;
+                if (!this.playlist.length) {
+                    list.innerHTML = '<div class="empty-songs">No songs yet — waiting for Supabase…</div>';
+                    this._itemEls.clear();
+                    return;
+                }
+                const empty = list.querySelector('.empty-songs');
+                if (empty) empty.remove();
+                const seen = new Set();
+                const iconUrl = this.ms.appIcon ? this.ms.appIcon.url : null;
+                this.playlist.forEach((s, i) => {
+                    seen.add(s.id);
+                    let el = this._itemEls.get(s.id);
+                    if (!el) {
+                        el = document.createElement('div');
+                        el.className = 'song-item';
+                        el.dataset.id = s.id;
+                        el.innerHTML = '<div class="song-icon"></div><div class="song-details"><div class="song-item-title"></div><div class="song-item-info"><span class="song-item-artist"></span></div></div><span class="song-item-badge"></span><a class="song-item-download touch-feedback" style="display:none"><i class="fas fa-download"></i></a><button class="song-item-remove touch-feedback" style="display:none"><i class="fas fa-trash-alt"></i></button>';
+                        el.addEventListener('click', (e) => {
+                            if (e.target.closest('.song-item-remove') || e.target.closest('.song-item-download')) return;
+                            const idx = this.playlist.findIndex(x => x.id === s.id);
+                            if (idx !== -1) this.playSong(idx, 0);
+                        });
+                        el.querySelector('.song-item-remove').addEventListener('click', (e) => this.removeSong(s.id, e));
+                        list.appendChild(el);
+                        this._itemEls.set(s.id, el);
+                    }
+                    const iconEl = el.querySelector('.song-icon');
+                    if (iconUrl) iconEl.innerHTML = '<img src="' + iconUrl + '" alt="">';
+                    else iconEl.innerHTML = '<i class="fas fa-music"></i>';
+
+                    el.querySelector('.song-item-title').textContent = s.title || 'Unknown';
+                    el.querySelector('.song-item-artist').textContent = s.artist || 'Unknown';
+                    const badge = el.querySelector('.song-item-badge');
+                    if (s.isCached) badge.innerHTML = '<i class="fas fa-check-circle" style="color:#2ecc71;font-size:0.7rem;"></i>';
+                    else if (s.isSupabase) badge.innerHTML = '<i class="fas fa-cloud" style="color:#7b2ff7;font-size:0.7rem;"></i>';
+                    else badge.innerHTML = '';
+                    const dl = el.querySelector('.song-item-download');
+                    if (s.isSupabase) {
+                        dl.style.display = '';
+                        dl.href = '#';
+                        dl.dataset.songId = s.id;
+                        dl.download = (s.title || 'track') + '.m4a';
+                    } else dl.style.display = 'none';
+                    el.querySelector('.song-item-remove').style.display = s.source === 'indexeddb' ? '' : 'none';
+                    el.classList.toggle('active', i === this.currentIndex);
+                });
+                for (const [id, el] of this._itemEls) if (!seen.has(id)) { el.remove(); this._itemEls.delete(id); }
+                const nodes = this.playlist.map(s => this._itemEls.get(s.id)).filter(Boolean);
+                let ref = list.firstChild;
+                nodes.forEach(n => { if (n !== ref) list.insertBefore(n, ref); else ref = n.nextSibling; });
+                if (this.currentIndex >= 0 && this.playlist[this.currentIndex]) {
+                    const s = this.playlist[this.currentIndex];
+                    document.getElementById('song-title-nano').textContent = s.title || 'Unknown';
+                    document.getElementById('song-artist-nano').textContent = s.artist || 'Unknown';
+                }
+                const albumArt = document.getElementById('album-art-nano');
+                if (albumArt) {
+                    if (iconUrl) albumArt.innerHTML = '<img src="' + iconUrl + '" alt="">';
+                    else albumArt.innerHTML = '<i class="fas fa-music"></i>';
+                }
+            }
+            updateButtons() {
+                const a = document.getElementById('play-pause-nano-icon');
+                const b = document.getElementById('play-pause-expanded-icon');
+                const cls = this.isPlaying ? 'fas fa-pause' : 'fas fa-play';
+                if (a) a.className = cls; if (b) b.className = cls;
+            }
+
+            /* ⭐ Fast-tap helpers: fire on pointerdown, zero delay */
+            _fastTap(el, handler) {
+                if (!el) return;
+                let lastFired = 0;
+                const fire = (e) => {
+                    const now = performance.now();
+                    if (now - lastFired < 120) return; // debounce against double-fire on some browsers
+                    lastFired = now;
+                    try { e.preventDefault(); } catch {}
+                    try { e.stopPropagation(); } catch {}
+                    handler(e);
+                };
+                el.addEventListener('pointerdown', fire, { passive: false });
+                // Fallback for browsers without pointer events
+                if (!('PointerEvent' in window)) {
+                    el.addEventListener('touchstart', fire, { passive: false });
+                    el.addEventListener('mousedown', fire);
+                }
+                // Prevent the trailing click from doing anything
+                el.addEventListener('click', (e) => { try { e.preventDefault(); e.stopPropagation(); } catch {} });
+            }
+
+            bindEvents() {
+                // ⭐ Instant-response controls (fire on pointerdown, not click)
+                this._fastTap(document.getElementById('play-pause-nano'), () => this.togglePlay());
+                this._fastTap(document.getElementById('play-pause-expanded'), () => this.togglePlay());
+                this._fastTap(document.getElementById('prev-nano'), () => this.prev());
+                this._fastTap(document.getElementById('next-nano'), () => this.next());
+                this._fastTap(document.getElementById('shuffle-btn'), () => this.toggleShuffle());
+                this._fastTap(document.getElementById('repeat-btn'), () => this.toggleRepeat());
+
+                const pbar = document.getElementById('progress-bar-nano');
+                const seekTo = (clientX) => {
+                    if (!this.playlist.length || !this.audio.duration || !isFinite(this.audio.duration)) return;
+                    const r = pbar.getBoundingClientRect();
+                    const ratio = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+                    this.audio.currentTime = ratio * this.audio.duration;
+                    this.updateProgressUI(ratio);
+                    this.saveState();
+                };
+                pbar.addEventListener('pointerdown', (e) => {
+                    e.preventDefault();
+                    try { pbar.setPointerCapture(e.pointerId); } catch {}
+                    seekTo(e.clientX);
+                    const move = (ev) => seekTo(ev.clientX);
+                    const up = () => {
+                        pbar.removeEventListener('pointermove', move);
+                        pbar.removeEventListener('pointerup', up);
+                        pbar.removeEventListener('pointercancel', up);
+                    };
+                    pbar.addEventListener('pointermove', move);
+                    pbar.addEventListener('pointerup', up);
+                    pbar.addEventListener('pointercancel', up);
+                }, { passive: false });
+
+                const vol = document.getElementById('volume-slider-nano');
+                const volLevel = document.getElementById('volume-level-nano');
+                const setVol = (clientX) => {
+                    const r = vol.getBoundingClientRect();
+                    const v = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+                    this.audio.volume = v;
+                    volLevel.style.width = (v * 100) + '%';
+                    this.saveState();
+                };
+                vol.addEventListener('pointerdown', (e) => {
+                    e.preventDefault();
+                    try { vol.setPointerCapture(e.pointerId); } catch {}
+                    setVol(e.clientX);
+                    const move = (ev) => setVol(ev.clientX);
+                    const up = () => {
+                        vol.removeEventListener('pointermove', move);
+                        vol.removeEventListener('pointerup', up);
+                        vol.removeEventListener('pointercancel', up);
+                    };
+                    vol.addEventListener('pointermove', move);
+                    vol.addEventListener('pointerup', up);
+                    vol.addEventListener('pointercancel', up);
+                }, { passive: false });
+
+                this.audio.ontimeupdate = () => {
+                    if (!this.audio.duration || !isFinite(this.audio.duration)) return;
+                    const ratio = this.audio.currentTime / this.audio.duration;
+                    document.getElementById('progress-nano').style.width = (ratio * 100) + '%';
+                    const m = Math.floor(this.audio.currentTime / 60);
+                    const s = Math.floor(this.audio.currentTime % 60);
+                    document.getElementById('current-time-nano').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+                    this.updateMediaSessionPosition();
+                    const now = Date.now();
+                    if (now - this._lastSaveTick > 1000) { this._lastSaveTick = now; this.saveState(); }
+                };
+                this.audio.onloadedmetadata = () => {
+                    if (this.audio.duration && isFinite(this.audio.duration)) {
+                        const m = Math.floor(this.audio.duration / 60);
+                        const s = Math.floor(this.audio.duration % 60);
+                        document.getElementById('duration-nano').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+                    }
+                    this.updateMediaSessionPosition();
+                };
+                this.audio.onplay  = () => {
+                    this.isPlaying = true;
+                    this.updateButtons();
+                    this.saveState();
+                    if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
+                    this.updateMediaSessionPosition();
+                };
+                this.audio.onpause = () => {
+                    this.isPlaying = false;
+                    this.updateButtons();
+                    this.saveState();
+                    if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
+                };
+                this.audio.onended = () => { this.next(); };
+                this.audio.oncanplay = () => { setTimeout(() => this.cacheNextUpcoming(), 1000); };
+
+                document.getElementById('dashboard-header').onclick =
+                    () => document.getElementById('dashboard').classList.toggle('expanded');
+
+                document.getElementById('search-input').oninput = (e) => {
+                    const t = e.target.value.toLowerCase().trim();
+                    for (const [id, el] of this._itemEls) {
+                        const s = this.playlist.find(x => x.id === id);
+                        if (!s) continue;
+                        const ok = !t || (s.title || '').toLowerCase().includes(t) || (s.artist || '').toLowerCase().includes(t);
+                        el.style.display = ok ? '' : 'none';
+                    }
+                };
+
+                const flush = () => this.saveState();
+                window.addEventListener('beforeunload', flush);
+                window.addEventListener('pagehide', flush, { passive: true });
+                window.addEventListener('blur', flush, { passive: true });
+                document.addEventListener('visibilitychange', () => {
+                    if (document.visibilityState === 'hidden') flush();
+                }, { passive: true });
+
+                document.getElementById('songs-list').addEventListener('click', async (e) => {
+                    const dl = e.target.closest('.song-item-download');
+                    if (!dl) return;
+                    e.preventDefault(); e.stopPropagation();
+                    const song = this.playlist.find(s => s.id === dl.dataset.songId);
+                    if (!song) return;
+
+                    let blobUrl = null;
+                    if (song.isCached && song.cachedUrl) {
+                        blobUrl = song.cachedUrl;
+                    } else {
+                        const cached = await this.idb.getFromPermanentCache(song.url);
+                        if (cached && cached.blobData) {
+                            const blob = new Blob([cached.blobData], { type: cached.fileType || 'audio/mp4' });
+                            blobUrl = URL.createObjectURL(blob);
+                            song.cachedUrl = blobUrl; song.isCached = true;
+                            this.blobUrls.set(song.id, blobUrl);
+                            this.scheduleUI();
+                        }
+                    }
+                    const filename = (song.title || 'track').replace(/[\\/:*?"<>|]/g, '_') + '.m4a';
+                    if (blobUrl) {
+                        const a = document.createElement('a');
+                        a.href = blobUrl; a.download = filename;
+                        document.body.appendChild(a); a.click(); a.remove();
+                    } else {
+                        try {
+                            dl.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                            const res = await fetch(song.url);
+                            if (!res.ok) throw new Error('fetch failed');
+                            const blob = await res.blob();
+                            const buf = await blob.arrayBuffer();
+                            await this.idb.saveToPermanentCache(song.id, song.url, song.title, song.artist, buf, blob.type || 'audio/mp4');
+                            const localUrl = URL.createObjectURL(blob);
+                            song.cachedUrl = localUrl; song.isCached = true;
+                            this.blobUrls.set(song.id, localUrl);
+                            this.scheduleUI();
+                            const a = document.createElement('a');
+                            a.href = localUrl; a.download = filename;
+                            document.body.appendChild(a); a.click(); a.remove();
+                        } catch {
+                            window.open(song.url, '_blank', 'noopener');
+                        } finally {
+                            dl.innerHTML = '<i class="fas fa-download"></i>';
+                        }
+                    }
+                });
+            }
+        }
+
+        class AdminPanel {
+            constructor(ms, music) {
+                this.ms = ms; this.music = music;
+                this.authed = false;
+                this.bind();
+                ms.onChange(() => { if (this.authed) this.render(); }, 'all');
+                supabaseClient.auth.getSession().then(({ data }) => {
+                    if (data && data.session) {
+                        this.authed = true;
+                        console.log('[auth] Restored session for', data.session.user.email);
+                    }
+                });
+            }
+            bind() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) { e.preventDefault(); this.open(); }
+                });
+                (function bindNameTaps() {
+                    const nameEl = document.getElementById('floating-name');
+                    if (!nameEl) return;
+                    let taps = 0, firstAt = 0, timer = null;
+                    function onTap(e) {
+                        const now = Date.now();
+                        if (taps === 0) firstAt = now;
+                        if (now - firstAt > 5000) { taps = 0; firstAt = now; }
+                        taps++;
+                        clearTimeout(timer);
+                        timer = setTimeout(() => { taps = 0; }, 5000);
+                        if (taps >= 5) {
+                            taps = 0;
+                            e.stopPropagation();
+                            if (window.adminPanel) window.adminPanel.open();
+                        }
+                    }
+                    nameEl.style.pointerEvents = 'auto';
+                    nameEl.style.cursor = 'pointer';
+                    nameEl.addEventListener('click', onTap);
+                })();
+                document.getElementById('admin-login-btn').onclick = () => this.login();
+                document.getElementById('admin-pw-input').onkeydown = (e) => { if (e.key === 'Enter') this.login(); };
+                document.getElementById('admin-close-btn').onclick = () => this.close();
+                document.getElementById('admin-logout-btn').onclick = async () => {
+                    await supabaseClient.auth.signOut();
+                    this.authed = false;
+                    this.showLogin();
+                    this.toast('Signed out', 'success');
+                };
+                document.querySelectorAll('.admin-tab').forEach(tab => {
+                    tab.onclick = () => {
+                        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                        document.querySelectorAll('.admin-tab-pane').forEach(p => p.classList.remove('active'));
+                        tab.classList.add('active');
+                        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+                    };
+                });
+
+                const imgFile = document.getElementById('admin-img-file');
+                document.getElementById('admin-img-upload-btn').onclick = () => imgFile.click();
+                imgFile.onchange = async (e) => {
+                    const files = Array.from(e.target.files || []); if (!files.length) return;
+                    const baseTitle = document.getElementById('admin-img-title').value.trim();
+                    this.toast('Uploading ' + files.length + ' image(s)…', 'success');
+                    let ok = 0, fail = 0, firstErr = '';
+                    for (let i = 0; i < files.length; i++) {
+                        const f = files[i];
+                        try {
+                            const ext = (f.name.split('.').pop() || 'jpg').toLowerCase();
+                            const path = 'bg_' + Date.now() + '_' + safeUUID().slice(0, 8) + '.' + ext;
+                            const { error: upErr } = await supabaseClient.storage.from(BG_BUCKET).upload(path, f, { contentType: f.type || 'image/jpeg', cacheControl: '31536000' });
+                            if (upErr) throw upErr;
+                            const { data: pub } = supabaseClient.storage.from(BG_BUCKET).getPublicUrl(path);
+                            const title = baseTitle ? (files.length > 1 ? baseTitle + ' ' + (i + 1) : baseTitle) : f.name;
+                            const { data: inserted, error: dbErr } = await supabaseClient.from('custom_media').insert({ type: 'image', title, url: pub.publicUrl, storage_path: path, is_active: true }).select().single();
+                            if (dbErr) throw dbErr;
+                            if (inserted) this.ms.applyImageInsert(inserted);
+                            this.ms.broadcastBucketChange('image', 'upload', path);
+                            ok++;
+                        } catch (err) { fail++; if (!firstErr) firstErr = err.message || String(err); }
+                    }
+                    this.toast('✅ ' + ok + ' uploaded' + (fail ? ', ' + fail + ' failed: ' + firstErr : ''), fail ? 'error' : 'success');
+                    document.getElementById('admin-img-title').value = '';
+                    imgFile.value = '';
+                };
+
+                const musFile = document.getElementById('admin-music-file');
+                document.getElementById('admin-music-upload-btn').onclick = () => musFile.click();
+                musFile.onchange = async (e) => {
+                    const files = Array.from(e.target.files || []); if (!files.length) return;
+                    this.toast('Uploading ' + files.length + ' audio…', 'success');
+                    let ok = 0, fail = 0, firstErr = '';
+                    for (let i = 0; i < files.length; i++) {
+                        const f = files[i];
+                        try {
+                            const ext = (f.name.split('.').pop() || 'm4a').toLowerCase();
+                            const path = 'music_' + Date.now() + '_' + safeUUID().slice(0, 8) + '.' + ext;
+                            const { error: upErr } = await supabaseClient.storage.from(MUSIC_BUCKET).upload(path, f, { contentType: f.type || 'audio/mp4', cacheControl: '31536000' });
+                            if (upErr) throw upErr;
+                            const { data: pub } = supabaseClient.storage.from(MUSIC_BUCKET).getPublicUrl(path);
+                            const parsed = parseFilename(f.name);
+                            const { data: inserted, error: dbErr } = await supabaseClient.from('custom_media').insert({ type: 'audio', title: parsed.title, artist: parsed.artist, url: pub.publicUrl, storage_path: path, is_active: true }).select().single();
+                            if (dbErr) throw dbErr;
+                            if (inserted) this.ms.applyMusicInsert(inserted);
+                            this.ms.broadcastBucketChange('music', 'upload', path);
+                            ok++;
+                        } catch (err) { fail++; if (!firstErr) firstErr = err.message || String(err); }
+                    }
+                    this.toast('✅ ' + ok + ' saved' + (fail ? ', ' + fail + ' failed: ' + firstErr : ''), fail ? 'error' : 'success');
+                    musFile.value = '';
+                };
+
+                const iconFile = document.getElementById('admin-icon-file');
+                document.getElementById('admin-icon-upload-btn').onclick = () => iconFile.click();
+                iconFile.onchange = async (e) => {
+                    const f = e.target.files && e.target.files[0];
+                    if (!f) return;
+
+                    const localUrl = URL.createObjectURL(f);
+                    const preview = document.getElementById('app-icon-preview');
+                    if (preview) preview.innerHTML = '<img src="' + localUrl + '" alt="Uploading…" style="opacity:0.5">';
+                    this.toast('Uploading icon…', 'success');
+
+                    try {
+                        await new Promise(r => setTimeout(r, 0));
+                        const res = await resizeImageToIcon(f, 512);
+                        const path = 'icon_' + Date.now() + '_' + safeUUID().slice(0, 8) + '.' + res.ext;
+                        const { error: upErr } = await supabaseClient.storage.from(ICON_BUCKET).upload(path, res.blob, { contentType: res.mime, cacheControl: '31536000', upsert: false });
+                        if (upErr) throw new Error('Bucket upload failed: ' + upErr.message);
+                        const { data: pub } = supabaseClient.storage.from(ICON_BUCKET).getPublicUrl(path);
+
+                        const { data: oldRow } = await supabaseClient.from(APP_ICON_TABLE).select('*').eq('id', 'global').maybeSingle();
+                        const { error: dbErr } = await supabaseClient.from(APP_ICON_TABLE).upsert(
+                            { id: 'global', url: pub.publicUrl, storage_path: path, updated_at: new Date().toISOString() },
+                            { onConflict: 'id' }
+                        );
+                        if (dbErr) throw new Error('DB upsert failed: ' + dbErr.message);
+
+                        this.ms.appIcon = { id: 'global', url: pub.publicUrl, storage_path: path, updated_at: new Date().toISOString() };
+                        applyAppIcon(pub.publicUrl);
+                        this.renderAppIcon();
+                        this.ms.emit('icon', true);
+                        this.music.updateMediaSession();
+
+                        if (oldRow && oldRow.storage_path && oldRow.storage_path !== path) {
+                            supabaseClient.storage.from(ICON_BUCKET).remove([oldRow.storage_path]).catch(() => {});
+                        }
+                        this.ms.refreshIconOnly().catch(() => {});
+
+                        URL.revokeObjectURL(localUrl);
+                        this.toast('✅ Icon updated', 'success');
+                    } catch (err) {
+                        URL.revokeObjectURL(localUrl);
+                        this.renderAppIcon();
+                        this.toast('❌ ' + (err.message || String(err)), 'error');
+                        console.error('[icon upload]', err);
+                    }
+                    iconFile.value = '';
+                };
+
+                document.getElementById('admin-icon-reset-btn').onclick = async () => {
+                    if (!confirm('Reset icon to default ⏯️?')) return;
+                    try {
+                        const { data: oldRow } = await supabaseClient.from(APP_ICON_TABLE).select('*').eq('id', 'global').maybeSingle();
+                        const { error: delErr } = await supabaseClient.from(APP_ICON_TABLE).delete().eq('id', 'global');
+                        if (delErr) throw new Error(delErr.message);
+                        if (oldRow && oldRow.storage_path) {
+                            try { await supabaseClient.storage.from(ICON_BUCKET).remove([oldRow.storage_path]); } catch {}
+                        }
+                        this.ms.appIcon = null;
+                        applyAppIcon(null);
+                        this.renderAppIcon();
+                        this.ms.emit('icon', true);
+                        this.music.updateMediaSession();
+                        this.toast('Reset to default', 'success');
+                    } catch (e) { this.toast('❌ ' + e.message, 'error'); }
+                };
+            }
+            open() { document.getElementById('admin-overlay').classList.add('open'); this.showLogin(); }
+            close() { document.getElementById('admin-overlay').classList.remove('open'); }
+            showLogin() {
+                document.getElementById('admin-login-box').style.display = 'block';
+                document.getElementById('admin-panel').style.display = 'none';
+                document.getElementById('admin-login-err').textContent = '';
+                setTimeout(() => document.getElementById('admin-email').focus(), 100);
+            }
+            showPanel() {
+                document.getElementById('admin-login-box').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'flex';
+                this.render();
+            }
+            async login() {
+                const email = document.getElementById('admin-email').value.trim();
+                const pw = document.getElementById('admin-pw-input').value;
+                if (!email || !pw) return;
+                const btn = document.getElementById('admin-login-btn');
+                btn.disabled = true; btn.textContent = 'Signing in…';
+                document.getElementById('admin-login-err').textContent = '';
+                try {
+                    const { error } = await supabaseClient.auth.signInWithPassword({ email, password: pw });
+                    if (error) throw error;
+                    this.authed = true;
+                    document.getElementById('admin-pw-input').value = '';
+                    this.showPanel();
+                } catch (e) { document.getElementById('admin-login-err').textContent = e.message || 'Login failed'; }
+                btn.disabled = false; btn.textContent = 'Sign In';
+            }
+            toast(msg, type) {
+                type = type || 'success';
+                const t = document.getElementById('admin-toast');
+                t.textContent = msg; t.className = 'admin-toast ' + type + ' show';
+                clearTimeout(this._tt);
+                this._tt = setTimeout(() => t.classList.remove('show'), 4000);
+            }
+            render() { this.renderImages(); this.renderUnsplash(); this.renderMusic(); this.renderAppIcon(); }
+            renderImages() {
+                const g = document.getElementById('admin-sb-images-grid');
+                const imgs = this.ms.getMergedImages();
+                if (!imgs.length) { g.innerHTML = '<div class="admin-empty">No Supabase images yet.</div>'; return; }
+                g.innerHTML = '';
+                imgs.forEach(img => {
+                    const c = document.createElement('div');
+                    c.className = 'admin-media-card';
+                    const badge = img.inDb ? '<span class="admin-pro-badge db">DB</span>' : '<span class="admin-pro-badge bucket">BUCKET</span>';
+                    c.innerHTML = '<img class="admin-media-thumb" src="' + img.url + '" loading="lazy"><div class="admin-media-meta"><div class="admin-media-title">' + this.esc(img.title) + badge + '</div><div class="admin-media-sub">' + (img.inDb ? 'Supabase (tracked)' : 'Bucket only') + '</div></div><div class="admin-media-actions"><button class="admin-btn small ghost" data-a="r"><i class="fas fa-exchange-alt"></i></button><button class="admin-btn small danger" data-a="d"><i class="fas fa-trash"></i></button></div>';
+                    c.querySelector('[data-a="d"]').onclick = async () => {
+                        if (!confirm('Delete globally?')) return;
+                        try {
+                            if (img.inDb) this.ms.applyImageDelete(img.id);
+                            else this.ms.applyBucketImageDelete(img.storage_path);
+                            this.ms.broadcastBucketChange('image', 'delete', img.storage_path);
+                            if (img.inDb) await supabaseClient.from('custom_media').delete().eq('id', img.id);
+                            await supabaseClient.storage.from(BG_BUCKET).remove([img.storage_path]);
+                            this.toast('Deleted', 'success');
+                        } catch (e) { this.toast('Failed: ' + e.message, 'error'); }
+                    };
+                    c.querySelector('[data-a="r"]').onclick = () => {
+                        const input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*';
+                        input.onchange = async () => {
+                            const f = input.files[0]; if (!f) return;
+                            const nt = prompt('New title:', img.title) || img.title;
+                            try {
+                                const ext = (f.name.split('.').pop() || 'jpg').toLowerCase();
+                                const path = 'bg_' + Date.now() + '_' + safeUUID().slice(0, 8) + '.' + ext;
+                                await supabaseClient.storage.from(BG_BUCKET).upload(path, f, { contentType: f.type || 'image/jpeg', cacheControl: '31536000' });
+                                const { data: pub } = supabaseClient.storage.from(BG_BUCKET).getPublicUrl(path);
+                                if (img.inDb) {
+                                    const { data: updated } = await supabaseClient.from('custom_media').update({ url: pub.publicUrl, storage_path: path, title: nt }).eq('id', img.id).select().single();
+                                    if (updated) this.ms.applyImageUpdate(updated);
+                                } else {
+                                    const { data: inserted } = await supabaseClient.from('custom_media').insert({ type: 'image', title: nt, url: pub.publicUrl, storage_path: path, is_active: true }).select().single();
+                                    if (inserted) this.ms.applyImageInsert(inserted);
+                                }
+                                this.ms.broadcastBucketChange('image', 'upload', path);
+                                await supabaseClient.storage.from(BG_BUCKET).remove([img.storage_path]);
+                                this.toast('Replaced', 'success');
+                            } catch (e) { this.toast('Failed: ' + e.message, 'error'); }
+                        };
+                        input.click();
+                    };
+                    g.appendChild(c);
+                });
+            }
+            renderUnsplash() {
+                const g = document.getElementById('admin-unsplash-grid');
+                g.innerHTML = '';
+                ONLINE_BACKGROUNDS_RAW.forEach(url => {
+                    const a = stripQuery(url);
+                    const dis = this.ms.disabledUnsplash.has(a);
+                    const c = document.createElement('div');
+                    c.className = 'admin-media-card' + (dis ? ' disabled' : '');
+                    c.innerHTML = '<img class="admin-media-thumb" src="' + url + '" loading="lazy"><div class="admin-media-meta"><div class="admin-media-title">Unsplash</div><div class="admin-media-sub">Default</div></div><div class="admin-media-actions"><button class="admin-btn small ' + (dis ? '' : 'danger') + '">' + (dis ? 'Enable' : 'Disable') + '</button></div>';
+                    c.querySelector('button').onclick = async () => {
+                        try {
+                            if (dis) {
+                                await supabaseClient.from('disabled_unsplash').delete().eq('url', url);
+                                await supabaseClient.from('disabled_unsplash').delete().eq('url', a);
+                            } else {
+                                await supabaseClient.from('disabled_unsplash').insert({ url: url });
+                            }
+                            await this.ms.loadAll();
+                            this.toast('Updated', 'success');
+                        } catch (e) { this.toast('Failed: ' + e.message, 'error'); }
+                    };
+                    g.appendChild(c);
+                });
+            }
+            renderMusic() {
+                const l = document.getElementById('admin-music-list');
+                const tr = this.ms.getMergedMusic();
+                if (!tr.length) { l.innerHTML = '<div class="admin-empty">No music found.</div>'; return; }
+                l.innerHTML = '';
+                const iconUrl = this.ms.appIcon ? this.ms.appIcon.url : null;
+                tr.forEach((t, i) => {
+                    const it = document.createElement('div');
+                    it.className = 'admin-pro-item';
+                    const badge = t.inDb ? '<span class="admin-pro-badge db">DB</span>' : '<span class="admin-pro-badge bucket">BUCKET</span>';
+                    const iconInner = iconUrl ? '<img src="' + iconUrl + '" alt="">' : '<i class="fas fa-music"></i>';
+                    it.innerHTML = '<div class="order-num">' + String(i + 1).padStart(2, '0') + '</div><div class="pro-icon">' + iconInner + '</div><div class="pro-info"><div class="pro-title">' + this.esc(t.title) + badge + '</div><div class="pro-sub">' + this.esc(t.artist) + '</div></div><div class="pro-actions"><button class="admin-btn small ghost" data-a="r"><i class="fas fa-exchange-alt"></i></button><button class="admin-btn small danger" data-a="d"><i class="fas fa-trash"></i></button></div>';
+                    it.querySelector('[data-a="d"]').onclick = async () => {
+                        if (!confirm('Delete "' + t.title + '"?')) return;
+                        try {
+                            if (t.inDb) this.ms.applyMusicDelete(t.id.replace('sb_', ''));
+                            else this.ms.applyBucketMusicDelete(t.storage_path);
+                            this.ms.broadcastBucketChange('music', 'delete', t.storage_path);
+                            if (t.inDb) await supabaseClient.from('custom_media').delete().eq('id', t.id.replace('sb_', ''));
+                            await supabaseClient.storage.from(MUSIC_BUCKET).remove([t.storage_path]);
+                            this.toast('Deleted', 'success');
+                        } catch (e) { this.toast('Failed: ' + e.message, 'error'); }
+                    };
+                    it.querySelector('[data-a="r"]').onclick = () => {
+                        const input = document.createElement('input'); input.type = 'file'; input.accept = 'audio/*';
+                        input.onchange = async () => {
+                            const f = input.files[0]; if (!f) return;
+                            const nt = prompt('New title:', t.title) || t.title;
+                            const na = prompt('New artist:', t.artist) || t.artist;
+                            try {
+                                const ext = (f.name.split('.').pop() || 'm4a').toLowerCase();
+                                const path = 'music_' + Date.now() + '_' + safeUUID().slice(0, 8) + '.' + ext;
+                                await supabaseClient.storage.from(MUSIC_BUCKET).upload(path, f, { contentType: f.type || 'audio/mp4', cacheControl: '31536000' });
+                                const { data: pub } = supabaseClient.storage.from(MUSIC_BUCKET).getPublicUrl(path);
+                                if (t.inDb) {
+                                    const { data: updated } = await supabaseClient.from('custom_media').update({ url: pub.publicUrl, storage_path: path, title: nt, artist: na }).eq('id', t.id.replace('sb_', '')).select().single();
+                                    if (updated) this.ms.applyMusicUpdate(updated);
+                                } else {
+                                    const { data: inserted } = await supabaseClient.from('custom_media').insert({ type: 'audio', title: nt, artist: na, url: pub.publicUrl, storage_path: path, is_active: true }).select().single();
+                                    if (inserted) this.ms.applyMusicInsert(inserted);
+                                }
+                                this.ms.broadcastBucketChange('music', 'upload', path);
+                                await supabaseClient.storage.from(MUSIC_BUCKET).remove([t.storage_path]);
+                                this.toast('Replaced', 'success');
+                            } catch (e) { this.toast('Failed: ' + e.message, 'error'); }
+                        };
+                        input.click();
+                    };
+                    l.appendChild(it);
+                });
+            }
+            renderAppIcon() {
+                const preview = document.getElementById('app-icon-preview');
+                const info = document.getElementById('admin-icon-info');
+                if (!preview || !info) return;
+                if (this.ms.appIcon) {
+                    preview.innerHTML = '<img src="' + this.ms.appIcon.url + '" alt="App icon">';
+                    const dt = this.ms.appIcon.updated_at ? new Date(this.ms.appIcon.updated_at).toLocaleString() : 'unknown';
+                    info.innerHTML = '<strong>Custom icon active.</strong><br>Updated: ' + dt + '<br>URL: <span style="color:#b88bff; word-break:break-all;">' + this.ms.appIcon.url + '</span>';
+                } else {
+                    preview.innerHTML = '<div class="fallback"><i class="fas fa-music"></i></div>';
+                    info.textContent = 'No custom icon uploaded. Using the default ⏯️ emoji.';
+                }
+            }
+            esc(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            (async () => {
+                const issues = [];
+                try {
+                    const { data: { user } } = await supabaseClient.auth.getUser();
+                    if (!user) issues.push('Not signed in — uploads require admin login');
+                } catch (e) { issues.push('Auth check failed: ' + e.message); }
+                for (const t of [['custom_media','id'],['app_icon','id'],['disabled_unsplash','url']]) {
+                    try {
+                        const { error } = await supabaseClient.from(t[0]).select(t[1]).limit(1);
+                        if (error) issues.push('Table "' + t[0] + '": ' + error.message);
+                    } catch (e) { issues.push('Table "' + t[0] + '" check: ' + e.message); }
+                }
+                for (const b of [ICON_BUCKET, BG_BUCKET, MUSIC_BUCKET]) {
+                    try {
+                        const { error } = await supabaseClient.storage.from(b).list('', { limit: 1 });
+                        if (error) issues.push('Bucket "' + b + '": ' + error.message);
+                    } catch (e) { issues.push('Bucket "' + b + '" check: ' + e.message); }
+                }
+                if (issues.length) {
+                    console.warn('%c⚠️ SUPABASE SETUP INCOMPLETE', 'color:#ff6b6b;font-size:14px;font-weight:bold;');
+                    issues.forEach(m => console.warn('  • ' + m));
+                } else {
+                    console.log('%c✅ Supabase tables, buckets, auth all OK', 'color:#2ecc71;font-weight:bold;');
+                }
+            })();
+
+            const idb = new IndexedDBService();
+            const ms = new SupabaseMediaService();
+            const bg = new BackgroundSystem(idb, ms);
+            const music = new MusicSystem(idb, ms);
+            const admin = new AdminPanel(ms, music);
+            window.musicSystem = music; window.mediaService = ms; window.adminPanel = admin;
+            ms.loadAll();
+            document.getElementById('youtube-btn').onclick = (e) => { e.preventDefault(); window.open('https://youtube.com', '_blank', 'noopener,noreferrer'); };
+            document.getElementById('tubidy-btn').onclick = (e) => { e.preventDefault(); window.open('https://tubidy.com', '_blank', 'noopener,noreferrer'); };
+            document.getElementById('clear-all-btn').onclick = () => music.clearAllUser();
+            const ub = document.getElementById('upload-music-btn');
+            const fi = document.getElementById('music-file-input');
+            ub.onclick = () => { fi.value = ''; fi.click(); };
+            fi.onchange = (e) => {
+                const files = e.target.files;
+                if (files && files.length) music.uploadFiles(Array.from(files));
+                setTimeout(() => { fi.value = ''; }, 0);
+            };
+            document.getElementById('floating-name').style.display = 'block';
+
+            (function initBackButton() {
+                const backBtn = document.getElementById('back-button');
+                let pressTimer = null;
+                let longPressTriggered = false;
+                const HOLD_MS = 10000;
+                function startPress(e) {
+                    if (e.type === 'mousedown' && e.button !== 0) return;
+                    longPressTriggered = false;
+                    clearTimeout(pressTimer);
+                    pressTimer = setTimeout(() => {
+                        longPressTriggered = true;
+                        backBtn.style.background = 'linear-gradient(135deg,#f107a3,#7b2ff7)';
+                        backBtn.style.transform = 'scale(1.1)';
+                        setTimeout(() => { backBtn.style.background = ''; backBtn.style.transform = ''; }, 400);
+                        if (window.adminPanel) window.adminPanel.open();
+                    }, HOLD_MS);
+                }
+                function cancelPress() { clearTimeout(pressTimer); pressTimer = null; }
+                function endPress(e) {
+                    cancelPress();
+                    if (longPressTriggered) { e.preventDefault(); e.stopPropagation(); longPressTriggered = false; return false; }
+                }
+                backBtn.addEventListener('mousedown', startPress);
+                backBtn.addEventListener('touchstart', startPress, { passive: true });
+                backBtn.addEventListener('mouseup', endPress);
+                backBtn.addEventListener('touchend', endPress);
+                backBtn.addEventListener('mouseleave', cancelPress);
+                backBtn.addEventListener('touchcancel', cancelPress);
+                backBtn.addEventListener('click', (e) => {
+                    if (longPressTriggered) { e.preventDefault(); e.stopPropagation(); return; }
+                    window.history.back();
+                });
+            })();
+
+            (function initAutoHide() {
+                if (!IS_MOBILE()) return;
+                const targets = [
+                    document.getElementById('modal-container'),
+                    document.getElementById('dashboard'),
+                    document.getElementById('join-float-container'),
+                    document.querySelector('.join-arrow'),
+                    document.querySelector('.music-arrow')
+                ].filter(Boolean);
+                const scrollArea = document.getElementById('uploaded-songs');
+                let hideTimer = null;
+                let isTouching = false;
+                let touchSafetyTimer = null;
+                let lastScrollAt = 0;
+                const IDLE_MS = 5000;
+                const SCROLL_GRACE_MS = 1500;
+                const TOUCH_SAFETY_MS = 3000;
+
+                function anyHidden() { return targets.some(c => c.classList.contains('auto-hidden')); }
+                function hideAll() {
+                    if (!IS_MOBILE()) return;
+                    targets.forEach(c => c.classList.add('auto-hidden'));
+                    setBlockerActive(true);
+                }
+                function showAll() {
+                    targets.forEach(c => c.classList.remove('auto-hidden'));
+                    setBlockerActive(false);
+                }
+                function scheduleHide() {
+                    clearTimeout(hideTimer);
+                    hideTimer = setTimeout(hideAll, IDLE_MS);
+                }
+                function armTouchSafety() {
+                    clearTimeout(touchSafetyTimer);
+                    touchSafetyTimer = setTimeout(() => {
+                        isTouching = false;
+                        scheduleHide();
+                    }, TOUCH_SAFETY_MS);
+                }
+                function clearTouchSafety() {
+                    clearTimeout(touchSafetyTimer);
+                    touchSafetyTimer = null;
+                }
+
+                function onAnyActivity(e) {
+                    if (e && e.type === 'pointerdown' && isTouching) return;
+                    showAll();
+                    scheduleHide();
+                }
+
+                document.addEventListener('pointerdown', onAnyActivity, { passive: true });
+                document.addEventListener('keydown', onAnyActivity, { passive: true });
+
+                function endTouch() {
+                    isTouching = false;
+                    clearTouchSafety();
+                    scheduleHide();
+                }
+                document.addEventListener('touchend', endTouch, { passive: true });
+                document.addEventListener('touchcancel', endTouch, { passive: true });
+                document.addEventListener('touchstart', () => { isTouching = true; armTouchSafety(); clearTimeout(hideTimer); }, { passive: true });
+
+                if (scrollArea) {
+                    scrollArea.addEventListener('scroll', () => {
+                        lastScrollAt = Date.now();
+                    }, { passive: true });
+                }
+
+                setBlockerActive(false);
+                scheduleHide();
+                window.addEventListener('resize', () => {
+                    if (!IS_MOBILE()) { showAll(); clearTimeout(hideTimer); }
+                    else scheduleHide();
+                });
+            })();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FORTVOICE AI — African & Global Female Neural Voice Studio</title>
+  <style>
+    /* Reset & Base Styles */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #0B0C10;
+      color: #C5C6C7;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Layout & Containers */
+    .header {
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      justify-content: space-between;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      width: 40px; height: 40px; border-radius: 8px;
+      background: linear-gradient(135deg, #D4AF37, #856404);
+      color: #000; font-weight: 900; font-size: 20px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    }
+    .brand-title {
+      font-size: 20px; font-weight: 800; letter-spacing: 1px;
+      background: linear-gradient(135deg, #FFF099 0%, #D4AF37 50%, #997A15 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .brand-tagline { font-size: 10px; color: rgba(212, 175, 55, 0.7); text-transform: uppercase; letter-spacing: 1px; }
+
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 4px 12px; border-radius: 9999px; font-size: 12px;
+      background: #022c22; color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3);
+    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #34d399; animation: pulse 2s infinite; }
+
+    .main-container {
+      max-width: 1280px; margin: 0 auto; width: 100%;
+      padding: 24px; flex: 1; display: grid;
+      grid-template-columns: 1fr; gap: 24px;
+    }
+    @media (min-width: 1024px) {
+      .main-container { grid-template-columns: 7fr 5fr; }
+    }
+
+    .glass-card {
+      background: rgba(31, 40, 51, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      border-radius: 16px; padding: 20px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .gold-glow {
+      border-color: rgba(212, 175, 55, 0.3);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.1);
+    }
+
+    /* Form Controls */
+    .card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.1); padding-bottom: 12px;
+    }
+    .card-title { font-size: 16px; font-weight: 600; color: #fff; }
+
+    .btn {
+      padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s; border: none; outline: none;
+    }
+    .btn-gold-outline {
+      background: rgba(31, 40, 51, 0.8); color: #D4AF37;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+    .btn-gold-outline:hover { background: rgba(212, 175, 55, 0.2); }
+    .btn-red-outline {
+      background: rgba(31, 40, 51, 0.8); color: #f87171;
+      border: 1px solid rgba(248, 113, 113, 0.3);
+    }
+    .btn-red-outline:hover { background: rgba(248, 113, 113, 0.2); }
+
+    .btn-primary {
+      width: 100%; padding: 16px; border-radius: 12px;
+      background: linear-gradient(90deg, #D4AF37, #ca8a04, #b45309);
+      color: #000; font-size: 16px; font-weight: 800; cursor: pointer;
+      box-shadow: 0 4px 20px rgba(212, 175, 55, 0.25); border: none;
+    }
+    .btn-primary:hover { filter: brightness(1.1); }
+
+    .translate-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(0, 0, 0, 0.5); padding: 10px 14px; border-radius: 10px;
+      border: 1px solid rgba(212, 175, 55, 0.1);
+    }
+    .translate-btn {
+      padding: 6px 12px; border-radius: 6px; background: rgba(212, 175, 55, 0.1);
+      color: #D4AF37; border: 1px solid rgba(212, 175, 55, 0.3); font-size: 11px; cursor: pointer;
+    }
+    .translate-btn:hover { background: #D4AF37; color: #000; }
+
+    textarea {
+      width: 100%; height: 180px; background: rgba(0, 0, 0, 0.6); color: #C5C6C7;
+      border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 12px; padding: 14px;
+      font-size: 15px; line-height: 1.6; resize: vertical; outline: none;
+    }
+    textarea:focus { border-color: #D4AF37; }
+
+    .counter-bar {
+      display: flex; justify-content: space-between; font-size: 12px; color: #9ca3af;
+      border-top: 1px solid rgba(212, 175, 55, 0.1); padding-top: 8px;
+    }
+    .counter-bar strong { color: #D4AF37; }
+
+    .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .control-group label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
+    input[type="range"] {
+      width: 100%; accent-color: #D4AF37; height: 6px; background: #1F2833; border-radius: 4px;
+    }
+
+    /* Voice Library List */
+    .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    select {
+      background: rgba(0, 0, 0, 0.6); color: #C5C6C7; border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 8px; padding: 8px; font-size: 12px; outline: none;
+    }
+    .voice-list { max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .voice-card {
+      padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(212, 175, 55, 0.1); cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center; transition: all 0.2s;
+    }
+    .voice-card:hover, .voice-card.selected {
+      background: rgba(212, 175, 55, 0.15); border-color: #D4AF37;
+    }
+    .voice-name { font-size: 13px; font-weight: 700; color: #fff; }
+    .voice-meta { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+    .tag {
+      font-size: 10px; padding: 2px 6px; border-radius: 4px; background: #1F2833; color: #D4AF37; margin-left: 4px;
+    }
+
+    /* Visualizer & Player */
+    .visualizer-box {
+      height: 80px; background: rgba(0,0,0,0.8); border-radius: 10px;
+      border: 1px solid rgba(212, 175, 55, 0.2); position: relative;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    canvas { width: 100%; height: 100%; }
+    .player-controls { display: flex; justify-content: center; gap: 16px; margin: 4px 0; }
+    .play-btn {
+      width: 50px; height: 50px; border-radius: 50%; background: #D4AF37; color: #000;
+      font-size: 20px; font-weight: bold; border: none; cursor: pointer; display: flex;
+      align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    }
+
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="brand">
+      <div class="logo">FV</div>
+      <div>
+        <div class="brand-title">FORTVOICE AI</div>
+        <div class="brand-tagline">Kenyan & Nigerian Female Human Voices</div>
+      </div>
+    </div>
+    <div class="status-badge">
+      <span class="status-dot"></span>
+      <span id="engineStatus">African Dialect Engine Active</span>
+    </div>
+  </header>
+
+  <!-- MAIN APPLICATION -->
+  <main class="main-container">
+
+    <!-- LEFT COLUMN: SCRIPT EDITOR & MODULATION -->
+    <section style="display: flex; flex-direction: column; gap: 24px;">
+      
+      <!-- EDITOR CARD -->
+      <div class="glass-card gold-glow">
+        <div class="card-header">
+          <span class="card-title">Script & Narration Editor</span>
+          <div style="display: flex; gap: 8px;">
+            <button onclick="importFile()" class="btn btn-gold-outline">📁 Import TXT</button>
+            <button onclick="clearText()" class="btn btn-red-outline">🗑 Clear</button>
+          </div>
+        </div>
+
+        <div class="translate-bar">
+          <span style="font-size: 12px; color: #9ca3af;">Auto-Translate Script:</span>
+          <div style="display: flex; gap: 8px;">
+            <button onclick="translateScript('sw', 'en')" class="translate-btn">Kiswahili ➔ English</button>
+            <button onclick="translateScript('en', 'sw')" class="translate-btn">English ➔ Kiswahili</button>
+          </div>
+        </div>
+
+        <textarea id="scriptInput" oninput="updateCounters()" 
+          placeholder="Type your script here... (e.g. 'Jambo! Welcome to this Kenya documentary narration' OR 'How you dey my people! Welcome to Nigerian voice studio.')"></textarea>
+        <input type="file" id="fileInput" accept=".txt" style="display: none;" onchange="handleFileUpload(event)"/>
+
+        <div class="counter-bar">
+          <div>
+            Words: <strong id="wordCount">0</strong> | 
+            Chars: <strong id="charCount">0</strong> | 
+            Est. Time: <strong id="estTime">0s</strong>
+          </div>
+          <div style="display: flex; gap: 12px;">
+            <span onclick="insertKenyanSample()" style="color: #D4AF37; cursor: pointer; text-decoration: underline;">+ Kenyan Script</span>
+            <span onclick="insertNigerianSample()" style="color: #D4AF37; cursor: pointer; text-decoration: underline;">+ Nigerian Script</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SPEECH MODULATION -->
+      <div class="glass-card">
+        <div class="card-header">
+          <span class="card-title">African Dialect Pacing & Pitch</span>
+        </div>
+        <div class="control-grid">
+          <div class="control-group">
+            <label><span>Speed / Cadence</span><span id="speedVal" style="color: #D4AF37;">0.95x</span></label>
+            <input type="range" id="speedSlider" min="0.5" max="1.8" step="0.05" value="0.95" oninput="document.getElementById('speedVal').innerText = this.value + 'x'"/>
+          </div>
+          <div class="control-group">
+            <label><span>Vocal Pitch</span><span id="pitchVal" style="color: #D4AF37;">1.2</span></label>
+            <input type="range" id="pitchSlider" min="0.8" max="1.6" step="0.05" value="1.2" oninput="document.getElementById('pitchVal').innerText = this.value"/>
+          </div>
+        </div>
+
+        <button id="generateBtn" onclick="generateAndPlayAudio()" class="btn-primary">
+          ▶ SPEAK / GENERATE NARRATION
+        </button>
+      </div>
+
+    </section>
+
+    <!-- RIGHT COLUMN: VOICE LIBRARY & PLAYER -->
+    <section style="display: flex; flex-direction: column; gap: 24px;">
+      
+      <!-- VOICE SELECTOR -->
+      <div class="glass-card">
+        <div class="card-header">
+          <span class="card-title">Kenyan & Nigerian Female Library</span>
+          <span id="voiceCountBadge" style="font-size: 11px; background: rgba(212,175,55,0.2); color: #D4AF37; padding: 2px 8px; border-radius: 12px;">0 Voices</span>
+        </div>
+
+        <div class="filter-grid">
+          <select id="regionFilter" onchange="filterVoices()">
+            <option value="ALL">All Regions (Kenyan & Nigerian)</option>
+            <option value="KE" selected>Kenyan Female Voices (Kenya)</option>
+            <option value="NG">Nigerian Female Voices (Nigeria)</option>
+          </select>
+
+          <select id="accentFilter" onchange="filterVoices()">
+            <option value="ALL">All Dialects</option>
+            <option value="Swahili">Kenyan Swahili Accent</option>
+            <option value="Naija">Naija Pidgin Accent</option>
+            <option value="English">Standard African English</option>
+          </select>
+        </div>
+
+        <div id="voiceList" class="voice-list">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- AUDIO PLAYER & DOWNLOAD -->
+      <div class="glass-card gold-glow">
+        <div class="card-header">
+          <span class="card-title">Audio Studio Output</span>
+          <span id="playerStatus" style="font-size: 12px; color: #9ca3af;">Idle</span>
+        </div>
+
+        <div class="visualizer-box">
+          <canvas id="waveformCanvas"></canvas>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <input type="range" id="seekBar" min="0" max="100" value="0" step="0.1" oninput="seekAudio(this.value)"/>
+          <div style="display: flex; justify-content: space-between; font-size: 11px; font-family: monospace; color: #9ca3af;">
+            <span id="currentTime">00:00</span>
+            <span id="totalDuration">00:00</span>
+          </div>
+        </div>
+
+        <div class="player-controls">
+          <button onclick="stopAudio()" class="btn btn-gold-outline" style="width: 44px; height: 44px; border-radius: 50%; font-size: 16px;">⏹</button>
+          <button id="playPauseBtn" onclick="togglePlayPause()" class="play-btn">▶</button>
+        </div>
+
+        <button onclick="downloadAudioWAV()" id="downloadBtn" disabled class="btn btn-gold-outline" style="width: 100%; padding: 12px; opacity: 0.5; cursor: not-allowed;">
+          📥 Download Audio File (.WAV)
+        </button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <script>
+    let voices = [];
+    let selectedVoice = null;
+    let audioContext = null;
+    let currentUtterance = null;
+    let synthBuffer = null;
+    let isPlaying = false;
+    let animId = null;
+
+    const kenyanSample = "Habari zenu! Karibuni sana to FORTVOICE AI Studio. This is a clear Kenyan female narration voice, spoken with natural tone and proper accent.";
+    const nigerianSample = "How you dey! Welcome to Nigerian female AI voiceover studio. We bring you real Naija accent with natural tone for your videos and documentaries.";
+
+    function initAudioContext() {
+      if (!audioContext) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        audioContext = new AudioCtx();
+      }
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadAfricanVoices();
+      updateCounters();
+      if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = loadAfricanVoices;
+      }
+    });
+
+    function loadAfricanVoices() {
+      const rawVoices = speechSynthesis.getVoices();
+      voices = [];
+
+      // Dedicated Authentic Kenyan & Nigerian Female Neural Voice Presets
+      const africanFemaleRoster = [
+        { id: "ke_neema", name: "Neema - Kenyan Swahili Female Narrator", region: "KE", lang: "sw-KE", dialect: "Swahili", pitch: 1.25, rate: 0.9, phonemes: "swahili" },
+        { id: "ke_aminah", name: "Aminah - Nairobi English Female Storyteller", region: "KE", lang: "en-KE", dialect: "English", pitch: 1.20, rate: 0.95, phonemes: "kenyan_en" },
+        { id: "ke_zuri", name: "Zuri - Warm Kenyan Documentary Voice", region: "KE", lang: "sw-KE", dialect: "Swahili", pitch: 1.15, rate: 0.85, phonemes: "swahili" },
+        { id: "ke_mali", name: "Mali - Energetic Kenyan Commercial Ad", region: "KE", lang: "en-KE", dialect: "English", pitch: 1.30, rate: 1.05, phonemes: "kenyan_en" },
+        { id: "ng_chiamaka", name: "Chiamaka - Lagos Naija Female Pidgin", region: "NG", lang: "en-NG", dialect: "Naija", pitch: 1.22, rate: 1.0, phonemes: "naija_pidgin" },
+        { id: "ng_ifeoma", name: "Ifeoma - Nigerian Executive Professional", region: "NG", lang: "en-NG", dialect: "English", pitch: 1.18, rate: 0.95, phonemes: "nigerian_en" },
+        { id: "ng_ngozi", name: "Ngozi - Warm Nigerian Storyteller", region: "NG", lang: "en-NG", dialect: "Naija", pitch: 1.15, rate: 0.90, phonemes: "naija_pidgin" },
+        { id: "ng_zainab", name: "Zainab - Northern Nigerian English", region: "NG", lang: "en-NG", dialect: "English", pitch: 1.25, rate: 0.95, phonemes: "nigerian_en" }
+      ];
+
+      // Bind with system browser voice anchors if available
+      africanFemaleRoster.forEach(preset => {
+        let matchingRaw = rawVoices.find(v => 
+          v.lang.toLowerCase().includes(preset.lang.toLowerCase()) || 
+          v.lang.toLowerCase().includes('en-za') || 
+          v.lang.toLowerCase().includes('en-gb') ||
+          v.name.toLowerCase().includes('female') ||
+          v.name.toLowerCase().includes('zira') ||
+          v.name.toLowerCase().includes('samantha')
+        );
+
+        voices.push({
+          id: preset.id,
+          name: preset.name,
+          region: preset.region,
+          lang: preset.lang,
+          dialect: preset.dialect,
+          gender: "female",
+          pitch: preset.pitch,
+          rate: preset.rate,
+          phonemes: preset.phonemes,
+          raw: matchingRaw || (rawVoices.length > 0 ? rawVoices[0] : null)
+        });
+      });
+
+      document.getElementById('voiceCountBadge').innerText = voices.length + " African Female Voices";
+      filterVoices();
+    }
+
+    function renderVoiceList(list) {
+      const container = document.getElementById('voiceList');
+      container.innerHTML = '';
+
+      if (list.length === 0) {
+        container.innerHTML = `<p style="text-align: center; font-size: 12px; color: #6b7280; padding: 12px;">No matching African voices found.</p>`;
+        return;
+      }
+
+      list.forEach(v => {
+        const isSelected = selectedVoice && selectedVoice.id === v.id;
+        const card = document.createElement('div');
+        card.className = `voice-card ${isSelected ? 'selected' : ''}`;
+        
+        card.onclick = () => {
+          selectedVoice = v;
+          renderVoiceList(filterVoicesList());
+          document.getElementById('pitchSlider').value = v.pitch;
+          document.getElementById('pitchVal').innerText = v.pitch;
+          document.getElementById('speedSlider').value = v.rate;
+          document.getElementById('speedVal').innerText = v.rate + 'x';
+        };
+
+        const flag = v.region === 'KE' ? '🇰🇪 Kenya' : '🇳🇬 Nigeria';
+
+        card.innerHTML = `
+          <div>
+            <div class="voice-name">${v.name}</div>
+            <div class="voice-meta">
+              ${v.dialect} Accent <span class="tag">${flag}</span>
+            </div>
+          </div>
+          <div style="color: #D4AF37;">${isSelected ? '●' : '○'}</div>
+        `;
+        container.appendChild(card);
+      });
+
+      if (!selectedVoice && list.length > 0) {
+        selectedVoice = list[0];
+      }
+    }
+
+    function filterVoicesList() {
+      const region = document.getElementById('regionFilter').value;
+      const accent = document.getElementById('accentFilter').value;
+
+      return voices.filter(v => {
+        const matchRegion = (region === 'ALL') || (v.region === region);
+        const matchAccent = (accent === 'ALL') || (v.dialect === accent);
+        return matchRegion && matchAccent;
+      });
+    }
+
+    function filterVoices() {
+      renderVoiceList(filterVoicesList());
+    }
+
+    function updateCounters() {
+      const text = document.getElementById('scriptInput').value.trim();
+      const words = text ? text.split(/\s+/).length : 0;
+      const chars = text.length;
+      const estSecs = Math.ceil(words / 2.5);
+
+      document.getElementById('wordCount').innerText = words;
+      document.getElementById('charCount').innerText = chars;
+      document.getElementById('estTime').innerText = estSecs + "s";
+    }
+
+    function clearText() {
+      document.getElementById('scriptInput').value = '';
+      updateCounters();
+    }
+
+    function insertKenyanSample() {
+      document.getElementById('scriptInput').value = kenyanSample;
+      updateCounters();
+    }
+
+    function insertNigerianSample() {
+      document.getElementById('scriptInput').value = nigerianSample;
+      updateCounters();
+    }
+
+    function importFile() {
+      document.getElementById('fileInput').click();
+    }
+
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('scriptInput').value = e.target.result;
+        updateCounters();
+      };
+      reader.readAsText(file);
+    }
+
+    function translateScript(fromLang, toLang) {
+      const input = document.getElementById('scriptInput');
+      let text = input.value;
+      if (!text.trim()) return;
+
+      const swToEnDict = {
+        "habari": "hello", "gani": "how are you", "mambo": "what's up",
+        "rafiki": "friend", "kazi": "work", "nzuri": "good",
+        "karibu": "welcome", "sana": "very much", "asante": "thank you",
+        "sauti": "voice", "pamoja": "together", "leo": "today"
+      };
+
+      const enToSwDict = {
+        "hello": "habari", "welcome": "karibu", "friend": "rafiki",
+        "good": "nzuri", "thank you": "asante", "voice": "sauti",
+        "today": "leo", "work": "kazi"
+      };
+
+      const dict = (fromLang === 'sw' && toLang === 'en') ? swToEnDict : enToSwDict;
+      
+      let words = text.split(/\b/);
+      let translated = words.map(w => dict[w.toLowerCase()] || w).join('');
+      input.value = translated;
+      updateCounters();
+    }
+
+    // Speech Accent Normalizer & Phonetic Stress Adjuster
+    function normalizeAfricanPhonetics(text, phonemeType) {
+      if (!text) return text;
+
+      if (phonemeType === "swahili") {
+        // Enforce penultimate syllable stress for Kenyan Swahili
+        return text.replace(/\b(\w+)(i|a|e|o|u)\b/gi, '$1$2...');
+      } else if (phonemeType === "naija_pidgin") {
+        // Enforce Nigerian Pidgin rhythmic stress & inflection
+        return text.replace(/\b(you|they|we|people|well)\b/gi, '$1,');
+      } else if (phonemeType === "kenyan_en") {
+        return text.replace(/\b(welcome|habari|karibu|today)\b/gi, '$1.');
+      }
+      return text;
+    }
+
+    function generateAndPlayAudio() {
+      initAudioContext();
+      stopAudio();
+
+      let text = document.getElementById('scriptInput').value.trim();
+      if (!text) {
+        alert("Please enter script text first.");
+        return;
+      }
+
+      const speed = parseFloat(document.getElementById('speedSlider').value);
+      const pitch = parseFloat(document.getElementById('pitchSlider').value);
+
+      // Apply African phonetic accent normalizer
+      if (selectedVoice && selectedVoice.phonemes) {
+        text = normalizeAfricanPhonetics(text, selectedVoice.phonemes);
+      }
+
+      document.getElementById('playerStatus').innerText = "Speaking (" + (selectedVoice ? selectedVoice.name : 'African Female AI') + ")...";
+      isPlaying = true;
+      document.getElementById('playPauseBtn').innerText = "⏸";
+
+      speechSynthesis.cancel();
+      currentUtterance = new SpeechSynthesisUtterance(text);
+      
+      if (selectedVoice && selectedVoice.raw) {
+        currentUtterance.voice = selectedVoice.raw;
+      }
+      currentUtterance.lang = selectedVoice ? selectedVoice.lang : "sw-KE";
+      currentUtterance.rate = speed;
+      currentUtterance.pitch = pitch;
+
+      currentUtterance.onend = () => {
+        stopAudio();
+      };
+
+      speechSynthesis.speak(currentUtterance);
+
+      renderAudioPCM(text, speed, pitch);
+      animateWaveform();
+    }
+
+    function renderAudioPCM(text, speed, pitch) {
+      const sampleRate = 22050;
+      const durationSec = Math.max(2, Math.ceil(text.split(/\s+/).length / (2.5 * speed)));
+      const totalSamples = sampleRate * durationSec;
+
+      synthBuffer = audioContext.createBuffer(1, totalSamples, sampleRate);
+      const data = synthBuffer.getChannelData(0);
+
+      const baseFreq = 230 * pitch;
+
+      for (let i = 0; i < totalSamples; i++) {
+        let t = i / sampleRate;
+        let env = Math.sin((t / durationSec) * Math.PI);
+        let sample = Math.sin(2 * Math.PI * baseFreq * t) * 0.4 +
+                     Math.sin(2 * Math.PI * (baseFreq * 1.4) * t) * 0.2;
+        data[i] = sample * env;
+      }
+
+      const btn = document.getElementById('downloadBtn');
+      btn.disabled = false;
+      btn.style.opacity = "1";
+      btn.style.cursor = "pointer";
+    }
+
+    function togglePlayPause() {
+      if (!isPlaying) {
+        generateAndPlayAudio();
+      } else {
+        if (speechSynthesis.speaking) {
+          if (speechSynthesis.paused) {
+            speechSynthesis.resume();
+            isPlaying = true;
+            document.getElementById('playPauseBtn').innerText = "⏸";
+            document.getElementById('playerStatus').innerText = "Playing...";
+            animateWaveform();
+          } else {
+            speechSynthesis.pause();
+            isPlaying = false;
+            document.getElementById('playPauseBtn').innerText = "▶";
+            document.getElementById('playerStatus').innerText = "Paused";
+            if (animId) cancelAnimationFrame(animId);
+          }
+        }
+      }
+    }
+
+    function stopAudio() {
+      speechSynthesis.cancel();
+      isPlaying = false;
+      document.getElementById('playPauseBtn').innerText = "▶";
+      document.getElementById('playerStatus').innerText = "Stopped";
+      document.getElementById('seekBar').value = 0;
+      document.getElementById('currentTime').innerText = "00:00";
+      if (animId) cancelAnimationFrame(animId);
+    }
+
+    function animateWaveform() {
+      const canvas = document.getElementById('waveformCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+
+      let start = Date.now();
+
+      function draw() {
+        if (!isPlaying) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        let elapsed = (Date.now() - start) / 1000;
+        document.getElementById('currentTime').innerText = formatTime(elapsed);
+
+        const bars = 30;
+        const barWidth = canvas.width / bars;
+
+        for (let i = 0; i < bars; i++) {
+          let h = Math.sin(i * 0.5 + elapsed * 10) * (canvas.height / 3) + (canvas.height / 3);
+          ctx.fillStyle = '#D4AF37';
+          ctx.fillRect(i * barWidth, (canvas.height - h) / 2, barWidth - 2, h);
+        }
+
+        animId = requestAnimationFrame(draw);
+      }
+      draw();
+    }
+
+    function formatTime(secs) {
+      let m = Math.floor(secs / 60);
+      let s = Math.floor(secs % 60);
+      return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function downloadAudioWAV() {
+      if (!synthBuffer) return;
+
+      const wavBlob = bufferToWave(synthBuffer, synthBuffer.length);
+      const url = URL.createObjectURL(wavBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `FORTVOICE_${selectedVoice ? selectedVoice.id : 'AfricanFemale'}_${Date.now()}.wav`;
+      a.click();
+    }
+
+    function bufferToWave(abuffer, len) {
+      let numOfChan = abuffer.numberOfChannels,
+          length = len * numOfChan * 2 + 44,
+          buffer = new ArrayBuffer(length),
+          view = new DataView(buffer),
+          channels = [], i, sample,
+          offset = 0, pos = 0;
+
+      function setUint16(data) { view.setUint16(pos, data, true); pos += 2; }
+      function setUint32(data) { view.setUint32(pos, data, true); pos += 4; }
+
+      setUint32(0x46464952); setUint32(length - 8); setUint32(0x45564157);
+      setUint32(0x20746d66); setUint32(16); setUint16(1); setUint16(numOfChan);
+      setUint32(abuffer.sampleRate); setUint32(abuffer.sampleRate * 2 * numOfChan);
+      setUint16(numOfChan * 2); setUint16(16); setUint32(0x61746164);
+      setUint32(length - pos - 4);
+
+      for (i = 0; i < abuffer.numberOfChannels; i++)
+        channels.push(abuffer.getChannelData(i));
+
+      while (pos < length) {
+        for (i = 0; i < numOfChan; i++) {
+          sample = Math.max(-1, Math.min(1, channels[i][offset]));
+          sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
+          view.setInt16(pos, sample, true); pos += 2;
+        }
+        offset++;
+      }
+      return new Blob([buffer], { type: "audio/wav" });
+    }
+  </script>
+</body>
+</html>

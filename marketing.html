@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0f0a1e">
+    <title>WILLFORTUNATE — Social Media Marketing Bot</title>
+
+    <link rel="preconnect" href="https://aeuqiijhozlmiptagthj.supabase.co">
+    <link rel="dns-prefetch" href="https://aeuqiijhozlmiptagthj.supabase.co">
+    <link rel="preconnect" href="https://play.google.com">
+    <link rel="preconnect" href="https://apps.apple.com">
+    <link rel="preconnect" href="https://www.posterwall.com">
+    <link rel="dns-prefetch" href="https://play.google.com">
+    <link rel="dns-prefetch" href="https://apps.apple.com">
+    <link rel="dns-prefetch" href="https://www.posterwall.com">
+
+    <!-- ⚡ ZERO-DELAY LOGO BOOTSTRAP + FAVICON — runs SYNCHRONOUSLY before body parses -->
+    <script>
+    (function () {
+        var PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%234CAF50' opacity='0.2'/%3E%3Ctext x='50' y='55' font-size='40' text-anchor='middle' fill='%23333' font-family='Arial'%3EWF%3C/text%3E%3C/svg%3E";
+        var FOURTEEN_DAYS = 14 * 24 * 60 * 60 * 1000;
+        var src = null;
+        try {
+            var raw = localStorage.getItem('wf_logo_v1');
+            if (raw) {
+                var c = JSON.parse(raw);
+                if (c && c.data && (Date.now() - c.ts) < FOURTEEN_DAYS) {
+                    src = c.data;
+                }
+            }
+        } catch (e) {}
+        window.__WF_LOGO_SRC__ = src || PLACEHOLDER;
+        window.__WF_LOGO_CACHED__ = !!src;
+
+        // ⭐ Set favicon synchronously — replaces any default icon
+        try {
+            var links = document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]');
+            if (!links.length) {
+                var l = document.createElement('link');
+                l.rel = 'icon';
+                document.head.appendChild(l);
+                links = [l];
+            }
+            for (var i = 0; i < links.length; i++) {
+                links[i].href = window.__WF_LOGO_SRC__;
+                if (src) {
+                    if (src.indexOf('data:image/svg') === 0) links[i].type = 'image/svg+xml';
+                    else if (src.indexOf('data:image/png') === 0) links[i].type = 'image/png';
+                    else if (src.indexOf('data:image/jpeg') === 0) links[i].type = 'image/jpeg';
+                    else if (src.indexOf('data:image/webp') === 0) links[i].type = 'image/webp';
+                } else {
+                    links[i].type = 'image/svg+xml';
+                }
+            }
+        } catch (e) {}
+
+        // Preload/decode immediately
+        try {
+            var pre = new Image();
+            pre.src = window.__WF_LOGO_SRC__;
+            window.__WF_LOGO_PRELOAD__ = pre;
+        } catch (e) {}
+    })();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg-start: #1a1033;
+            --bg-mid: #2a1a4d;
+            --bg-end: #0f0a1e;
+            --cta-1: #00e5ff;
+            --cta-2: #00b3b3;
+            --cta-3: #0077ff;
+            --glass-bg: rgba(255, 255, 255, 0.06);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --text-primary: #f5f3ff;
+            --text-muted: rgba(220, 210, 255, 0.65);
+            --glitter-gold: #ffe66d;
+            --glitter-pink: #ff6bd0;
+            --glitter-purple: #b88bff;
+            --glitter-cyan: #00e5ff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; width: 100%; }
+
+        /* 🔒 DEFAULT: NO SCROLL — desktop / tall screens */
+        html, body {
+            overflow: hidden;
+            overscroll-behavior: none;
+            position: fixed;
+            inset: 0;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+            background: #0f0a1e;
+            background-image: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-mid) 50%, var(--bg-end) 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text-primary);
+        }
+
+        @media (min-width: 769px) {
+            body::before, body::after {
+                content: '';
+                position: fixed;
+                border-radius: 50%;
+                filter: blur(80px);
+                pointer-events: none;
+                will-change: transform;
+                z-index: 0;
+            }
+            body::before {
+                top: -150px; left: -150px;
+                width: 400px; height: 400px;
+                background: radial-gradient(circle, rgba(123, 47, 247, 0.35), transparent 70%);
+                animation: orb1 20s ease-in-out infinite;
+            }
+            body::after {
+                bottom: -150px; right: -150px;
+                width: 450px; height: 450px;
+                background: radial-gradient(circle, rgba(241, 7, 163, 0.28), transparent 70%);
+                animation: orb2 25s ease-in-out infinite;
+            }
+            @keyframes orb1 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(50px, 80px) scale(1.15); } }
+            @keyframes orb2 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-60px, -70px) scale(1.1); } }
+        }
+
+        .glitter-layer {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 2;
+            overflow: hidden;
+            contain: strict;
+        }
+
+        .glitter-particle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffffff 0%, var(--glitter-gold) 40%, transparent 70%);
+            box-shadow: 0 0 6px var(--glitter-gold), 0 0 12px rgba(255, 230, 109, 0.5);
+            opacity: 0;
+            will-change: transform, opacity;
+            animation: glitterFloat linear infinite;
+        }
+        .glitter-particle.pink { background: radial-gradient(circle, #ffffff 0%, var(--glitter-pink) 40%, transparent 70%); box-shadow: 0 0 6px var(--glitter-pink), 0 0 12px rgba(255, 107, 208, 0.5); }
+        .glitter-particle.purple { background: radial-gradient(circle, #ffffff 0%, var(--glitter-purple) 40%, transparent 70%); box-shadow: 0 0 6px var(--glitter-purple), 0 0 12px rgba(184, 139, 255, 0.5); }
+        .glitter-particle.cyan { background: radial-gradient(circle, #ffffff 0%, var(--glitter-cyan) 40%, transparent 70%); box-shadow: 0 0 6px var(--glitter-cyan), 0 0 12px rgba(0, 229, 255, 0.5); }
+
+        @keyframes glitterFloat {
+            0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
+            10% { opacity: 1; transform: translateY(90vh) translateX(10px) scale(1); }
+            50% { opacity: 0.9; transform: translateY(50vh) translateX(-15px) scale(1.2); }
+            90% { opacity: 0.6; transform: translateY(10vh) translateX(20px) scale(0.8); }
+            100% { transform: translateY(-10vh) translateX(0) scale(0); opacity: 0; }
+        }
+
+        .twinkle-star {
+            position: absolute;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 4px #ffffff, 0 0 8px var(--glitter-cyan), 0 0 12px rgba(255, 255, 255, 0.6);
+            pointer-events: none;
+            will-change: transform, opacity;
+            animation: twinkle 2s ease-in-out infinite;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.4); }
+        }
+
+        .glitter-rain {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffffff 0%, var(--glitter-gold) 50%, transparent 80%);
+            box-shadow: 0 0 8px var(--glitter-gold), 0 0 16px rgba(255, 230, 109, 0.4);
+            opacity: 0;
+            will-change: transform, opacity;
+            animation: glitterRain linear infinite;
+        }
+        .glitter-rain.pink { background: radial-gradient(circle, #ffffff 0%, var(--glitter-pink) 50%, transparent 80%); box-shadow: 0 0 8px var(--glitter-pink), 0 0 16px rgba(255, 107, 208, 0.4); }
+        .glitter-rain.purple { background: radial-gradient(circle, #ffffff 0%, var(--glitter-purple) 50%, transparent 80%); box-shadow: 0 0 8px var(--glitter-purple), 0 0 16px rgba(184, 139, 255, 0.4); }
+        .glitter-rain.cyan { background: radial-gradient(circle, #ffffff 0%, var(--glitter-cyan) 50%, transparent 80%); box-shadow: 0 0 8px var(--glitter-cyan), 0 0 16px rgba(0, 229, 255, 0.4); }
+
+        @keyframes glitterRain {
+            0% { transform: translate(-20px, -20px) scale(0.5); opacity: 0; }
+            10% { opacity: 1; transform: translate(0, 0) scale(1); }
+            90% { opacity: 0.8; transform: translate(100vw, 100vh) scale(0.8); }
+            100% { opacity: 0; transform: translate(110vw, 110vh) scale(0.3); }
+        }
+
+        .orbit-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 6;
+        }
+        .orbit-sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffffff 0%, var(--glitter-gold) 50%, transparent 80%);
+            box-shadow: 0 0 8px var(--glitter-gold), 0 0 16px rgba(255, 230, 109, 0.5);
+            top: 50%;
+            left: 50%;
+            transform-origin: 0 0;
+            animation: orbit 8s linear infinite;
+            will-change: transform;
+        }
+        .orbit-sparkle.pink { background: radial-gradient(circle, #ffffff 0%, var(--glitter-pink) 50%, transparent 80%); box-shadow: 0 0 8px var(--glitter-pink), 0 0 16px rgba(255, 107, 208, 0.5); }
+        .orbit-sparkle.purple { background: radial-gradient(circle, #ffffff 0%, var(--glitter-purple) 50%, transparent 80%); box-shadow: 0 0 8px var(--glitter-purple), 0 0 16px rgba(184, 139, 255, 0.5); }
+        .orbit-sparkle.cyan { background: radial-gradient(circle, #ffffff 0%, var(--glitter-cyan) 50%, transparent 80%); box-shadow: 0 0 8px var(--glitter-cyan), 0 0 16px rgba(0, 229, 255, 0.5); }
+        @keyframes orbit {
+            0% { transform: rotate(0deg) translateX(90px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(90px) rotate(-360deg); }
+        }
+
+        /* 🧱 CARD — compact vertical footprint (mobile default) */
+        .container {
+            position: relative;
+            z-index: 3;
+            width: 100%;
+            max-width: clamp(300px, 88vw, 360px);
+            padding: clamp(10px, 3vw, 14px) clamp(16px, 5vw, 26px) clamp(8px, 2.5vw, 12px);
+            border-radius: clamp(18px, 5vw, 24px);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: center;
+            gap: 0;
+            overflow: hidden;
+            flex-shrink: 0;
+            margin-block: auto;
+        }
+
+        /* 🖥️ Desktop: PRO two-column layout — big logo hero + compact info card */
+        @media (min-width: 769px) {
+            .container {
+                max-width: min(1080px, 92vw);
+                min-height: 0;
+                padding: 32px 40px 32px 32px;
+                display: grid;
+                grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.85fr);
+                grid-template-rows: auto;
+                grid-template-areas:
+                    "logo   name"
+                    "logo   title"
+                    "logo   button"
+                    "logo   hint"
+                    "logo   stats";
+                column-gap: 40px;
+                row-gap: 0;
+                align-items: center;
+                justify-content: center;
+                text-align: left;
+                backdrop-filter: blur(28px) saturate(180%);
+                -webkit-backdrop-filter: blur(28px) saturate(180%);
+                box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55), 0 0 120px rgba(123, 47, 247, 0.18);
+            }
+
+            .image-container {
+                grid-area: logo;
+                margin: 0;
+                align-self: center;
+                justify-self: center;
+                max-width: 100%;
+            }
+
+            .bot-name {
+                grid-area: name;
+                font-size: clamp(22px, 1.9vw, 30px);
+                letter-spacing: clamp(1.5px, 0.3vw, 2.4px);
+                margin: 0 0 6px;
+                text-align: left;
+            }
+
+            .bot-title {
+                grid-area: title;
+                font-size: clamp(12px, 1vw, 14px);
+                letter-spacing: 1px;
+                margin: 0 0 20px;
+                padding: 0 0 18px;
+                text-align: left;
+            }
+
+            /* Compact button — auto width, pinned left, perfect pill size */
+            .action-button {
+                grid-area: button;
+                align-self: end;
+                justify-self: start;
+                width: auto;
+                max-width: 260px;
+                margin: 0 0 10px;
+                padding: 10px 22px;
+                font-size: 12px;
+                letter-spacing: 1px;
+            }
+
+            .click-text {
+                grid-area: hint;
+                text-align: left;
+                margin: 0 0 16px;
+            }
+
+            .stats-container {
+                grid-area: stats;
+                text-align: left;
+                margin: 0;
+                padding: 14px 0 0;
+            }
+
+            /* Bigger, uncluttered logo in the hero column */
+            .logo-image {
+                max-height: clamp(520px, 88dvh, 940px);
+                max-width: 100%;
+                width: auto;
+            }
+        }
+
+        /* 🖥️ Short desktops (laptops ≤800px tall): tighter paddings + bigger logo than before */
+        @media (min-width: 769px) and (max-height: 800px) {
+            .container {
+                padding: 24px 28px 24px 24px;
+                column-gap: 28px;
+            }
+            .logo-image { max-height: clamp(400px, 74dvh, 660px); }
+        }
+
+        /* 🖥️ Ultra-wide: keep the hero logo from getting absurd */
+        @media (min-width: 1600px) {
+            .container { max-width: 1180px; }
+            .logo-image { max-height: 760px; }
+        }
+
+        @media (max-width: 768px) {
+            .container { background: rgba(255, 255, 255, 0.08); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); }
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: calc(clamp(18px, 5vw, 24px) + 1px);
+            padding: 1.5px;
+            background: linear-gradient(115deg,
+                transparent 0%,
+                rgba(255, 230, 109, 0.6) 15%,
+                rgba(255, 107, 208, 0.6) 30%,
+                rgba(184, 139, 255, 0.6) 45%,
+                rgba(0, 229, 255, 0.6) 60%,
+                rgba(255, 230, 109, 0.6) 75%,
+                transparent 100%);
+            background-size: 300% 300%;
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            animation: borderShimmer 6s linear infinite;
+            z-index: 5;
+        }
+        @keyframes borderShimmer {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 300% 50%; }
+        }
+
+        .back-button {
+            position: absolute;
+            top: clamp(8px, 2.5vw, 12px);
+            left: clamp(8px, 2.5vw, 12px);
+            width: clamp(36px, 10vw, 42px);
+            height: clamp(36px, 10vw, 42px);
+            border-radius: clamp(12px, 3.5vw, 14px);
+            background: linear-gradient(145deg, #0a1a55 0%, #1a3a9c 55%, #2a52c7 100%);
+            border: 1.5px solid rgba(100, 160, 255, 0.7);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            font-size: clamp(16px, 4.5vw, 19px);
+            font-weight: 700;
+            z-index: 20;
+            touch-action: manipulation;
+            box-shadow: 0 6px 16px rgba(10, 26, 85, 0.55), 0 0 22px rgba(60, 120, 255, 0.4), inset 0 1.5px 0 rgba(160, 200, 255, 0.45);
+        }
+        @media (min-width: 769px) {
+            .back-button { transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, border-color 0.2s ease; }
+            .back-button:hover {
+                transform: translateY(-2px) scale(1.04);
+                border-color: rgba(140, 190, 255, 1);
+                box-shadow: 0 10px 24px rgba(10, 26, 85, 0.7), 0 0 32px rgba(80, 150, 255, 0.6), 0 0 60px rgba(60, 120, 255, 0.35), inset 0 1.5px 0 rgba(180, 215, 255, 0.55);
+            }
+        }
+        .back-button:active { transform: scale(0.94); }
+
+        .image-container {
+            position: relative;
+            width: 100%;
+            margin: clamp(2px, 1vw, 4px) auto clamp(4px, 2vw, 8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            overflow: visible;
+            flex: 0 1 auto;
+            min-height: 0;
+        }
+        .image-container.is-empty {
+            border: 2px dashed rgba(180, 140, 255, 0.35);
+            border-radius: 12px;
+            padding: 24px 22px;
+            min-height: 120px;
+        }
+        .image-container.is-empty::after {
+            content: 'Tap to add logo';
+            position: absolute;
+            bottom: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10.5px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        .image-container.has-logo { border: none; padding: 0; background: transparent; }
+        .image-container.has-logo::after { display: none; }
+
+        /* ⭐ Logo — base rule (scrollable/centered mobile screens) */
+        .logo-image {
+            display: block;
+            max-width: 100%;
+            max-height: clamp(180px, 38dvh, 440px);
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 0;
+            border: none;
+            background: transparent;
+            pointer-events: none;
+            -webkit-user-drag: none;
+            -webkit-touch-callout: none;
+            position: relative;
+            z-index: 2;
+            animation: logoSparkle 4s ease-in-out infinite;
+        }
+
+        /* 🖼️ Landscape short screens: keep logo from dominating */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .logo-image { max-height: 60vh; }
+            .container   { max-width: 70vw; }
+        }
+
+        @keyframes logoSparkle {
+            0%, 100% { filter: drop-shadow(0 0 8px rgba(255, 230, 109, 0.3)) drop-shadow(0 0 16px rgba(255, 107, 208, 0.2)); }
+            50% { filter: drop-shadow(0 0 16px rgba(255, 230, 109, 0.6)) drop-shadow(0 0 32px rgba(255, 107, 208, 0.4)); }
+        }
+        .image-container.is-empty .logo-image { display: none; }
+
+        .image-container.has-logo::before {
+            content: '';
+            position: absolute;
+            inset: -20px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 230, 109, 0.15), transparent 40%),
+                        radial-gradient(circle at 70% 60%, rgba(255, 107, 208, 0.15), transparent 40%),
+                        radial-gradient(circle at 50% 80%, rgba(0, 229, 255, 0.12), transparent 40%);
+            pointer-events: none;
+            animation: haloShift 6s ease-in-out infinite;
+            z-index: 1;
+        }
+        @keyframes haloShift {
+            0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.6; }
+            50% { transform: rotate(180deg) scale(1.1); opacity: 1; }
+        }
+
+        .bot-name {
+            font-size: clamp(17px, 5.2vw, 22px);
+            font-weight: 800;
+            letter-spacing: clamp(1px, 0.5vw, 1.8px);
+            text-transform: uppercase;
+            line-height: 1.1;
+            margin: 0 0 clamp(2px, 0.8vw, 3px);
+            background: linear-gradient(90deg,
+                #ffffff 0%,
+                var(--glitter-gold) 20%,
+                #ffffff 40%,
+                var(--glitter-pink) 60%,
+                #ffffff 80%,
+                var(--glitter-cyan) 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: nameShimmer 4s linear infinite;
+            flex: 0 0 auto;
+        }
+        @keyframes nameShimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .bot-title {
+            font-size: clamp(10px, 3vw, 12.5px);
+            font-weight: 500;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            line-height: 1.2;
+            color: var(--text-muted);
+            margin: 0 0 clamp(6px, 2.5vw, 10px);
+            padding: 0 0 clamp(5px, 2vw, 8px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            flex: 0 0 auto;
+        }
+
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: clamp(9px, 3vw, 13px) clamp(16px, 5vw, 24px);
+            border-radius: clamp(11px, 3.5vw, 14px);
+            background: linear-gradient(135deg, var(--cta-1) 0%, var(--cta-3) 50%, var(--cta-2) 100%);
+            background-size: 200% 200%;
+            color: #001a22;
+            font-weight: 800;
+            font-size: clamp(11px, 3.2vw, 13px);
+            letter-spacing: clamp(0.8px, 0.35vw, 1.2px);
+            text-transform: uppercase;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+            box-shadow: 0 8px 24px rgba(0, 229, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            position: relative;
+            overflow: hidden;
+            animation: ctaShimmer 3s ease-in-out infinite;
+            flex: 0 0 auto;
+        }
+        @keyframes ctaShimmer { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+            animation: lightSweep 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes lightSweep {
+            0% { left: -100%; }
+            50%, 100% { left: 200%; }
+        }
+
+        .action-button::after {
+            content: '✨';
+            position: absolute;
+            right: 12px;
+            font-size: 14px;
+            opacity: 0.9;
+            animation: sparkleFloat 2s ease-in-out infinite;
+        }
+        @keyframes sparkleFloat {
+            0%, 100% { transform: translateY(0) scale(1); opacity: 0.9; }
+            50% { transform: translateY(-2px) scale(1.2); opacity: 1; }
+        }
+
+        @media (min-width: 769px) {
+            .action-button { transition: transform 0.15s ease, box-shadow 0.2s ease; }
+            .action-button:hover {
+                transform: translateY(-2px) scale(1.01);
+                box-shadow: 0 12px 32px rgba(0, 229, 255, 0.55), 0 0 40px rgba(255, 230, 109, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            }
+        }
+        .action-button:active { transform: scale(0.97); }
+
+        .click-text {
+            font-size: clamp(9px, 2.8vw, 10.5px);
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: rgba(200, 190, 240, 0.45);
+            margin: clamp(3px, 1.2vw, 5px) 0 0;
+            line-height: 1.2;
+            flex: 0 0 auto;
+        }
+
+        .stats-container {
+            margin: clamp(4px, 1.8vw, 8px) 0 0;
+            padding: clamp(3px, 1.2vw, 6px) 0 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: clamp(10px, 2.9vw, 11.5px);
+            letter-spacing: 0.4px;
+            line-height: 1.2;
+            color: rgba(200, 190, 240, 0.5);
+            flex: 0 0 auto;
+        }
+        #visitCount { font-weight: 600; color: rgba(220, 210, 255, 0.85); }
+
+        .upload-toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(20, 15, 35, 0.98);
+            border: 1px solid rgba(123, 47, 247, 0.4);
+            border-left: 3px solid #f107a3;
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-size: 12.5px;
+            color: var(--text-primary);
+            z-index: 10001;
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+            pointer-events: none;
+            max-width: 90%;
+        }
+        .upload-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .upload-toast.error { border-left-color: #e74c3c; }
+
+        .live-dot {
+            position: fixed;
+            top: 14px;
+            right: 14px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #2ecc71;
+            box-shadow: 0 0 10px #2ecc71, 0 0 20px rgba(46, 204, 113, 0.6);
+            z-index: 10002;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .live-dot.connected { opacity: 1; animation: livePulse 2s ease-in-out infinite; }
+        @keyframes livePulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 10px #2ecc71, 0 0 20px rgba(46, 204, 113, 0.6); }
+            50% { transform: scale(1.3); box-shadow: 0 0 15px #2ecc71, 0 0 30px rgba(46, 204, 113, 0.9); }
+        }
+
+        /* ────────────────────────────────────────────────
+           MODE SWITCHES ONLY — scroll on/off, hide extras.
+           ──────────────────────────────────────────────── */
+
+        /* SCROLL MODE: enable when the card cannot fit vertically. */
+        @media (max-height: 700px), (max-width: 420px) and (max-height: 780px) {
+            html, body {
+                position: static;
+                inset: auto;
+                height: auto;
+                min-height: 100dvh;
+                overflow-x: hidden;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior-y: contain;
+            }
+            body {
+                align-items: flex-start;
+                padding: 10px 10px 16px;
+            }
+            .container {
+                margin-block: auto;
+                /* ⭐ Stacked/no-scroll layout gets a bigger logo + wider card */
+                max-width: 94vw;
+                padding-left:  clamp(12px, 3vw, 18px);
+                padding-right: clamp(12px, 3vw, 18px);
+            }
+            .logo-image {
+                max-height: clamp(240px, 52dvh, 560px);
+            }
+        }
+
+        /* VERY SHORT viewports: hide non-essential rows */
+        @media (max-height: 480px) {
+            .stats-container { display: none; }
+            .click-text { display: none; }
+        }
+
+        /* Motion preferences */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            .glitter-layer, .orbit-layer { display: none !important; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glitter-layer" id="glitterLayer"></div>
+    <div class="glitter-layer" id="rainLayer"></div>
+    <div class="glitter-layer" id="twinkleLayer"></div>
+
+    <div class="live-dot" id="liveDot"></div>
+
+    <div class="container">
+        <a href="javascript:history.back()" class="back-button" title="Go back" aria-label="Go back"><span>←</span></a>
+
+        <div class="image-container has-logo" id="logoContainer">
+            <div class="orbit-layer" id="orbitLayer"></div>
+            <script>
+            /* ⚡ Synchronous injection — img exists with src already set BEFORE first paint */
+            document.write('<img id="mainLogo" class="logo-image" alt="WILLFORTUNATE Logo" src="' + window.__WF_LOGO_SRC__ + '">');
+            </script>
+            <noscript>
+                <img id="mainLogo" class="logo-image" alt="WILLFORTUNATE Logo"
+                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%234CAF50' opacity='0.2'/%3E%3Ctext x='50' y='55' font-size='40' text-anchor='middle' fill='%23333' font-family='Arial'%3EWF%3C/text%3E%3C/svg%3E">
+            </noscript>
+        </div>
+
+        <div class="bot-name">WILLFORTUNATE</div>
+        <div class="bot-title">Social Media Marketing Bot</div>
+
+        <button id="posterwallBtn" class="action-button" type="button">OPEN POSTERWALL →</button>
+
+        <div class="click-text">Tap to open poster wall app</div>
+
+        <div class="stats-container" id="statsDisplay">
+            <span id="visitCount">Loading...</span>
+        </div>
+    </div>
+
+    <input type="file" id="logoUploadInput" accept="image/*" style="display:none">
+    <div class="upload-toast" id="uploadToast"></div>
+
+    <script>
+        (function initGlitter() {
+            var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (prefersReduced) return;
+            var isMobile = window.matchMedia('(max-width: 768px)').matches;
+            var colors = ['', 'pink', 'purple', 'cyan'];
+            function pickColor() { return colors[Math.floor(Math.random() * colors.length)]; }
+
+            var glitterLayer = document.getElementById('glitterLayer');
+            if (glitterLayer) {
+                var count1 = isMobile ? 30 : 60;
+                for (var i = 0; i < count1; i++) {
+                    var p = document.createElement('div');
+                    p.className = 'glitter-particle ' + pickColor();
+                    p.style.left = Math.random() * 100 + '%';
+                    p.style.bottom = '-20px';
+                    p.style.animationDuration = (8 + Math.random() * 12) + 's';
+                    p.style.animationDelay = '-' + (Math.random() * 15) + 's';
+                    var size = 2 + Math.random() * 4;
+                    p.style.width = size + 'px';
+                    p.style.height = size + 'px';
+                    glitterLayer.appendChild(p);
+                }
+            }
+            var twinkleLayer = document.getElementById('twinkleLayer');
+            if (twinkleLayer) {
+                var count2 = isMobile ? 20 : 40;
+                for (var j = 0; j < count2; j++) {
+                    var s = document.createElement('div');
+                    s.className = 'twinkle-star';
+                    s.style.left = Math.random() * 100 + '%';
+                    s.style.top = Math.random() * 100 + '%';
+                    s.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+                    s.style.animationDelay = '-' + (Math.random() * 4) + 's';
+                    var ss = 2 + Math.random() * 3;
+                    s.style.width = ss + 'px';
+                    s.style.height = ss + 'px';
+                    twinkleLayer.appendChild(s);
+                }
+            }
+            var rainLayer = document.getElementById('rainLayer');
+            if (rainLayer) {
+                var count3 = isMobile ? 15 : 30;
+                for (var k = 0; k < count3; k++) {
+                    var r = document.createElement('div');
+                    r.className = 'glitter-rain ' + pickColor();
+                    r.style.left = '-50px';
+                    r.style.top = '-50px';
+                    r.style.animationDuration = (6 + Math.random() * 8) + 's';
+                    r.style.animationDelay = '-' + (Math.random() * 10) + 's';
+                    var rs = 2 + Math.random() * 3;
+                    r.style.width = rs + 'px';
+                    r.style.height = rs + 'px';
+                    rainLayer.appendChild(r);
+                }
+            }
+            var orbitLayer = document.getElementById('orbitLayer');
+            if (orbitLayer) {
+                var count4 = isMobile ? 8 : 12;
+                for (var o = 0; o < count4; o++) {
+                    var orb = document.createElement('div');
+                    orb.className = 'orbit-sparkle ' + pickColor();
+                    orb.style.animationDuration = (6 + Math.random() * 6) + 's';
+                    orb.style.animationDelay = '-' + (Math.random() * 6) + 's';
+                    var orbs = 3 + Math.random() * 3;
+                    orb.style.width = orbs + 'px';
+                    orb.style.height = orbs + 'px';
+                    orbitLayer.appendChild(orb);
+                }
+            }
+        })();
+
+        var _posterLaunching = false;
+        function openPosterMyWall(e) {
+            if (_posterLaunching) return;
+            _posterLaunching = true;
+            if (e) { e.preventDefault(); e.stopPropagation(); }
+            var ua = navigator.userAgent;
+            var isIOS = /iPhone|iPad|iPod/i.test(ua);
+            var isAndroid = /Android/i.test(ua);
+            var isMobile = isIOS || isAndroid;
+
+            if (!isMobile) {
+                try {
+                    var w = window.open('https://www.posterwall.com', '_blank', 'noopener,noreferrer');
+                    if (!w || w.closed || typeof w.closed === 'undefined') {
+                        window.location.href = 'https://www.posterwall.com';
+                    }
+                } catch (err) {
+                    window.location.href = 'https://www.posterwall.com';
+                }
+                setTimeout(function () { _posterLaunching = false; }, 800);
+                return;
+            }
+
+            var appScheme = 'postermywall://';
+            var storeUrl = isIOS
+                ? 'https://apps.apple.com/app/postermywall-design-promote/id6469032454'
+                : 'https://play.google.com/store/apps/details?id=com.app.postermywall12';
+            var websiteUrl = 'https://www.posterwall.com';
+
+            var didHide = false;
+            var timer;
+            function onVisibilityChange() {
+                if (document.hidden || document.visibilityState === 'hidden') {
+                    didHide = true;
+                    clearTimeout(timer);
+                }
+            }
+            document.addEventListener('visibilitychange', onVisibilityChange, { once: true });
+            window.addEventListener('blur', function () {
+                didHide = true;
+                clearTimeout(timer);
+            }, { once: true });
+            timer = setTimeout(function () {
+                document.removeEventListener('visibilitychange', onVisibilityChange);
+                if (!didHide) {
+                    try { window.location.href = storeUrl; } catch (err) { window.location.href = websiteUrl; }
+                }
+                _posterLaunching = false;
+            }, 1200);
+            try {
+                window.location.href = appScheme;
+            } catch (err) {
+                clearTimeout(timer);
+                try { window.location.href = storeUrl; } catch (err2) { window.location.href = websiteUrl; }
+                _posterLaunching = false;
+            }
+        }
+        (function bindInstantButton() {
+            var btn = document.getElementById('posterwallBtn');
+            if (!btn) return;
+            if (window.PointerEvent) btn.addEventListener('pointerdown', openPosterMyWall, { passive: false });
+            else {
+                btn.addEventListener('touchstart', openPosterMyWall, { passive: false });
+                btn.addEventListener('mousedown', openPosterMyWall);
+            }
+            btn.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') openPosterMyWall(e);
+            });
+        })();
+
+        // ============================================================
+        // LOGO SYSTEM — localStorage-first (sync) + favicon sync + Supabase background sync
+        // ============================================================
+        (function () {
+            'use strict';
+
+            var SUPABASE_URL = 'https://aeuqiijhozlmiptagthj.supabase.co';
+            var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFldXFpaWpob3psbWlwdGFndGhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MTA0NTUsImV4cCI6MjA4OTM4NjQ1NX0.kwEI0p9UIlh_OvHTyIqFV7oYKhrmpKyeQy66bmnEHDU';
+
+            var BUCKET = 'landing';
+            var LOGO_FILENAME = 'logo.png';
+            var LOGO_BASE_URL = SUPABASE_URL + '/storage/v1/object/public/' + BUCKET + '/' + LOGO_FILENAME;
+            var FOURTEEN_DAYS = 14 * 24 * 60 * 60 * 1000;
+            var LS_KEY = 'wf_logo_v1';
+            var LANDING_TABLE = 'landing_icon';
+
+            var sb = null;
+            try {
+                if (window.supabase && window.supabase.createClient) {
+                    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                        auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+                    });
+                }
+            } catch (e) { console.error('[INIT]', e); }
+
+            var currentLogoVersion = null;
+
+            function readCache() {
+                try {
+                    var raw = localStorage.getItem(LS_KEY);
+                    if (!raw) return null;
+                    var c = JSON.parse(raw);
+                    if (c && c.data && (Date.now() - c.ts) < FOURTEEN_DAYS) return c;
+                } catch (e) {}
+                return null;
+            }
+            function writeCache(data, version) {
+                try {
+                    localStorage.setItem(LS_KEY, JSON.stringify({ data: data, ts: Date.now(), version: version || null }));
+                } catch (e) {
+                    try { localStorage.clear(); localStorage.setItem(LS_KEY, JSON.stringify({ data: data, ts: Date.now(), version: version || null })); } catch (e2) {}
+                }
+            }
+            function clearCache() {
+                try { localStorage.removeItem(LS_KEY); } catch (e) {}
+            }
+
+            function setFavicon(dataUrl) {
+                try {
+                    var links = document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]');
+                    if (!links.length) {
+                        var l = document.createElement('link');
+                        l.rel = 'icon';
+                        document.head.appendChild(l);
+                        links = [l];
+                    }
+                    for (var i = 0; i < links.length; i++) {
+                        links[i].href = dataUrl;
+                        if (dataUrl.indexOf('data:image/svg') === 0) links[i].type = 'image/svg+xml';
+                        else if (dataUrl.indexOf('data:image/png') === 0) links[i].type = 'image/png';
+                        else if (dataUrl.indexOf('data:image/jpeg') === 0) links[i].type = 'image/jpeg';
+                        else if (dataUrl.indexOf('data:image/webp') === 0) links[i].type = 'image/webp';
+                    }
+                } catch (e) {}
+            }
+
+            var imgEl = document.getElementById('mainLogo');
+            var containerEl = document.getElementById('logoContainer');
+
+            function markLoaded() {
+                imgEl.classList.add('loaded');
+                containerEl.classList.remove('is-empty');
+                containerEl.classList.add('has-logo');
+            }
+            function markEmpty() {
+                imgEl.classList.remove('loaded');
+                containerEl.classList.remove('has-logo');
+                containerEl.classList.add('is-empty');
+            }
+
+            if (window.__WF_LOGO_CACHED__) {
+                markLoaded();
+            } else {
+                markEmpty();
+            }
+
+            function applyNewLogo(dataUrl, version) {
+                if (imgEl.src !== dataUrl) {
+                    imgEl.onload = function () { markLoaded(); };
+                    imgEl.onerror = function () { markEmpty(); };
+                    imgEl.src = dataUrl;
+                    if (imgEl.complete && imgEl.naturalWidth > 0) markLoaded();
+                } else {
+                    markLoaded();
+                }
+                window.__WF_LOGO_CACHED__ = true;
+                window.__WF_LOGO_SRC__ = dataUrl;
+                setFavicon(dataUrl);
+                writeCache(dataUrl, version);
+            }
+
+            function fetchFreshLogo(version) {
+                var url = LOGO_BASE_URL + (version ? '?v=' + encodeURIComponent(version) : '?t=' + Date.now());
+                fetch(url, { cache: 'reload' }).then(function (res) {
+                    if (!res.ok) {
+                        if (!window.__WF_LOGO_CACHED__) markEmpty();
+                        return;
+                    }
+                    return res.blob().then(function (blob) {
+                        if (blob.size < 100) return;
+                        var cached = readCache();
+                        if (cached && cached.version && version && cached.version === version) return;
+                        var reader = new FileReader();
+                        reader.onload = function () {
+                            applyNewLogo(reader.result, version);
+                        };
+                        reader.readAsDataURL(blob);
+                    });
+                }).catch(function () {});
+            }
+
+            function queryLogoVersion() {
+                if (!sb) return Promise.resolve(null);
+                return sb.from(LANDING_TABLE).select('updated_at').eq('id', 'global').maybeSingle().then(function (res) {
+                    return res.data && res.data.updated_at ? res.data.updated_at : null;
+                }).catch(function () { return null; });
+            }
+
+            function subscribeRealtime() {
+                if (!sb) return;
+                try {
+                    sb.channel('landing-icon-live')
+                        .on('postgres_changes', { event: '*', schema: 'public', table: LANDING_TABLE }, function (payload) {
+                            if (!payload.new) {
+                                currentLogoVersion = null;
+                                clearCache();
+                                window.__WF_LOGO_CACHED__ = false;
+                                markEmpty();
+                                return;
+                            }
+                            var v = payload.new.updated_at;
+                            if (v && v !== currentLogoVersion) {
+                                currentLogoVersion = v;
+                                fetchFreshLogo(v);
+                            }
+                        })
+                        .subscribe(function (status) {
+                            var dot = document.getElementById('liveDot');
+                            if (dot) {
+                                if (status === 'SUBSCRIBED') dot.classList.add('connected');
+                                else dot.classList.remove('connected');
+                            }
+                        });
+                } catch (e) { console.error('[REALTIME]', e); }
+            }
+
+            function updateVisitLabel(visits) {
+                var el = document.getElementById('visitCount');
+                if (!el) return;
+                el.textContent = visits <= 1 ? 'Willfortunate International Company' : 'Visit #' + visits;
+            }
+
+            function trackPageView() {
+                if (!sb) return;
+                var now = Date.now();
+                var LAST_KEY = 'wf_last_pv';
+                var COUNT_KEY = 'wf_visit_count';
+                var last = 0;
+                try { last = parseInt(localStorage.getItem(LAST_KEY) || '0', 10); } catch (e) {}
+                if (!last || (now - last) > FOURTEEN_DAYS) {
+                    sb.from('page_views').insert([{ page: 'willfortunate_landing', viewed_at: new Date().toISOString(), refresh_rate: '14_days' }]).then(function () {}).catch(function () {});
+                    try { localStorage.setItem(LAST_KEY, now.toString()); } catch (e) {}
+                    var visits = 1;
+                    try { visits = (parseInt(localStorage.getItem(COUNT_KEY) || '0', 10) || 0) + 1; localStorage.setItem(COUNT_KEY, visits.toString()); } catch (e) {}
+                    updateVisitLabel(visits);
+                }
+            }
+
+            function initTapDetector() {
+                var TARGET = 20;
+                var WINDOW_MS = 20000;
+                var taps = 0;
+                var firstAt = 0;
+                var resetTimer = null;
+                var input = document.getElementById('logoUploadInput');
+                if (!input) return;
+
+                function handleTap(e) {
+                    e.preventDefault();
+                    var now = performance.now();
+                    if (taps === 0) firstAt = now;
+                    if (now - firstAt > WINDOW_MS) { taps = 0; firstAt = now; }
+                    taps++;
+                    if (taps >= TARGET) {
+                        taps = 0;
+                        clearTimeout(resetTimer);
+                        input.value = '';
+                        input.click();
+                        return;
+                    }
+                    clearTimeout(resetTimer);
+                    resetTimer = setTimeout(function () { taps = 0; }, WINDOW_MS);
+                }
+
+                if (window.PointerEvent) containerEl.addEventListener('pointerdown', handleTap, { passive: false });
+                else {
+                    containerEl.addEventListener('touchstart', handleTap, { passive: false });
+                    containerEl.addEventListener('mousedown', handleTap);
+                }
+            }
+
+            function showToast(msg, isError) {
+                var t = document.getElementById('uploadToast');
+                if (!t) return;
+                t.textContent = msg;
+                t.classList.toggle('error', !!isError);
+                t.classList.add('show');
+                clearTimeout(showToast._timer);
+                showToast._timer = setTimeout(function () { t.classList.remove('show'); }, 2500);
+            }
+
+            function initUploadHandler() {
+                var input = document.getElementById('logoUploadInput');
+                if (!input) return;
+
+                input.addEventListener('change', function (e) {
+                    var file = e.target.files && e.target.files[0];
+                    if (!file) return;
+                    e.target.value = '';
+
+                    var previewUrl = URL.createObjectURL(file);
+                    imgEl.onload = function () { markLoaded(); URL.revokeObjectURL(previewUrl); };
+                    imgEl.onerror = markEmpty;
+                    imgEl.src = previewUrl;
+
+                    var reader = new FileReader();
+                    reader.onload = function () {
+                        writeCache(reader.result, 'pending-' + Date.now());
+                        window.__WF_LOGO_CACHED__ = true;
+                        setFavicon(reader.result);
+                    };
+                    reader.readAsDataURL(file);
+
+                    var ext = (file.name.split('.').pop() || 'png').toLowerCase();
+                    var isPng = ext === 'png';
+                    var isJpg = ext === 'jpg' || ext === 'jpeg';
+                    var isWebp = ext === 'webp';
+                    var uploadBlob, contentType;
+
+                    if (isPng) { uploadBlob = Promise.resolve(file); contentType = 'image/png'; }
+                    else if (isJpg) { uploadBlob = Promise.resolve(file); contentType = 'image/jpeg'; }
+                    else if (isWebp) { uploadBlob = Promise.resolve(file); contentType = 'image/webp'; }
+                    else {
+                        uploadBlob = resizeKeepingAspect(file, 1024).then(function (blob) { contentType = 'image/png'; return blob; });
+                    }
+
+                    showToast('Uploading…');
+
+                    uploadBlob.then(function (blob) {
+                        return sb.storage.from(BUCKET).upload(LOGO_FILENAME, blob, { contentType: contentType, upsert: true, cacheControl: '1209600' });
+                    }).then(function (result) {
+                        if (result && result.error) throw result.error;
+                        var now = new Date().toISOString();
+                        return sb.from(LANDING_TABLE).upsert({ id: 'global', url: LOGO_BASE_URL, storage_path: BUCKET + '/' + LOGO_FILENAME, updated_at: now }, { onConflict: 'id' }).then(function () { return now; });
+                    }).then(function (now) {
+                        currentLogoVersion = now;
+                        fetch(LOGO_BASE_URL + '?v=' + encodeURIComponent(now), { cache: 'reload' }).then(function (r) { return r.blob(); }).then(function (b) {
+                            var rd = new FileReader();
+                            rd.onload = function () {
+                                writeCache(rd.result, now);
+                                applyNewLogo(rd.result, now);
+                            };
+                            rd.readAsDataURL(b);
+                        }).catch(function () {});
+                        showToast('✅ Logo updated!');
+                    }).catch(function (err) {
+                        var msg = (err && err.message) ? err.message : String(err);
+                        if (msg.indexOf('row-level security') !== -1) msg = 'Permission denied — run SQL';
+                        showToast('❌ ' + msg, true);
+                    });
+                });
+            }
+
+            function resizeKeepingAspect(file, maxDim) {
+                maxDim = maxDim || 1024;
+                return new Promise(function (resolve, reject) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        var img = new Image();
+                        img.onload = function () {
+                            var w = img.width, h = img.height;
+                            var scale = Math.min(1, maxDim / Math.max(w, h));
+                            var nw = Math.round(w * scale);
+                            var nh = Math.round(h * scale);
+                            var canvas = document.createElement('canvas');
+                            canvas.width = nw;
+                            canvas.height = nh;
+                            var ctx = canvas.getContext('2d');
+                            ctx.imageSmoothingEnabled = true;
+                            ctx.imageSmoothingQuality = 'high';
+                            ctx.drawImage(img, 0, 0, nw, nh);
+                            canvas.toBlob(function (blob) {
+                                if (blob) resolve(blob);
+                                else reject(new Error('encode failed'));
+                            }, 'image/png');
+                        };
+                        img.onerror = function () { reject(new Error('image load failed')); };
+                        img.src = e.target.result;
+                    };
+                    reader.onerror = function () { reject(new Error('file read failed')); };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            function boot() {
+                initTapDetector();
+                initUploadHandler();
+
+                try {
+                    updateVisitLabel(parseInt(localStorage.getItem('wf_visit_count') || '0', 10));
+                } catch (e) {}
+                trackPageView();
+
+                var runVersionCheck = function () {
+                    queryLogoVersion().then(function (version) {
+                        currentLogoVersion = version;
+                        if (version) fetchFreshLogo(version);
+                        else if (!window.__WF_LOGO_CACHED__) {
+                            fetchFreshLogo(null);
+                        }
+                    });
+                };
+                if ('requestIdleCallback' in window) {
+                    requestIdleCallback(runVersionCheck, { timeout: 1500 });
+                } else {
+                    setTimeout(runVersionCheck, 300);
+                }
+
+                subscribeRealtime();
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', boot);
+            } else {
+                boot();
+            }
+        })();
+    </script>
+</body>
+
+</html>
