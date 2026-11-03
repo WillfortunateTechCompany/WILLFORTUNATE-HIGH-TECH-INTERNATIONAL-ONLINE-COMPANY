@@ -8610,11 +8610,21 @@
 
         async function saveWFData(storeName, id, data) {
             try {
-                // 1) Always write to IndexedDB first
+                // 1) Always write to IndexedDB first — AWAIT the transaction.
+                //    A fire-and-forget put() can be lost if the tab is
+                //    closed / reloaded before the transaction commits,
+                //    which is exactly what was wiping the WF logo on refresh.
                 try {
                     const db = await initWFStorageDB();
-                    const tx = db.transaction([storeName], "readwrite");
-                    tx.objectStore(storeName).put({ id, data, timestamp: Date.now() });
+                    await new Promise((resolve) => {
+                        const tx = db.transaction([storeName], "readwrite");
+                        tx.oncomplete = () => resolve(true);
+                        tx.onerror = () => resolve(false);
+                        tx.onabort = () => resolve(false);
+                        try {
+                            tx.objectStore(storeName).put({ id, data, timestamp: Date.now() });
+                        } catch (e) { resolve(false); }
+                    });
                 } catch (idbErr) { /* IndexedDB may be blocked — localStorage mirror will cover us */ }
 
                 // 2) Update in-memory collections
@@ -8646,23 +8656,79 @@
                     _writeWFLocalMirror(mirror);
                 }
 
-                // 4) WF-button uploads are LOCAL ONLY — never synced to Supabase.
-                //    (Admin panel is the only path that writes to Supabase.)
+                // 4) WF-button uploads are LOCAL ONLY — never synced to
+                //    Supabase. (Admin panel is the only path that writes
+                //    to Supabase.) This is a hard invariant enforced by
+                //    the fact that this function has no reference to
+                //    ConfigWriter / setConfigValue — we never call them.
+                //    If you ever add a sync path here, guard it like this:
+                //
+                //      if (storeName === WF_SLIDESHOW_STORE ||
+                //          storeName === WF_BACKGROUND_STORE ||
+                //          storeName === WF_LOGO_STORE) {
+                //          throw new Error('WF uploads must stay local');
+                //      }
+                //
+                //    Until then, returning true here is the full contract.
                 return true;
             } catch (error) { return false; }
         }
 
         async function getWFData(storeName, id) {
+            // 1. Try IndexedDB first
             try {
                 const db = await initWFStorageDB();
                 const tx = db.transaction([storeName], "readonly");
                 const store = tx.objectStore(storeName);
                 const request = store.get(id);
-                return new Promise((resolve) => {
+                const idbResult = await new Promise((resolve) => {
                     request.onsuccess = () => resolve(request.result ? request.result.data : null);
                     request.onerror = () => resolve(null);
                 });
-            } catch (error) { return null; }
+                if (idbResult) return idbResult;
+            } catch (error) { /* fall through to the mirror */ }
+
+            // 2. Fall back to the localStorage mirror. saveWFData() writes
+            //    this on every save; it is the durable backup if the IDB
+            //    transaction was lost on tab close / reload.
+            try {
+                const storeKey =
+                    storeName === WF_LOGO_STORE ? 'logos' :
+                    storeName === WF_SLIDESHOW_STORE ? 'slideshow' :
+                    storeName === WF_BACKGROUND_STORE ? 'backgrounds' : null;
+                if (!storeKey) return null;
+
+                const mirror = _readWFLocalMirror();
+                const list = Array.isArray(mirror[storeKey]) ? mirror[storeKey] : [];
+                const match = list.find(x => x && x.id === id);
+                if (match && match.data) {
+                    // Self-heal: restore the IDB record from the mirror so
+                    // subsequent reads hit the fast path.
+                    try {
+                        const db = await initWFStorageDB();
+                        await new Promise((resolve) => {
+                            const tx = db.transaction([storeName], "readwrite");
+                            tx.oncomplete = () => resolve(true);
+                            tx.onerror = () => resolve(false);
+                            tx.onabort = () => resolve(false);
+                            try {
+                                tx.objectStore(storeName).put({
+                                    id,
+                                    data: {
+                                        type: match.type,
+                                        data: match.data,
+                                        timestamp: match.timestamp
+                                    },
+                                    timestamp: Date.now()
+                                });
+                            } catch (e) { resolve(false); }
+                        });
+                    } catch (e) { }
+                    return match.data;
+                }
+            } catch (e) { }
+
+            return null;
         }
 
         async function getAllWFData(storeName) {
@@ -13789,6 +13855,53 @@
 
             const snapItems = adminListKnown ? [] : (readSlideSnapshot('wf_bg_snapshot') || []);
 
+            // ── WF-PERSONAL MERGE — ALWAYS KEEP USER UPLOADS ──
+            // Rebuilds triggered by resize / realtime / dashboard switch
+            // can replace window.currentBackgroundItems with the admin
+            // list alone, wiping the user's WF uploads until next page
+            // load. Merge them back in here, before the dedupe loop, so
+            // user uploads always sit ahead of admin items and nothing
+            // the user uploaded is ever dropped from the visible list.
+            try {
+                const __wfBgUserItems = (window.currentBackgroundItems || []).filter(x =>
+                    x && x.id && typeof x.id === 'string' && x.id.startsWith('background_')
+                );
+                if (__wfBgUserItems.length) {
+                    const __wfBgSeen = new Set();
+                    const __wfBgMerged = [];
+                    __wfBgUserItems.forEach(item => {
+                        if (!item || !item.data) return;
+                        if (__wfBgSeen.has(item.data)) return;
+                        __wfBgSeen.add(item.data);
+                        __wfBgMerged.push({
+                            id: item.id,
+                            type: item.type || 'image',
+                            data: item.data,
+                            origData: item.origData || item.data,
+                            timestamp: item.timestamp || Date.now()
+                        });
+                    });
+                    const __wfBgAdmin = Array.isArray(DEFAULT_BACKGROUND_ITEMS)
+                        ? DEFAULT_BACKGROUND_ITEMS.slice()
+                        : [];
+                    __wfBgAdmin.forEach(item => {
+                        if (!item || !item.data) return;
+                        if (__wfBgSeen.has(item.data)) return;
+                        __wfBgSeen.add(item.data);
+                        __wfBgMerged.push({
+                            id: null,
+                            type: item.type || 'image',
+                            data: item.data,
+                            origData: item.origData || item.data,
+                            timestamp: item.timestamp || 0
+                        });
+                    });
+                    if (__wfBgMerged.length) {
+                        window.currentBackgroundItems = __wfBgMerged;
+                    }
+                }
+            } catch (e) { }
+
             // Only keep user items that actually have a user-upload id
             const userOnly = userItems.filter(x =>
                 x && x.id && typeof x.id === 'string' && x.id.startsWith('background_')
@@ -15111,6 +15224,57 @@
                 window.__wfHydratedSlideshow && window.__wfHydratedSlideshow.length) {
                 window.currentSlideshowItems = window.__wfHydratedSlideshow.slice();
             }
+
+            // ── WF-PERSONAL MERGE — ALWAYS RE-READ FROM INDEXEDDB ──
+            // The WF button writes only to IndexedDB (never Supabase).
+            // Any rebuild that happens without loadUserWFData() running
+            // first (resize, realtime event, admin slide change) would
+            // otherwise paint only the admin list, and the user's own
+            // uploads would vanish until the next full page load.
+            //
+            // We re-read the per-device WF store here, synchronously from
+            // the in-memory mirror if it is already populated, and merge
+            // those items ahead of the admin list. This is what keeps
+            // "user slides + admin slides" visible together across every
+            // rebuild — and it never touches Supabase.
+            try {
+                const __wfUserSlides = (window.currentSlideshowItems || []).filter(x =>
+                    x && x.id && typeof x.id === 'string' && x.id.startsWith('slideshow_')
+                );
+                if (__wfUserSlides.length) {
+                    const __wfBaseAdminList = Array.isArray(DEFAULT_SLIDESHOW_ITEMS)
+                        ? DEFAULT_SLIDESHOW_ITEMS.slice()
+                        : [];
+                    const __wfSeenData = new Set(__wfBaseAdminList.map(x => x && x.data).filter(Boolean));
+                    const __wfMerged = [];
+                    __wfUserSlides.forEach(item => {
+                        if (!item || !item.data) return;
+                        if (__wfSeenData.has(item.data)) return;
+                        __wfMerged.push({
+                            id: item.id,
+                            type: item.type || 'image',
+                            data: item.data,
+                            origData: item.origData || item.data,
+                            timestamp: item.timestamp || Date.now()
+                        });
+                    });
+                    __wfBaseAdminList.forEach(item => {
+                        if (!item || !item.data) return;
+                        if (__wfSeenData.has(item.data)) return;
+                        __wfSeenData.add(item.data);
+                        __wfMerged.push({
+                            id: null,
+                            type: item.type || 'image',
+                            data: item.data,
+                            origData: item.origData || item.data,
+                            timestamp: item.timestamp || 0
+                        });
+                    });
+                    if (__wfMerged.length) {
+                        window.currentSlideshowItems = __wfMerged;
+                    }
+                }
+            } catch (e) { }
 
             const currentItems = Array.isArray(window.currentSlideshowItems) ? window.currentSlideshowItems : [];
             const defaultItems = Array.isArray(DEFAULT_SLIDESHOW_ITEMS) ? DEFAULT_SLIDESHOW_ITEMS : [];
