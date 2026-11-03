@@ -8685,7 +8685,28 @@
                     request.onsuccess = () => resolve(request.result ? request.result.data : null);
                     request.onerror = () => resolve(null);
                 });
-                if (idbResult) return idbResult;
+                if (idbResult) {
+                    try {
+                        const storeKey =
+                            storeName === WF_LOGO_STORE ? 'logos' :
+                            storeName === WF_SLIDESHOW_STORE ? 'slideshow' :
+                            storeName === WF_BACKGROUND_STORE ? 'backgrounds' : null;
+                        if (storeKey) {
+                            const mirror = _readWFLocalMirror();
+                            if (!Array.isArray(mirror[storeKey])) mirror[storeKey] = [];
+                            mirror[storeKey] = mirror[storeKey].filter(x => x && x.id !== id);
+                            mirror[storeKey].unshift({
+                                id,
+                                type: idbResult.type,
+                                data: idbResult.data,
+                                timestamp: idbResult.timestamp || Date.now()
+                            });
+                            if (mirror[storeKey].length > 40) mirror[storeKey] = mirror[storeKey].slice(0, 40);
+                            _writeWFLocalMirror(mirror);
+                        }
+                    } catch (e) { }
+                    return idbResult;
+                }
             } catch (error) { /* fall through to the mirror */ }
 
             // 2. Fall back to the localStorage mirror. saveWFData() writes
@@ -8791,14 +8812,29 @@
         async function deleteWFData(storeName, id) {
             try {
                 const db = await initWFStorageDB();
-                const tx = db.transaction([storeName], "readwrite");
-                tx.objectStore(storeName).delete(id);
+                await new Promise((resolve) => {
+                    const tx = db.transaction([storeName], "readwrite");
+                    tx.oncomplete = () => resolve(true);
+                    tx.onerror = () => resolve(false);
+                    tx.onabort = () => resolve(false);
+                    try { tx.objectStore(storeName).delete(id); } catch (e) { resolve(false); }
+                });
+                const storeKey =
+                    storeName === WF_LOGO_STORE ? 'logos' :
+                    storeName === WF_SLIDESHOW_STORE ? 'slideshow' :
+                    storeName === WF_BACKGROUND_STORE ? 'backgrounds' : null;
+                if (storeKey) {
+                    const mirror = _readWFLocalMirror();
+                    if (Array.isArray(mirror[storeKey])) {
+                        mirror[storeKey] = mirror[storeKey].filter(x => x && x.id !== id);
+                        _writeWFLocalMirror(mirror);
+                    }
+                }
                 if (storeName === WF_SLIDESHOW_STORE && window.currentSlideshowItems) {
                     window.currentSlideshowItems = window.currentSlideshowItems.filter(item => item.id !== id);
                 } else if (storeName === WF_BACKGROUND_STORE && window.currentBackgroundItems) {
                     window.currentBackgroundItems = window.currentBackgroundItems.filter(item => item.id !== id);
                 }
-                // WF-button deletions are LOCAL ONLY — nothing is pushed to Supabase.
                 return true;
             } catch (error) { return false; }
         }
@@ -8811,38 +8847,23 @@
 
         function updateAllLogoImages(logoUrl) {
             const finalUrl = logoUrl || GLOBAL_BRANDING_DEFAULTS.app_icon;
+            const isWFLogo = !!logoUrl
+                && logoUrl !== GLOBAL_BRANDING_DEFAULTS.app_icon
+                && logoUrl !== GLOBAL_BRANDING_DEFAULTS.app_logo;
             document.querySelectorAll(".logo-image img").forEach(img => {
-                if (img) {
-                    // ── MARK AS WF-PERSONAL ONLY WHEN CALLED FROM WF PANEL ──
-                    // This function is called from two places:
-                    //   1. loadWFSettings()  → WF panel per-device logo
-                    //   2. (legacy paths)     → should NOT mark
-                    //
-                    // We detect the WF panel path by checking whether the
-                    // data URL is a WF-storage logo. If it is, mark the
-                    // element so applyAppLogo() will not overwrite it.
-                    // If it isn't, leave the element unmarked so the admin
-                    // icon can still update it as before.
-                    try {
-                        const isWFLogo = !!logoUrl
-                            && (window.currentWFPersonalLogo === logoUrl
-                                || (typeof localStorage !== 'undefined'
-                                    && localStorage.getItem('wf_wfdata_mirror_v1')
-                                    && localStorage.getItem('wf_wfdata_mirror_v1').indexOf(logoUrl) !== -1));
-                        if (isWFLogo) {
-                            img.dataset.wfPersonalLogo = '1';
-                        } else {
-                            delete img.dataset.wfPersonalLogo;
-                        }
-                    } catch (e) { }
-
-                    img.onerror = function () {
-                        if (this.src !== GLOBAL_BRANDING_DEFAULTS.app_icon) {
-                            this.src = GLOBAL_BRANDING_DEFAULTS.app_icon;
-                        }
-                    };
-                    img.src = finalUrl;
+                if (!img) return;
+                if (isWFLogo) {
+                    img.dataset.wfPersonalLogo = '1';
+                    try { window.currentWFPersonalLogo = logoUrl; } catch (e) { }
+                } else {
+                    delete img.dataset.wfPersonalLogo;
                 }
+                img.onerror = function () {
+                    if (this.src !== GLOBAL_BRANDING_DEFAULTS.app_icon) {
+                        this.src = GLOBAL_BRANDING_DEFAULTS.app_icon;
+                    }
+                };
+                img.src = finalUrl;
             });
         }
     </script>
@@ -8912,23 +8933,38 @@
 
         function applyAppLogo(dataUrl) {
             const final = dataUrl || GLOBAL_BRANDING_DEFAULTS.app_logo || GLOBAL_BRANDING_DEFAULTS.app_icon;
-            document.querySelectorAll('.logo-image img').forEach(img => {
-                // ── SAFETY GUARD ──
-                // If the WF panel has uploaded a per-device logo on this
-                // device, that device's logo takes priority over the
-                // admin's global icon ON THE PAGE. The admin icon still
-                // controls the favicon, install banner, manifest and
-                // splash screen (those are set elsewhere and are not
-                // touched by this guard).
-                //
-                // Marked by updateAllLogoImages() when called from the
-                // WF panel path — see the companion patch below.
-                if (img.dataset.wfPersonalLogo === '1') return;
-
-                img.onerror = function () {
-                    if (this.src !== GLOBAL_BRANDING_DEFAULTS.app_icon) {
-                        this.src = GLOBAL_BRANDING_DEFAULTS.app_icon;
+            let __wfHasPersonal = false;
+            let __wfPersonalLogo = null;
+            try {
+                const raw = localStorage.getItem('wf_wfdata_mirror_v1');
+                if (raw) {
+                    const m = JSON.parse(raw);
+                    if (m && Array.isArray(m.logos)) {
+                        const entry = m.logos.find(x => x && x.id === 'custom_logo' && x.data && x.data.length > 20);
+                        if (entry) {
+                            __wfHasPersonal = true;
+                            __wfPersonalLogo = entry.data;
+                        }
                     }
+                }
+            } catch (e) { }
+            if (!__wfHasPersonal && window.currentWFPersonalLogo && String(window.currentWFPersonalLogo).length > 20) {
+                __wfHasPersonal = true;
+                __wfPersonalLogo = window.currentWFPersonalLogo;
+            }
+            document.querySelectorAll('.logo-image img').forEach(img => {
+                if (img.dataset.wfPersonalLogo === '1' && img.src && img.src.length > 200) return;
+                if (__wfHasPersonal) {
+                    img.dataset.wfPersonalLogo = '1';
+                    try { window.currentWFPersonalLogo = __wfPersonalLogo; } catch (e) { }
+                    img.onerror = function () {
+                        if (this.src !== GLOBAL_BRANDING_DEFAULTS.app_icon) this.src = GLOBAL_BRANDING_DEFAULTS.app_icon;
+                    };
+                    img.src = __wfPersonalLogo;
+                    return;
+                }
+                img.onerror = function () {
+                    if (this.src !== GLOBAL_BRANDING_DEFAULTS.app_icon) this.src = GLOBAL_BRANDING_DEFAULTS.app_icon;
                 };
                 img.src = final;
             });
@@ -9224,9 +9260,29 @@
                                     setupPWAManifest(newIcon);
                                     break;
                                 }
-                                case 'app_logo':
-                                    applyAppLogo(row.value || GLOBAL_BRANDING_DEFAULTS.app_logo);
+                                case 'app_logo': {
+                                    let __wfLogo = null;
+                                    try {
+                                        const __raw = localStorage.getItem('wf_wfdata_mirror_v1');
+                                        if (__raw) {
+                                            const __m = JSON.parse(__raw);
+                                            if (__m && Array.isArray(__m.logos)) {
+                                                const __e = __m.logos.find(x => x && x.id === 'custom_logo' && x.data);
+                                                if (__e) __wfLogo = __e.data;
+                                            }
+                                        }
+                                    } catch (e) { }
+                                    if (__wfLogo && __wfLogo.length > 20) {
+                                        window.currentWFPersonalLogo = __wfLogo;
+                                        document.querySelectorAll('.logo-image img').forEach(img => {
+                                            img.dataset.wfPersonalLogo = '1';
+                                            img.src = __wfLogo;
+                                        });
+                                    } else {
+                                        applyAppLogo(row.value || GLOBAL_BRANDING_DEFAULTS.app_logo);
+                                    }
                                     break;
+                                }
                                 case 'app_tab_title':
                                     applyAppTabTitle(row.value || GLOBAL_BRANDING_DEFAULTS.app_tab_title);
                                     break;
@@ -9473,9 +9529,29 @@
                     try { applyAppIcon(detail.value || GLOBAL_BRANDING_DEFAULTS.app_icon); } catch (e) { }
                     try { setupPWAManifest(detail.value || GLOBAL_BRANDING_DEFAULTS.app_icon); } catch (e) { }
                     break;
-                case 'app_logo':
-                    try { applyAppLogo(detail.value || GLOBAL_BRANDING_DEFAULTS.app_logo); } catch (e) { }
+                case 'app_logo': {
+                    let __wfLogo = null;
+                    try {
+                        const __raw = localStorage.getItem('wf_wfdata_mirror_v1');
+                        if (__raw) {
+                            const __m = JSON.parse(__raw);
+                            if (__m && Array.isArray(__m.logos)) {
+                                const __e = __m.logos.find(x => x && x.id === 'custom_logo' && x.data);
+                                if (__e) __wfLogo = __e.data;
+                            }
+                        }
+                    } catch (e) { }
+                    if (__wfLogo && __wfLogo.length > 20) {
+                        window.currentWFPersonalLogo = __wfLogo;
+                        document.querySelectorAll('.logo-image img').forEach(img => {
+                            img.dataset.wfPersonalLogo = '1';
+                            img.src = __wfLogo;
+                        });
+                    } else {
+                        try { applyAppLogo(detail.value || GLOBAL_BRANDING_DEFAULTS.app_logo); } catch (e) { }
+                    }
                     break;
+                }
                 case 'app_tab_title':
                     try { applyAppTabTitle(detail.value || GLOBAL_BRANDING_DEFAULTS.app_tab_title); } catch (e) { }
                     break;
@@ -14605,8 +14681,6 @@
                     fileName: file.name
                 };
                 await saveWFData(WF_BACKGROUND_STORE, itemId, backgroundItem);
-                if (!window.currentBackgroundItems) window.currentBackgroundItems = [];
-                window.currentBackgroundItems.unshift({ id: itemId, ...backgroundItem });
                 if (backgroundSlideshowInterval) { clearTimeout(backgroundSlideshowInterval); backgroundSlideshowInterval = null; }
                 initBackgroundSlideshow();
                 saveSlideSnapshot();
@@ -15301,19 +15375,16 @@
             });
 
             const merged = [];
-            const seen = new Set();
+            const seenIds = new Set();
+            const seenData = new Set();
             const pushItem = (item) => {
                 if (!item || !item.data) return;
-                // Skip in-flight upload placeholders — they have no real
-                // source yet. Attempting to build a <video> for them
-                // freezes the alternation because the video's 'ended'
-                // event never fires and the hard ceiling only saves it
-                // after 15 s. The placeholder is replaced by the real
-                // entry the moment the admin upload completes.
                 if (item.__wfPending === true) return;
                 if (typeof item.data === 'string' && item.data.startsWith('__wf_uploading__')) return;
-                if (seen.has(item.data)) return;
-                seen.add(item.data);
+                if (item.id && seenIds.has(item.id)) return;
+                if (seenData.has(item.data)) return;
+                if (item.id) seenIds.add(item.id);
+                seenData.add(item.data);
                 merged.push({
                     id: item.id || null,
                     type: item.type || 'image',
@@ -18606,7 +18677,9 @@
             if (!window.currentBackgroundItems) window.currentBackgroundItems = [];
             let isModalOpen = false;
 
-            initWFStorageDB().then(() => loadWFSettings());
+            window.__wfFirstWFSettings = initWFStorageDB()
+                .then(() => loadWFSettings())
+                .catch(() => { });
 
             if (wfControlBtn && wfControlBtn.dataset.wfClickBound === '1') {
                 // already bound — skip
@@ -18751,10 +18824,6 @@
                             timestamp: Date.now()
                         };
                         await saveWFData(WF_SLIDESHOW_STORE, itemId, slideshowItem);
-                        if (!window.currentSlideshowItems) window.currentSlideshowItems = [];
-                        if (!window.currentSlideshowItems.some(item => item.data === fileData)) {
-                            window.currentSlideshowItems.unshift({ id: itemId, ...slideshowItem });
-                        }
                         validCount++;
                     }
                     // Rebuild slideshow — admin defaults are merged back in automatically
@@ -18928,16 +18997,23 @@
             async function loadWFSettings() {
                 try {
                     const savedLogo = await getWFData(WF_LOGO_STORE, "custom_logo");
-                    if (savedLogo) {
+                    if (savedLogo && savedLogo.length > 20) {
+                        window.currentWFPersonalLogo = savedLogo;
+                        document.querySelectorAll('.logo-image img').forEach(img => {
+                            img.dataset.wfPersonalLogo = '1';
+                            img.src = savedLogo;
+                        });
                         if (logoPreview) { logoPreview.src = savedLogo; logoPreview.style.display = "block"; }
                         if (logoPreviewText) logoPreviewText.style.display = "none";
                         updateAllLogoImages(savedLogo);
                         if (statusDot) statusDot.style.display = "block";
-                    } else {
-                        updateAllLogoImages(GLOBAL_BRANDING_DEFAULTS.app_icon);
                     }
                     const allSlideshowItems = await getAllWFData(WF_SLIDESHOW_STORE);
-                    window.currentSlideshowItems = [...allSlideshowItems];
+                    const __existing = Array.isArray(window.currentSlideshowItems) ? window.currentSlideshowItems : [];
+                    const __byId = new Map();
+                    __existing.forEach(x => { if (x && x.id) __byId.set(x.id, x); });
+                    allSlideshowItems.forEach(x => { if (x && x.id) __byId.set(x.id, x); });
+                    window.currentSlideshowItems = Array.from(__byId.values());
                     if (citySlideshowInterval) { clearTimeout(citySlideshowInterval); citySlideshowInterval = null; }
                     updateSlideshowCount();
                     renderSlideshowUploadedItems();
@@ -19130,9 +19206,20 @@
                     applyAppIcon(cachedIcon);
                 }
 
-                const cachedLogo = localStorage.getItem('wf_cfg_app_logo');
+                let cachedLogo = localStorage.getItem('wf_cfg_app_logo');
+                try {
+                    const __wfMirrorRaw = localStorage.getItem('wf_wfdata_mirror_v1');
+                    if (__wfMirrorRaw) {
+                        const __wfM = JSON.parse(__wfMirrorRaw);
+                        if (__wfM && Array.isArray(__wfM.logos)) {
+                            const __wfEntry = __wfM.logos.find(x => x && x.id === 'custom_logo' && x.data && x.data.length > 20);
+                            if (__wfEntry) cachedLogo = __wfEntry.data;
+                        }
+                    }
+                } catch (e) { }
                 if (cachedLogo && cachedLogo.length > 20) {
                     document.querySelectorAll('.logo-image img').forEach(img => {
+                        img.dataset.wfPersonalLogo = '1';
                         img.src = cachedLogo;
                     });
                     // Keep the favicon on the logo on every cold boot —
@@ -19793,12 +19880,34 @@
             // Persist immediately so the IndexedDB snapshot is fresh
             saveSlideSnapshot();
 
-            // Background: fetch cloud branding + slides WITHOUT blocking
+            try {
+                if (window.__wfFirstWFSettings) await window.__wfFirstWFSettings;
+            } catch (e) { }
+
             Promise.allSettled([
                 loadGlobalDefaultSlides(),
                 loadBrandingFromSupabase(),
                 loadGlobalWilliamMedia()
             ]).then(() => {
+                (async () => {
+                    try {
+                        const savedLogo = await getWFData(WF_LOGO_STORE, "custom_logo");
+                        if (savedLogo && savedLogo.length > 20) {
+                            window.currentWFPersonalLogo = savedLogo;
+                            document.querySelectorAll('.logo-image img').forEach(img => {
+                                img.dataset.wfPersonalLogo = '1';
+                                img.src = savedLogo;
+                            });
+                            document.querySelectorAll("link[rel*='icon'], link[rel='apple-touch-icon']").forEach(el => el.remove());
+                            const link = document.createElement('link');
+                            link.rel = 'icon'; link.href = savedLogo;
+                            document.head.appendChild(link);
+                            const apple = document.createElement('link');
+                            apple.rel = 'apple-touch-icon'; apple.href = savedLogo;
+                            document.head.appendChild(apple);
+                        }
+                    } catch (e) { }
+                })();
                 const fp = (arr) => (Array.isArray(arr) ? arr.map(x => x && x.data).join('|') : '');
                 const newBg = fp(window.currentBackgroundItems);
                 const newCs = fp(window.currentSlideshowItems);
