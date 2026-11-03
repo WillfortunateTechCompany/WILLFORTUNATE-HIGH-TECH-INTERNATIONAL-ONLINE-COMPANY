@@ -2124,7 +2124,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .secret-dot {
-            position: absolute; top: 8px; right: 8px;
+            position: absolute; top: 8px; left: 8px;
             width: 15px; height: 15px; background: #00e5ff;
             border-radius: 50%; cursor: pointer; opacity: 0.8;
             display: none; box-shadow: 0 0 15px #00e5ff;
@@ -2138,7 +2138,7 @@
         .login-card h1 {
             text-align: center; margin-bottom: 10px; color: #fff;
             font-size: 1.2rem; font-weight: 600;
-            padding-right: 42px;
+            padding-left: 42px;
         }
         .form-group { margin-bottom: 12px; }
         .login-card label {
@@ -5340,6 +5340,42 @@
 </head>
 <body class="dark-mode">
     <!-- ============================================================
+         EARLY PWA PROMPT CAPTURE — must run before DOMContentLoaded.
+         beforeinstallprompt fires ONCE per page load. If no listener
+         is attached when it fires, the event is gone forever and the
+         install button on Android can never work. This block runs
+         synchronously as soon as the body is parsed, before any of
+         the heavy boot code below, so the event is always captured.
+         ============================================================ -->
+    <script>
+        (function () {
+            'use strict';
+            window.__deferredInstallPrompt = null;
+            window.addEventListener('beforeinstallprompt', function (e) {
+                // Prevent the default mini-infobar so our own button controls it.
+                try { e.preventDefault(); } catch (err) { }
+                window.__deferredInstallPrompt = e;
+                // If the banner is already on screen, nothing else to do —
+                // the click handler reads __deferredInstallPrompt live.
+                try {
+                    var banner = document.getElementById('pwaInstallBanner');
+                    var loginDash = document.getElementById('loginDashboard');
+                    if (banner && loginDash && loginDash.style.display !== 'none') {
+                        banner.classList.add('show');
+                        banner.style.setProperty('display', 'flex', 'important');
+                        banner.style.setProperty('visibility', 'visible', 'important');
+                        banner.style.setProperty('opacity', '1', 'important');
+                    }
+                } catch (err) { }
+            });
+            window.addEventListener('appinstalled', function () {
+                window.__deferredInstallPrompt = null;
+                try { localStorage.setItem('wf_pwa_installed_flag', 'true'); } catch (err) { }
+            });
+        })();
+    </script>
+
+    <!-- ============================================================
          SESSION INDICATOR — top-center, hidden on mobile & William
          ============================================================ -->
     <div class="session-indicator" id="sessionIndicator">
@@ -5361,15 +5397,15 @@
             <button class="mobile-nav-close" id="mobileNavClose"><i class="fas fa-times"></i></button>
         </div>
         <div class="mobile-nav-items">
-            <a href="#" class="mobile-nav-item" id="mobileLoginBtn"><i class="fas fa-sign-in-alt"></i> Login</a>
-            <a href="#" class="mobile-nav-item" id="mobileAboutBtn"><i class="fas fa-info-circle"></i> About Us</a>
-            <a href="#" class="mobile-nav-item" id="mobileBillingBtn"><i class="fas fa-credit-card"></i> Billing Plan</a>
-            <a href="#" class="mobile-nav-item" id="mobileAIHubBtn"><i class="fas fa-robot"></i> AI HUB</a>
-            <a href="https://www.facebook.com/willis.weilan" target="_blank" class="mobile-nav-item" id="mobileFacebookBtn"><i class="fab fa-facebook"></i> Facebook</a>
-            <a href="https://tiktok.com/@gsqdisrafil" target="_blank" class="mobile-nav-item" id="mobileTikTokBtn"><i class="fab fa-tiktok"></i> TikTok</a>
-            <a href="#" class="mobile-nav-item" id="mobileWhatsAppBtn"><i class="fab fa-whatsapp"></i> WhatsApp</a>
-            <a href="https://www.youtube.com/@G_SQ%C3%9A%C3%84DISRAFIL" target="_blank" class="mobile-nav-item" id="mobileYouTubeBtn"><i class="fab fa-youtube"></i> YouTube</a>
-            <a href="https://www.instagram.com/willfort.technology.companies?igsh=MXNkY3g2Zm5oenVhZg==" target="_blank" class="mobile-nav-item" id="mobileInstagramBtn"><i class="fab fa-instagram"></i> Instagram</a>
+            <a href="#" class="mobile-nav-item" data-index="0"><i class="fas fa-sign-in-alt"></i> Login</a>
+            <a href="#" class="mobile-nav-item" data-index="1"><i class="fas fa-info-circle"></i> About Us</a>
+            <a href="#" class="mobile-nav-item" data-index="2"><i class="fas fa-credit-card"></i> Billing Plan</a>
+            <a href="#" class="mobile-nav-item" data-index="3"><i class="fas fa-robot"></i> AI HUB</a>
+            <a href="https://www.facebook.com/willis.weilan" target="_blank" class="mobile-nav-item" data-index="4"><i class="fab fa-facebook"></i> Facebook</a>
+            <a href="https://tiktok.com/@gsqdisrafil" target="_blank" class="mobile-nav-item" data-index="5"><i class="fab fa-tiktok"></i> TikTok</a>
+            <a href="#" class="mobile-nav-item" data-index="6"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+            <a href="https://www.youtube.com/@G_SQ%C3%9A%C3%84DISRAFIL" target="_blank" class="mobile-nav-item" data-index="7"><i class="fab fa-youtube"></i> YouTube</a>
+            <a href="https://www.instagram.com/willfort.technology.companies?igsh=MXNkY3g2Zm5oenVhZg==" target="_blank" class="mobile-nav-item" data-index="8"><i class="fab fa-instagram"></i> Instagram</a>
         </div>
     </div>
 
@@ -9574,6 +9610,13 @@
 
                 if (result.ok) {
                     adminPanelUnlockedOnce = true;
+                    // Silence the slideshow BEFORE the admin panel paints,
+                    // so no frame of audio leaks through.
+                    try {
+                        document.querySelectorAll('.background-slide.active video, .city-slide.active video').forEach(function (v) {
+                            try { v.muted = true; } catch (e) { }
+                        });
+                    } catch (e) { }
                     document.getElementById("adminDashboard").classList.add("active");
                     if (currentUserEmail) {
                         if (!userDatabase[currentUserEmail]) userDatabase[currentUserEmail] = {};
@@ -9582,6 +9625,9 @@
                         StorageManager.setItem("userDatabase", userDatabase);
                     }
                     await loadAdminDashboard();
+                    // Re-run the full gate so any later change (e.g. the
+                    // user closes the panel) restores the mute choice.
+                    try { window.__wfApplySlideshowAudioGate?.(); } catch (e) { }
                     return;
                 }
 
@@ -10762,22 +10808,29 @@
                             localEntries.push(placeholder);
                             pendingVideoUploads.push({ file, placeholder });
                         } else {
-                            try {
-                                const dataUrl = await new Promise((resolve, reject) => {
-                                    const reader = new FileReader();
-                                    reader.onload = () => resolve(reader.result);
-                                    reader.onerror = () => reject(reader.error);
-                                    reader.readAsDataURL(file);
+                            // ---------------------------------------------------------
+                            // IMAGES — DO NOT base64 the file.
+                            // readAsDataURL blocks the main thread while it
+                            // builds a ~33%-larger string in RAM, and the
+                            // slideshow then decodes it again to paint.
+                            // Instead: one instant blob-URL handle, paint
+                            // from it immediately, upload the raw File to
+                            // Supabase Storage in the background, and swap
+                            // the CDN URL in when it lands. This is the
+                            // exact pattern the video branch already uses.
+                            // ---------------------------------------------------------
+                            let blobUrl = null;
+                            try { blobUrl = URL.createObjectURL(file); } catch (err) { blobUrl = null; }
+                            if (blobUrl) {
+                                localEntries.push({
+                                    type: 'image',
+                                    data: blobUrl,
+                                    __wfLocalBlobUrl: true,
+                                    fileName: file.name,
+                                    fileRef: file,
+                                    timestamp: Date.now()
                                 });
-                                if (dataUrl) {
-                                    localEntries.push({
-                                        type: 'image',
-                                        data: dataUrl,
-                                        fileName: file.name,
-                                        timestamp: Date.now()
-                                    });
-                                }
-                            } catch (err) { }
+                            }
                         }
                     }
                     if (localEntries.length === 0) { uploadInput.value = ''; return; }
@@ -10878,25 +10931,45 @@
                             }
                         }
 
-                        // -------- IMAGES: swap the data URL for the CDN URL
+                        // -------- IMAGES: swap the blob URL for the CDN URL
                         for (const local of localEntries) {
                             if (local.type !== 'image') continue;
-                            const matchingFile = __valid.find(f => f.name === local.fileName);
+                            const matchingFile = local.fileRef
+                                || __valid.find(f => f.name === local.fileName);
                             if (!matchingFile) continue;
                             try {
                                 const result = await uploadToBucket(BUCKETS.slides, matchingFile, 'city');
                                 if (result && result.url) {
-                                    const target = (DEFAULT_SLIDESHOW_ITEMS || []).find(
+                                    // Match by the blob-URL string first (the
+                                    // fast path), then fall back to fileName
+                                    // in case a concurrent rebuild cloned the
+                                    // entry and lost the exact string.
+                                    let target = (DEFAULT_SLIDESHOW_ITEMS || []).find(
                                         s => s.data === local.data
                                     );
+                                    if (!target) {
+                                        target = (DEFAULT_SLIDESHOW_ITEMS || []).find(
+                                            s => s && s.type === 'image' &&
+                                                 s.data && s.data.startsWith('blob:') &&
+                                                 s.fileName === local.fileName
+                                        );
+                                    }
                                     if (target) {
                                         target.data = result.url;
                                         target.path = result.path;
                                         target.origData = result.url;
+                                        delete target.__wfLocalBlobUrl;
                                         uploaded++;
                                     }
+                                    // Free the object-URL handle now that the
+                                    // CDN URL is in place. Failure is benign.
+                                    try {
+                                        if (typeof local.data === 'string' && local.data.startsWith('blob:')) {
+                                            URL.revokeObjectURL(local.data);
+                                        }
+                                    } catch (err) { }
                                 }
-                            } catch (err) { /* keep the local data URL */ }
+                            } catch (err) { /* keep the local blob URL */ }
                         }
 
                         if (failed > 0) {
@@ -10913,7 +10986,17 @@
                                 path: s.path || null,
                                 fileName: s.fileName || null,
                                 timestamp: s.timestamp || Date.now()
-                            }));
+                            })).filter(function (s) {
+                                // Never persist a blob: URL to Supabase — it
+                                // is only meaningful in this tab and would
+                                // render as a broken slide on every other
+                                // device. If the upload failed, the entry is
+                                // dropped from the cloud copy (it still
+                                // paints locally from the blob URL until the
+                                // next reload).
+                                if (typeof s.data === 'string' && s.data.startsWith('blob:')) return false;
+                                return true;
+                            });
                             __configCache.set('slideshow_slides', JSON.stringify(final));
                             __configCacheAt.set('slideshow_slides', Date.now());
                             try { localStorage.setItem('wf_cfg_slideshow_slides', JSON.stringify(final)); } catch (e) { }
@@ -12088,7 +12171,34 @@
             // to decide whether the currently audible video should be
             // heard on the current dashboard. It cannot stop playback.
             // ------------------------------------------------------------
-            const audible = __wfSlidesPageIsVisible();
+            // A full-screen overlay on top of the slides page (admin
+            // panel, login modal, about-us modal, cropper, speed modal,
+            // access modal, mobile drawer) must silence the slideshow
+            // even though the slides dashboard is technically still the
+            // visible one underneath.
+            const __wfOverlayOpen = (function () {
+                try {
+                    const adminDash = document.getElementById('adminDashboard');
+                    if (adminDash && adminDash.classList.contains('active')) return true;
+                    const loginModal = document.getElementById('loginFormModal');
+                    if (loginModal && loginModal.classList.contains('active')) return true;
+                    const aboutModal = document.getElementById('aboutUsModal');
+                    if (aboutModal && aboutModal.classList.contains('active')) return true;
+                    const cropper = document.getElementById('cropperOverlay');
+                    if (cropper && cropper.classList.contains('active')) return true;
+                    const accessModal = document.getElementById('accessModalOverlay');
+                    if (accessModal && accessModal.classList.contains('active')) return true;
+                    const speedModal = document.getElementById('speedModalOverlay');
+                    if (speedModal && speedModal.classList.contains('active')) return true;
+                    const brandingCropper = document.getElementById('brandingCropperOverlay');
+                    if (brandingCropper && brandingCropper.classList.contains('active')) return true;
+                    const mobileNav = document.getElementById('mobileNav');
+                    if (mobileNav && mobileNav.classList.contains('active')) return true;
+                } catch (e) { }
+                return false;
+            })();
+
+            const audible = __wfSlidesPageIsVisible() && !__wfOverlayOpen;
 
             // ---- 1. CITY SLIDESHOW ----
             // NEVER writes muted. User choice is the only authority.
@@ -16719,14 +16829,18 @@
                         return;
                     }
 
-                    // Render FIRST (drawer is still hidden), then show it.
-                    // This prevents the DOM-replace-under-finger bug
-                    // that was causing items to fire twice.
-                    renderDrawer().then(() => {
-                        openDrawer();
-                    }).catch(() => {
-                        openDrawer();
-                    });
+                    // Open IMMEDIATELY on the first tap. The drawer
+                    // already contains whatever was rendered at boot
+                    // (renderDrawer() runs once on init), so there is
+                    // no reason to wait for a network round-trip before
+                    // showing it.
+                    openDrawer();
+
+                    // Refresh the items in the background. When it
+                    // resolves, renderDrawer() swaps in the fresh list
+                    // via itemsContainer.innerHTML — while the drawer is
+                    // already visible. No await, no tap delay.
+                    renderDrawer().catch(function () { });
                 });
             }
 
@@ -16833,12 +16947,13 @@
             let __lastRenderAt = 0;
 
             async function renderDrawer() {
-                // Prevent overlapping renders (which caused double-fires)
+                // Prevent overlapping renders. Keep this guard — two
+                // renderDrawer() calls in flight at once would race on
+                // itemsContainer.innerHTML. But do NOT gate on a 300ms
+                // timer any more: the drawer already opens on the first
+                // tap, so a fast re-render is harmless and the timer was
+                // adding artificial delay on the second tap.
                 if (__renderInFlight) return;
-                // Debounce: no more than one render per 300ms
-                const now = Date.now();
-                if (now - __lastRenderAt < 300) return;
-                __lastRenderAt = now;
                 __renderInFlight = true;
 
                 try {
@@ -16979,17 +17094,25 @@
             };
 
             try {
-                const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
-                const url = URL.createObjectURL(blob);
+                // Chrome on Android fails installability when the manifest
+                // is a blob: URL — it does not fetch it in time and the
+                // beforeinstallprompt event never fires. A data: URL with
+                // the correct MIME type is treated as an immediate,
+                // same-origin manifest and passes installability on both
+                // Android Chrome and desktop Chrome.
+                const manifestJson = JSON.stringify(manifest);
+                const dataUrl = 'data:application/manifest+json;charset=utf-8,' +
+                    encodeURIComponent(manifestJson);
+
                 document.querySelectorAll("link[rel='manifest']").forEach(l => l.remove());
                 const link = document.createElement('link');
                 link.rel = 'manifest';
-                link.href = url;
+                link.href = dataUrl;
                 document.head.appendChild(link);
 
                 // Also expose the manifest URL for Chrome to pick up the
                 // updated icon on the next beforeinstallprompt.
-                window.__wfManifestUrl = url;
+                window.__wfManifestUrl = dataUrl;
             } catch (e) { }
         }
 
@@ -17108,21 +17231,20 @@
                 const prompt = window.__deferredInstallPrompt;
                 if (prompt && typeof prompt.prompt === 'function') {
                     try {
+                        // Do NOT null the prompt before calling prompt() —
+                        // some Android Chrome builds read the event during
+                        // the prompt() call itself.
                         prompt.prompt();
                         const choice = await prompt.userChoice;
                         if (choice && choice.outcome === 'accepted') {
                             hideBannerNow();
-                            // Persist the install flag immediately — the
-                            // async `appinstalled` event can fire late (or
-                            // be missed by the banner's own listener), and
-                            // without this the banner flashes on the next
-                            // load before the flag exists.
-                            try { localStorage.setItem('wf_pwa_installed_flag', 'true'); } catch (e) { }
+                            try { localStorage.setItem('wf_pwa_installed_flag', 'true'); } catch (err) { }
                             showSuccessNotification('Installed', 'App installed — WF upload is now enabled');
                         }
                     } catch (err) {
                         console.error('[WFSMB] install prompt failed:', err);
                     }
+                    // Clear only AFTER the prompt has fully resolved.
                     window.__deferredInstallPrompt = null;
                     return;
                 }
@@ -17222,16 +17344,15 @@
             });
 
             // ---------------------------------------------------------
-            // CAPTURE THE NATIVE PROMPT — purely additive
+            // CAPTURE THE NATIVE PROMPT
             // ---------------------------------------------------------
-            if (!window.__wfPwaPromptBound) {
-                window.__wfPwaPromptBound = true;
-                window.addEventListener('beforeinstallprompt', function (e) {
-                    window.__deferredInstallPrompt = e;
-                    if (slidesPageVisible() && !isStandaloneNow()) {
-                        showBannerNow();
-                    }
-                });
+            // The listener that actually stores __deferredInstallPrompt
+            // runs at the very top of <body> (it must be attached before
+            // beforeinstallprompt can fire on Android). Here we only
+            // ensure the banner becomes visible if the event was already
+            // captured before this function ran.
+            if (window.__deferredInstallPrompt && slidesPageVisible() && !isStandaloneNow()) {
+                showBannerNow();
             }
 
             // ---------------------------------------------------------
@@ -19512,6 +19633,35 @@
                         else startTicks();
                     }).observe(m, { attributes: true, attributeFilter: ['class'] });
                 });
+
+                // Re-run the slideshow audio gate whenever any full-screen
+                // overlay opens or closes. Opening the admin panel (or any
+                // modal) must silence the slideshow; closing it must
+                // restore the user's mute choice. This observer only
+                // calls the gate — it does not pause, play, or seek.
+                try {
+                    if (window.__wfOverlayAudioObserverBound !== true) {
+                        window.__wfOverlayAudioObserverBound = true;
+                        const overlays = [
+                            document.getElementById('adminDashboard'),
+                            document.getElementById('loginFormModal'),
+                            document.getElementById('aboutUsModal'),
+                            document.getElementById('cropperOverlay'),
+                            document.getElementById('accessModalOverlay'),
+                            document.getElementById('speedModalOverlay'),
+                            document.getElementById('brandingCropperOverlay'),
+                            document.getElementById('mobileNav')
+                        ].filter(Boolean);
+                        if (overlays.length) {
+                            const audioGateObserver = new MutationObserver(function () {
+                                try { window.__wfApplySlideshowAudioGate?.(); } catch (e) { }
+                            });
+                            overlays.forEach(function (el) {
+                                audioGateObserver.observe(el, { attributes: true, attributeFilter: ['class', 'style'] });
+                            });
+                        }
+                    }
+                } catch (e) { }
 
                 // Also skip work while the user's finger is down anywhere.
                 // The safety timer is a SINGLE setTimeout that is reset on
